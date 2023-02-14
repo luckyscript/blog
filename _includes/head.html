@@ -1,0 +1,44 @@
+<head>
+  <meta charset="utf-8">
+  <title>{% if page.layout =='post' or page.hideHomeActive or page.is404 %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
+  <meta name="description"
+        content="{{ site.description }}{% if page.categories %}{{ page.categories }}{% endif %}{% if page.summary %}{{ page.summary }}{% endif %}">
+  {% if page.tags %}
+  <meta name="keywords" content="{{ page.tags | join: ', ' }}">
+  {% endif %}
+
+  <meta name="viewport" content="width=device-width">
+  <meta name="theme-color" content="#FFFFFF">
+
+  <!-- Open Graph -->
+  <meta property="og:locale" content="{{ site.locale }}">
+  <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+  <meta property="og:description"
+        content="{% if page.summary %}{{ page.summary }}{% else %}{{ site.description }}{% endif %}">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+  <meta property="og:site_name" content="{{ site.title }}">
+  <link rel="stylesheet" href="https://gw.alipayobjects.com/os/k/font/lxgwwenkaiscreenr.css" async rel="preload" as="font">
+
+
+  {% capture canonical %}{{ site.url }}{% if site.permalink contains '.html' %}{{ page.url }}{% else %}{{ page.url |
+  remove:'index.html' | strip_slash }}{% endif %}{% endcapture %}
+  <link rel="canonical" href="{{ canonical }}">
+  <link href="{{ site.url }}/feed.xml" type="application/atom+xml" rel="alternate" title="{{ site.title }} Feed">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <link rel="stylesheet" href="{{ site.url }}/css/index.css">
+
+  <meta http-equiv="cleartype" content="on">
+
+  <link rel="shortcut icon" href="https://gw.alipayobjects.com/zos/k/h9/1.png">
+
+  <script type="text/javascript" src="{{ site.url }}/js/header.js"></script>
+  {% if page.layout == "post" %}
+  <script src="{{site.url}}/js/lazysizes.min.js" async></script>
+  {% endif %}
+</head>
+<body>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html class="no-js" lang="{{site.lang}}">
+{% include head.html %}
+
+  <div id="post">
+    {% include header.html %}
+    <div id="main" role="main">
+      <article class="hentry">
+        <div class="entry-content">
+          <h1 class="post-title entry-title">{{ page.title }}</h1>
+          <h4 class="page-info">
+            <span>Categories:&nbsp;&nbsp;{{page.categories}}</span>
+            <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
+            {%   assign today = "today" | date: '%s'      %}
+            {%   assign start = page.update | date: '%s'  %}
+            {%   assign secondsSince = today | minus: start     %}
+            {%   assign hoursSince = secondsSince | divided_by: 60 | divided_by: 60     %}
+            {%   assign daysSince = hoursSince | divided_by: 24  %}
+
+            {% if daysSince > 365 %}
+            <p class="expired-tips"> 提醒：本文最后更新于 {{daysSince}}天前，文中所描述的信息可能已发生改变，请谨慎阅读。</p>
+            {% endif %}
+          </h4>
+          {{ content | toc }}
+          {% include buy-me-coffee.html %}
+        </div>
+        {% include giscus.html %}
+        {% include read-more.html %}
+      </article>
+    </div>
+    {% include footer.html %}
+  </div>
+  <script></script>
+</body>
+
+</html>

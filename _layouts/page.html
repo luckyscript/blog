@@ -1,0 +1,17 @@
+<!doctype html>
+<html class="no-js" lang="{{site.lang}}">
+{% include head.html %}
+  <div id="page">
+    {% include header.html %}
+    <div id="main" role="main">
+      <article class="hentry">
+        <div class="entry-content">
+          {{ content }}
+        </div>
+        {% include giscus.html %}
+      </article>
+    </div>
+    {% include footer.html %}
+  </div>
+</body>
+</html>
