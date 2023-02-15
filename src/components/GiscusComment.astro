@@ -1,0 +1,30 @@
+---
+---
+<div class="giscus-container" id="giscus-container">
+  <script>
+    var giscusTheme = localStorage.getItem("theme") || 'light';
+    var giscusAttributes = {
+      "src": "https://giscus.app/client.js",
+      "data-repo": "luckyscript/luckyscript.me",
+      "data-repo-id": "R_kgDOI9kOHA",
+      "data-category": "Announcements",
+      "data-category-id": "DIC_kwDOI9kOHM4CUMhi",
+      "data-mapping": "title",
+      "data-strict": "0",
+      "data-reactions-enabled": "1",
+      "data-emit-metadata": "0",
+      "data-input-position": "bottom",
+      "data-theme": giscusTheme,
+      "data-lang": "en",
+      "crossorigin": "anonymous",
+      "data-loading":"lazy",
+      "async": "",
+    };
+    let giscusScript = document.createElement("script");
+    
+    Object.entries(giscusAttributes).forEach(([key, value]) => giscusScript.setAttribute(key, value));
+    
+    document.getElementById('giscus-container').appendChild(giscusScript);
+  </script>
+  <!-- <script src="https://giscus.app/client.js" data-repo="luckyscript/luckyscript.me" data-repo-id="R_kgDOI9kOHA" data-category="Announcements" data-category-id="DIC_kwDOI9kOHM4CUMhi" data-mapping="title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="light" data-lang="en" data-loading="lazy" crossorigin="anonymous" async=""></script> -->
+</div>
