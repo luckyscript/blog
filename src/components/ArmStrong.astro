@@ -1,5 +1,16 @@
 ---
+import { CDN_URL } from "src/config";
 ---
 
 <script type="module" src="/js/modelviewer.js"></script>
-<model-viewer class="w-full h-96" alt="Neil Armstrong's Spacesuit from the Smithsonian Digitization Programs Office and National Air and Space Museum" src="https://luckyscript.starshuo.com/NeilArmstrong.glb" environment-image="https://luckyscript.starshuo.com/moon_1k.hdr" poster="https://luckyscript.starshuo.com/NeilArmstrong.webp" shadow-intensity="1" camera-controls touch-action="pan-y" generate-schema></model-viewer>
+<model-viewer 
+  class="w-full h-96" 
+  alt="Neil Armstrong's Spacesuit from the Smithsonian Digitization Programs Office and National Air and Space Museum" 
+  src={`${CDN_URL}/assets/models/NeilArmstrong.glb`}
+  environment-image={`${CDN_URL}/assets/models/moon_1k.hdr`}
+  poster={`${CDN_URL}/assets/models/NeilArmstrong.webp`}
+  shadow-intensity="1" 
+  camera-controls 
+  touch-action="pan-y" 
+  generate-schema
+></model-viewer>
