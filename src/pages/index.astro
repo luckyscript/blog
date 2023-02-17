@@ -4,12 +4,18 @@ import PageLayout from "../layouts/PageLayout.astro";
 import Intro from "../components/Intro.astro";
 import { SITE_TITLE } from "../config";
 import ArmStrong from "src/components/ArmStrong.astro";
+import Hyperdrive from "src/components/Hyperdrive.astro";
+import Starfield from "src/components/Starfield.astro";
 ---
 
 <PageLayout>
   <PageMeta title={`${SITE_TITLE} | Home`} slot="meta" />
   <Fragment slot="main">
     <Intro />
-    <ArmStrong />
+    <div class="w-full h-96 relative py-px bg-gradient-to-br border-y overflow-hidden">
+      <Starfield noGradient />
+      <Hyperdrive class="z-0 w-full h-full" />
+      <ArmStrong />
+    </div>
   </Fragment>
 </PageLayout>
