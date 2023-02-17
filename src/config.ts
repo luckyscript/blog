@@ -12,4 +12,4 @@ const BASE_URL = new URL(import.meta.env.SITE);
 
 export const SITE_URL = BASE_URL.origin;
 
-export const CDN_URL = import.meta.env.PROD ? 'https://luckyscript.starshuo.com/' : SITE_URL;
+export const CDN_URL = import.meta.env.PROD ? 'http://luckyscript.starshuo.com' : SITE_URL;
