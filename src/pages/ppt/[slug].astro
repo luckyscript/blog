@@ -1,0 +1,66 @@
+---
+import { readOne, readAll } from "../../lib/markdoc/read";
+import { ppt } from "../../lib/markdoc/frontmatter.schema";
+import Renderer from "../../components/Renderer.astro";
+import BlogPostMeta from "../../components/BlogPostMeta.astro";
+import PPTLayout from "../../layouts/PPTLayout.astro";
+import { SITE_URL } from "../../config";
+
+
+// console.log(Reveal, 'xxx')
+export async function getStaticPaths() {
+  const posts = await readAll({
+    directory: "ppt",
+    frontmatterSchema: ppt,
+  });
+
+  // we don't want to generate pages for posts that link to external websites
+  const filteredPosts = posts
+    .filter((p) => p.frontmatter.draft !== true)
+    .filter(({ frontmatter }) => !frontmatter.external);
+
+  return filteredPosts.map((post) => {
+    return { params: { slug: post.slug } };
+  });
+}
+
+const { slug } = Astro.params;
+if (typeof slug !== "string") {
+  throw Error(`slug should be string. Received: ${slug}`);
+}
+
+const { content, frontmatter, rawContent } = await readOne({
+  directory: "ppt",
+  slug,
+  frontmatterSchema: ppt,
+});
+
+const ogImageAbsoluteUrl =
+  frontmatter.external !== true && frontmatter.ogImagePath
+    ? new URL(frontmatter.ogImagePath, SITE_URL).toString()
+    : undefined;
+---
+
+<PPTLayout title={frontmatter.title} date={frontmatter.date}>
+  <BlogPostMeta
+    title={frontmatter.title}
+    description={frontmatter.external ? undefined : frontmatter.description}
+    publishDate={frontmatter.date.toISOString()}
+    pagePath={`/ppt/${slug}`}
+    ogImageAbsoluteUrl={ogImageAbsoluteUrl}
+    slot="meta"
+  />
+  <!-- <Renderer content={content} slot="content" /> -->
+  <div class="reveal" id="write" slot="content">
+    <div class="slides">
+      <section data-markdown>
+        <textarea data-template>
+          {rawContent.replaceAll('\n\n', '\n---\n')}
+        </textarea>
+          <!-- <script type="text/template" define:vars={{ rawContent }}>
+            
+          </script> -->
+      </section>
+    </div>
+  </div>
+</PPTLayout>
