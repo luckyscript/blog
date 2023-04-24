@@ -5,7 +5,7 @@ title: 浅谈尾递归
 date: 2016-03-17 16:00:00
 update: 2016-03-17 16:00:00
 description: 第一次接触尾递归（Tail recursion）是在读《SICP》这本书上。第二次是面试的时候，被面试官问到了。
-categories: 函数式编程 
+category: 函数式编程 
 tags: [前端, JavaScript, Lisp, 函数式编程]
 draft: true 
 ---

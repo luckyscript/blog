@@ -5,7 +5,7 @@ title: 后续传递(continuation)和回调(callback)的差别
 date: 2016-04-05 16:00:00
 update: 2016-04-05 16:00:00
 summary: 后续传递与回调是函数式编程中比较重要的一个概念 
-categories: 函数式编程 
+category: 函数式编程
 tags: [前端, JavaScript, 函数式编程]
 ---
 

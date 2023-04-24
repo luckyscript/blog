@@ -98,6 +98,14 @@ export const config: Config = {
       },
       selfClosing: true,
     },
+    bilibili: {
+      render: "BilibiliEmbed",
+      attributes: {
+        id: { type: String, required: true },
+        label: { type: String, required: true },
+      },
+      selfClosing: true,
+    },
   },
   nodes: {
     heading: {

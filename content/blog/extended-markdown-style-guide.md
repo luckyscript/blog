@@ -8,11 +8,17 @@ draft: true
 
 This blog's markdown is powered by [Markdoc](https://markdoc.dev/). In addition to supporting all basic markdown syntax, this blog also supports extended syntax to render custom components that are not conventionally available via basic markdown. This post is an example to showcase all available extended markdown syntax.
 
+## BiliBili Video
+
+You can embed Bilibili videos
+
+{% bilibili id="BV1az4y1X7Tr" label="Blender教程" /%}
+
 ## YouTube Video
 
 You can embed YouTube videos in your blog posts.
 
-{% youtube url="https://www.youtube-nocookie.com/embed/StTqXEQ2l-Y" label="Everything is awesome - Lego movie song" /%}
+{% youtube url="https://www.youtube.com/embed/StTqXEQ2l-Y" label="Everything is awesome - Lego movie song" /%}
 
 ## Tweet
 

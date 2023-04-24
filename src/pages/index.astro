@@ -6,13 +6,15 @@ import { SITE_TITLE } from "../config";
 import ArmStrong from "src/components/ArmStrong.astro";
 import Hyperdrive from "src/components/Hyperdrive.astro";
 import Starfield from "src/components/Starfield.astro";
+import GithubRecord from "src/components/GithubRecord.astro";
 ---
 
 <PageLayout>
   <PageMeta title={`${SITE_TITLE} | Home`} slot="meta" />
   <Fragment slot="main">
     <Intro />
-    <img class="github-chart w-full my-10" src="http://ghchart.rshah.org/luckyscript" alt="luckyscript's Github chart">
+    <div class="w-full text-center unset gradient-link tracking-wider font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500">Never Give Up!</div>
+    <GithubRecord />
     <div class="w-full h-96 relative py-px bg-gradient-to-br overflow-hidden">
       <Starfield noGradient />
       <Hyperdrive class="z-0 w-full h-full" />

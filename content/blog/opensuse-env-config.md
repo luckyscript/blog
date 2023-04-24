@@ -5,7 +5,7 @@ title: openSUSE环境配置
 date: 2019-04-25 16:00:00
 update: 2019-04-25 16:00:00
 summary: 最近在看《TLPI》，书里面的习题和例程在mac下不是很好编译，darwin和linux的环境还是有所差异的，所以当选择Linux发行版的时候，我还是首选了大蜥蜴。
-categories: Linux
+category: Linux
 tags: [Linux, Tech]
 ---
 

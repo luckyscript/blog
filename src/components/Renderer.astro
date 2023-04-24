@@ -2,6 +2,7 @@
 import { MarkdocRenderer } from "astro-markdoc-renderer";
 import type { Content } from "astro-markdoc-renderer";
 import YouTubeEmbed from "./YouTubeEmbed.astro";
+import BilibiliEmbed from "./Bilibili.astro";
 import TweetEmbed from "./TweetEmbed.astro";
 import CodePenEmbed from "./CodePenEmbed.astro";
 import GitHubGistEmbed from "./GitHubGistEmbed.astro";
@@ -25,6 +26,10 @@ const components = {
   },
   YouTubeEmbed: {
     Component: YouTubeEmbed,
+    props: {},
+  },
+  BilibiliEmbed: {
+    Component: BilibiliEmbed,
     props: {},
   },
   TweetEmbed: {
