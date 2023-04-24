@@ -5,7 +5,7 @@ title: 从Simple JavaScript Inheritance源码来谈js的原型链
 date: 2017-11-15 16:00:00
 update: 2017-11-15 16:00:00
 summary: 最近写ES6写的比较多，对于面向对象方面用的还是比较顺手的， 但是说到底，ES6的class也就是js的语法糖而已，js的面向对象以及继承，底层的原理还是绕不开原型链。
-category: 前端技术 
+category: 前端技术
 tags: [前端, JavaScript]
 ---
 

@@ -1,11 +1,11 @@
 ---
 external: false
 layout: post
-title: X-filter 
+title: X-filter
 date: 2019-04-15 16:00:00
 update: 2019-04-15 16:00:00
 summary: 之前在次碳酸钴的博客闲逛的时候，发现前辈开发了独特的XEditor，觉得不错，但是貌似没有开源，于是不能拿来主义了，就自己开发了一下。
-category: 前端技术 
+category: 前端技术
 tags: [前端, JavaScript]
 ---
 

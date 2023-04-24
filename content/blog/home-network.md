@@ -5,7 +5,7 @@ title: 家里的网络环境建设
 date: 2020-04-26 16:00:00
 update: 2020-04-26 16:00:00
 summary: 家里的网络环境对平时的生活质量来说是一个挺重要的存在，虽说随便拿个路由器来拨号使用对于大多数人已经足够，但是对于程序员来说，还是有不少可以折腾的空间。
-category: Awesome 
+category: Awesome
 tags: [Awesome]
 toc: true
 ---
