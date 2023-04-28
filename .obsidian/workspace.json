@@ -1,0 +1,174 @@
+{
+  "main": {
+    "id": "a84e51478101f8ac",
+    "type": "split",
+    "children": [
+      {
+        "id": "2bad5de397de974d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b767af3caf0fe348",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "content/blog/obsidian.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3aec43ae5e390c73",
+    "type": "split",
+    "children": [
+      {
+        "id": "edbd661a5c4b8041",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "093b8ff706786294",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "dd13a339db605656",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "e2741f729c2740d3",
+    "type": "split",
+    "children": [
+      {
+        "id": "cd2d6d490c3dec65",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7101a95ee07e1ad4",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "content/blog/obsidian.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "41b6305b90e28473",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "content/blog/obsidian.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "0770d32dc267db57",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "6a51906858d1de40",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "content/blog/obsidian.md"
+              }
+            }
+          },
+          {
+            "id": "4b4d11734fb533a0",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "zk-prefixer:创建时间戳笔记": false,
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false
+    }
+  },
+  "active": "b767af3caf0fe348",
+  "lastOpenFiles": [
+    "content/link/catcoding.md",
+    "src/pages/weibo.astro",
+    "src/pages/weibo.jsx",
+    "node_modules/_lodash.groupby@4.6.0@lodash.groupby/package.json",
+    "node_modules/_lodash.groupby@4.6.0@lodash.groupby/index.js",
+    "node_modules/_lodash.groupby@4.6.0@lodash.groupby/README.md",
+    "node_modules/_lodash.groupby@4.6.0@lodash.groupby/LICENSE",
+    "node_modules/_lodash.groupby@4.6.0@lodash.groupby",
+    "template/link.md",
+    "content/blog/awesome-iOS.md",
+    "content/link/typescript-book-chinese.md",
+    "content/blog/obsidian.md",
+    "template/blog.md",
+    "content/blog/js-prototype.md",
+    "content/blog/basic-markdown-style-guide.md",
+    "Untitled.canvas",
+    "content/blog/Untitled.md",
+    "content/blog/2023-04-27.md",
+    "content/blog/Untitled 1.md",
+    "template",
+    "README.md"
+  ]
+}

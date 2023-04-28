@@ -103,6 +103,9 @@
 @layer components {
 
     /* ------ GLOBAL STYLES - START ------ */
+    span img {
+        display: inline-block !important;
+    }
     strong {
         font-weight: 600;
         color: theme('colors.text.bold');
