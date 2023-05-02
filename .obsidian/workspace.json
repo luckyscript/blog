@@ -11,12 +11,10 @@
             "id": "b767af3caf0fe348",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "diff-view",
               "state": {
                 "file": "content/blog/obsidian.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
+                "staged": false
               }
             }
           }
@@ -78,7 +76,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "content/blog/obsidian.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -95,7 +92,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "content/blog/obsidian.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -117,9 +113,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "content/blog/obsidian.md"
-              }
+              "state": {}
             }
           },
           {
@@ -149,6 +143,10 @@
   },
   "active": "b767af3caf0fe348",
   "lastOpenFiles": [
+    "content/blog/obsidian.md",
+    "content/life/thoughts-of-mid-autumn-festival.md",
+    "content/life/cup-buying-diary.md",
+    "content/blog/js-prototype.md",
     "content/link/catcoding.md",
     "src/pages/weibo.astro",
     "src/pages/weibo.jsx",
@@ -160,9 +158,7 @@
     "template/link.md",
     "content/blog/awesome-iOS.md",
     "content/link/typescript-book-chinese.md",
-    "content/blog/obsidian.md",
     "template/blog.md",
-    "content/blog/js-prototype.md",
     "content/blog/basic-markdown-style-guide.md",
     "Untitled.canvas",
     "content/blog/Untitled.md",
