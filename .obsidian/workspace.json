@@ -17,8 +17,20 @@
                 "staged": false
               }
             }
+          },
+          {
+            "id": "5391a33bfd6bca7c",
+            "type": "leaf",
+            "state": {
+              "type": "diff-view",
+              "state": {
+                "file": ".obsidian/workspace.json",
+                "staged": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -141,8 +153,11 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "b767af3caf0fe348",
+  "active": "5391a33bfd6bca7c",
   "lastOpenFiles": [
+    "content/blog/zelda-game-leak.md",
+    "content/blog/tail-recursive.md",
+    "content/blog/js-call-stack.md",
     "content/blog/obsidian.md",
     "content/life/thoughts-of-mid-autumn-festival.md",
     "content/life/cup-buying-diary.md",
