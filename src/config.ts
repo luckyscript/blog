@@ -19,3 +19,12 @@ export const WEIBO_CONFIG = {
   containerid: 1076035351049607,
   name: 'luckyscript',
 }
+
+export const NAV = {
+  Home: '/',
+  Blog: '/blog',
+  About: '/about',
+  Life: '/life',
+  Link: '/link',
+  PPT: '/ppt',
+}

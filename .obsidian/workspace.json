@@ -8,29 +8,19 @@
         "type": "tabs",
         "children": [
           {
-            "id": "b767af3caf0fe348",
-            "type": "leaf",
-            "state": {
-              "type": "diff-view",
-              "state": {
-                "file": "content/blog/obsidian.md",
-                "staged": false
-              }
-            }
-          },
-          {
             "id": "5391a33bfd6bca7c",
             "type": "leaf",
             "state": {
-              "type": "diff-view",
+              "type": "markdown",
               "state": {
-                "file": ".obsidian/workspace.json",
-                "staged": false
+                "file": "content/link/优质博客.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -67,6 +57,14 @@
                 "sortOrder": "alphabetical"
               }
             }
+          },
+          {
+            "id": "6faf14cac7e879e0",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
           }
         ]
       }
@@ -88,6 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "content/link/优质博客.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,6 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "content/link/优质博客.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "content/link/优质博客.md"
+              }
             }
           },
           {
@@ -155,6 +157,22 @@
   },
   "active": "5391a33bfd6bca7c",
   "lastOpenFiles": [
+    "src/pages/link/[slug].astro",
+    "src/pages/link",
+    "src/pages/life copy/[slug].astro",
+    "src/pages/life copy",
+    "content/link/link.md",
+    "content/link/LLM相关.md",
+    "content/link/优质博客.md",
+    "content/link/typescript-book-chinese.md",
+    "src/pages/link.md",
+    "src/pages/link.astro",
+    "src/pages/about.md",
+    "content/cards/202305042248.md",
+    "src/pages/link_back.astro",
+    "content/cards",
+    "content/blog/basic-markdown-style-guide.md",
+    "content/blog/awesome-iOS.md",
     "content/blog/zelda-game-leak.md",
     "content/blog/tail-recursive.md",
     "content/blog/js-call-stack.md",
@@ -162,24 +180,17 @@
     "content/life/thoughts-of-mid-autumn-festival.md",
     "content/life/cup-buying-diary.md",
     "content/blog/js-prototype.md",
-    "content/link/catcoding.md",
     "src/pages/weibo.astro",
     "src/pages/weibo.jsx",
     "node_modules/_lodash.groupby@4.6.0@lodash.groupby/package.json",
     "node_modules/_lodash.groupby@4.6.0@lodash.groupby/index.js",
     "node_modules/_lodash.groupby@4.6.0@lodash.groupby/README.md",
-    "node_modules/_lodash.groupby@4.6.0@lodash.groupby/LICENSE",
-    "node_modules/_lodash.groupby@4.6.0@lodash.groupby",
     "template/link.md",
-    "content/blog/awesome-iOS.md",
-    "content/link/typescript-book-chinese.md",
     "template/blog.md",
-    "content/blog/basic-markdown-style-guide.md",
     "Untitled.canvas",
     "content/blog/Untitled.md",
     "content/blog/2023-04-27.md",
     "content/blog/Untitled 1.md",
-    "template",
     "README.md"
   ]
 }
