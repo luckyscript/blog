@@ -11,13 +11,8 @@
             "id": "5391a33bfd6bca7c",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "content/link/优质博客.md",
-                "mode": "source",
-                "backlinks": true,
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -86,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "content/link/优质博客.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "content/link/优质博客.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "content/link/优质博客.md"
-              }
+              "state": {}
             }
           },
           {
@@ -157,13 +148,15 @@
   },
   "active": "5391a33bfd6bca7c",
   "lastOpenFiles": [
+    "content/link/优质博客.md",
+    "content/link/blog.md",
+    "content/link/LLM.md",
     "src/pages/link/[slug].astro",
     "src/pages/link",
     "src/pages/life copy/[slug].astro",
     "src/pages/life copy",
     "content/link/link.md",
     "content/link/LLM相关.md",
-    "content/link/优质博客.md",
     "content/link/typescript-book-chinese.md",
     "src/pages/link.md",
     "src/pages/link.astro",
@@ -183,7 +176,6 @@
     "src/pages/weibo.astro",
     "src/pages/weibo.jsx",
     "node_modules/_lodash.groupby@4.6.0@lodash.groupby/package.json",
-    "node_modules/_lodash.groupby@4.6.0@lodash.groupby/index.js",
     "node_modules/_lodash.groupby@4.6.0@lodash.groupby/README.md",
     "template/link.md",
     "template/blog.md",
