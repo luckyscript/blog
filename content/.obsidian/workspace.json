@@ -1,18 +1,22 @@
 {
   "main": {
-    "id": "a84e51478101f8ac",
+    "id": "e10b2b0aba339ef3",
     "type": "split",
     "children": [
       {
-        "id": "2bad5de397de974d",
+        "id": "d80b4ba4180376ac",
         "type": "tabs",
         "children": [
           {
-            "id": "5391a33bfd6bca7c",
+            "id": "49b35992de6c2ee1",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "link/LLM.md",
+                "mode": "preview",
+                "source": true
+              }
             }
           }
         ]
@@ -21,15 +25,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "3aec43ae5e390c73",
+    "id": "61d7d133eb0ed351",
     "type": "split",
     "children": [
       {
-        "id": "edbd661a5c4b8041",
+        "id": "9b9384018c2f7c41",
         "type": "tabs",
         "children": [
           {
-            "id": "093b8ff706786294",
+            "id": "e3586a21a87997d8",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -39,7 +43,7 @@
             }
           },
           {
-            "id": "dd13a339db605656",
+            "id": "7f86e22af9ab4da6",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -54,7 +58,7 @@
             }
           },
           {
-            "id": "6faf14cac7e879e0",
+            "id": "6fbd969af1133741",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -68,19 +72,20 @@
     "width": 300
   },
   "right": {
-    "id": "e2741f729c2740d3",
+    "id": "81670314e2bb5bb3",
     "type": "split",
     "children": [
       {
-        "id": "cd2d6d490c3dec65",
+        "id": "94a4a45292284515",
         "type": "tabs",
         "children": [
           {
-            "id": "7101a95ee07e1ad4",
+            "id": "84a39617782633d6",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
+                "file": "link/LLM.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -92,18 +97,19 @@
             }
           },
           {
-            "id": "41b6305b90e28473",
+            "id": "55969c1ad82d0df9",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "link/LLM.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
             }
           },
           {
-            "id": "0770d32dc267db57",
+            "id": "514e046b97cb936c",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -114,15 +120,25 @@
             }
           },
           {
-            "id": "6a51906858d1de40",
+            "id": "031b7226ebbca5fd",
             "type": "leaf",
             "state": {
               "type": "outline",
+              "state": {
+                "file": "link/LLM.md"
+              }
+            }
+          },
+          {
+            "id": "a28c8e7066f85abd",
+            "type": "leaf",
+            "state": {
+              "type": "git-history-view",
               "state": {}
             }
           },
           {
-            "id": "4b4d11734fb533a0",
+            "id": "1b9ce93d8767f92e",
             "type": "leaf",
             "state": {
               "type": "git-view",
@@ -130,59 +146,29 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 235.5
   },
   "left-ribbon": {
     "hiddenItems": {
-      "zk-prefixer:创建时间戳笔记": false,
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
       "command-palette:打开命令面板": false
     }
   },
-  "active": "5391a33bfd6bca7c",
+  "active": "49b35992de6c2ee1",
   "lastOpenFiles": [
-    "content/link/优质博客.md",
-    "content/link/blog.md",
-    "content/link/LLM.md",
-    "src/pages/link/[slug].astro",
-    "src/pages/link",
-    "src/pages/life copy/[slug].astro",
-    "src/pages/life copy",
-    "content/link/link.md",
-    "content/link/LLM相关.md",
-    "content/link/typescript-book-chinese.md",
-    "src/pages/link.md",
-    "src/pages/link.astro",
-    "src/pages/about.md",
-    "content/cards/202305042248.md",
-    "src/pages/link_back.astro",
-    "content/cards",
-    "content/blog/basic-markdown-style-guide.md",
-    "content/blog/awesome-iOS.md",
-    "content/blog/zelda-game-leak.md",
-    "content/blog/tail-recursive.md",
-    "content/blog/js-call-stack.md",
-    "content/blog/obsidian.md",
-    "content/life/thoughts-of-mid-autumn-festival.md",
-    "content/life/cup-buying-diary.md",
-    "content/blog/js-prototype.md",
-    "src/pages/weibo.astro",
-    "src/pages/weibo.jsx",
-    "node_modules/_lodash.groupby@4.6.0@lodash.groupby/package.json",
-    "node_modules/_lodash.groupby@4.6.0@lodash.groupby/README.md",
+    "link/LLM.md",
+    "link/link.md",
     "template/link.md",
     "template/blog.md",
-    "Untitled.canvas",
-    "content/blog/Untitled.md",
-    "content/blog/2023-04-27.md",
-    "content/blog/Untitled 1.md",
-    "README.md"
+    "projects/draft-project.md",
+    "life/thoughts-of-mid-autumn-festival.md"
   ]
 }

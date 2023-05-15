@@ -26,5 +26,6 @@ export const NAV = {
   About: '/about',
   Life: '/life',
   Link: '/link',
+  Note: 'https://note.luckyscript.me',
   PPT: '/ppt',
 }
