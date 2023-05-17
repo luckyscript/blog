@@ -13,8 +13,9 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "link/LLM.md",
-                "mode": "preview",
+                "file": "cards/202305172016.md",
+                "mode": "source",
+                "backlinks": false,
                 "source": true
               }
             }
@@ -80,42 +81,14 @@
         "type": "tabs",
         "children": [
           {
-            "id": "84a39617782633d6",
-            "type": "leaf",
-            "state": {
-              "type": "backlink",
-              "state": {
-                "file": "link/LLM.md",
-                "collapseAll": false,
-                "extraContext": false,
-                "sortOrder": "alphabetical",
-                "showSearch": false,
-                "searchQuery": "",
-                "backlinkCollapsed": false,
-                "unlinkedCollapsed": true
-              }
-            }
-          },
-          {
             "id": "55969c1ad82d0df9",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "link/LLM.md",
+                "file": "cards/202305172016.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
-              }
-            }
-          },
-          {
-            "id": "514e046b97cb936c",
-            "type": "leaf",
-            "state": {
-              "type": "tag",
-              "state": {
-                "sortOrder": "frequency",
-                "useHierarchy": true
               }
             }
           },
@@ -125,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "link/LLM.md"
+                "file": "cards/202305172016.md"
               }
             }
           },
@@ -146,7 +119,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
@@ -156,18 +129,32 @@
     "hiddenItems": {
       "switcher:打开快速切换": false,
       "graph:查看关系图谱": false,
-      "canvas:新建白板": false,
-      "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
-      "command-palette:打开命令面板": false
+      "command-palette:打开命令面板": false,
+      "workspaces:管理工作区布局": false,
+      "zk-prefixer:创建时间戳笔记": false
     }
   },
   "active": "49b35992de6c2ee1",
   "lastOpenFiles": [
+    "cards/202305172016.md",
+    "cards/202305171957.md",
+    "cards/202305171956.md",
+    "cards/202305162002.md",
+    "cards/202305171958.md",
+    "template/cards.md",
+    "template/link.md",
+    "cards/202305171920.md",
+    "cards/202305171955.md",
+    "template/blog.md",
+    "cards/202305171954.md",
+    "cards/202305171959.md",
+    "cards/202305042248.md",
+    "cards/202305162001.md",
+    "未命名.canvas",
+    "ppt/basic-markdown-style-guide.md",
     "link/LLM.md",
     "link/link.md",
-    "template/link.md",
-    "template/blog.md",
     "projects/draft-project.md",
     "life/thoughts-of-mid-autumn-festival.md"
   ]

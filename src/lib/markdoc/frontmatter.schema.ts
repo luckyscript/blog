@@ -66,3 +66,7 @@ export const ppt = z.discriminatedUnion("external", [
 export const project = baseSchema.extend({
   url: z.string(),
 });
+
+export const cards = baseSchema.extend({
+  pos: z.string(),
+});

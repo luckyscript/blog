@@ -1,0 +1,75 @@
+---
+import { readAll } from "../lib/markdoc/read";
+import { cards } from "../lib/markdoc/frontmatter.schema";
+import PageLayout from "../layouts/PageLayout.astro";
+import PageMeta from "../components/PageMeta.astro";
+import { SITE_TITLE } from "../config";
+import Renderer from "../components/Renderer.astro";
+
+const posts = await readAll({
+  directory: "cards",
+  frontmatterSchema: cards,
+});
+
+const sortedPosts = posts
+  .filter((p) => p.frontmatter.draft !== true)
+  .sort(
+    (a, b) =>
+      new Date(b.frontmatter.date).valueOf() -
+      new Date(a.frontmatter.date).valueOf()
+  );
+---
+
+<PageLayout>
+  <PageMeta title={`cards | ${SITE_TITLE}`} slot="meta" />
+  <style>
+    .masonry {
+      columns: 3;
+      column-gap: 30px;
+      width: 1440px;
+      transform: translateX(-288px);
+    }
+    .masonry-item {
+      width: 100%;
+      break-inside: avoid;
+      margin-bottom: 30px;
+    }
+
+  </style>
+  <section slot="main" class="section">
+    <div class="masonry">
+      {
+        sortedPosts.map((post) => {
+          const formattedDate = new Date(
+            post.frontmatter.date
+          ).toLocaleDateString("en-us", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+          return (
+            <figure class="masonry-item md:flex bg-slate-100 rounded-xl p-8 md:p-0 dark:bg-slate-800">
+              <div class="pt-6 md:p-8 text-center md:text-left space-y-4">
+                <blockquote class="blog-post prose prose-bubblegum">
+                  <Renderer content={post.content} />
+                </blockquote>
+                <figcaption class="font-medium">
+                  {post.frontmatter.pos ? (
+                    <div>
+                      笔于 <span class="text-sky-500 dark:text-sky-400">{post.frontmatter.pos}</span>
+                    </div>
+                  ) : null}
+                  <div class="text-slate-700 dark:text-slate-500">
+                    <time datetime={post.frontmatter.date.toISOString()}>
+                      {formattedDate}
+                    </time>
+                  </div>
+                </figcaption>
+              </div>
+            </figure>
+          );
+        })
+      }
+    </div>
+  </section>
+</PageLayout>
