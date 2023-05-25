@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "d80b4ba4180376ac",
+        "id": "e171a8dd909027fc",
         "type": "tabs",
         "children": [
           {
-            "id": "49b35992de6c2ee1",
+            "id": "d06ea9c6604ff4c2",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cards/202305172016.md",
+                "file": "weekly/01-.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -70,7 +70,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200
   },
   "right": {
     "id": "81670314e2bb5bb3",
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cards/202305172016.md",
+                "file": "weekly/01-.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cards/202305172016.md"
+                "file": "weekly/01-.md"
               }
             }
           },
@@ -135,11 +135,12 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "49b35992de6c2ee1",
+  "active": "e3586a21a87997d8",
   "lastOpenFiles": [
+    "cards/202305172016.md",
+    "weekly/01-.md",
     "template/cards.md",
     "template/link.md",
-    "cards/202305172016.md",
     "cards/202305171957.md",
     "cards/202305171956.md",
     "cards/202305162002.md",

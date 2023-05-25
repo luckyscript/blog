@@ -29,4 +29,5 @@ export const NAV = {
   Note: 'https://note.luckyscript.me',
   Card: '/cards',
   PPT: '/ppt',
+  Weekly: '/weekly',
 }
