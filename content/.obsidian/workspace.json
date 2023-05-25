@@ -11,16 +11,25 @@
             "id": "d06ea9c6604ff4c2",
             "type": "leaf",
             "state": {
+              "type": "empty",
+              "state": {}
+            }
+          },
+          {
+            "id": "1571352f451ad729",
+            "type": "leaf",
+            "state": {
               "type": "markdown",
               "state": {
-                "file": "weekly/01-.md",
+                "file": "cards/202305251950.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -86,7 +95,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "weekly/01-.md",
+                "file": "cards/202305251950.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +107,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "weekly/01-.md"
+                "file": "cards/202305251950.md"
               }
             }
           },
@@ -135,8 +144,10 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "e3586a21a87997d8",
+  "active": "1571352f451ad729",
   "lastOpenFiles": [
+    "weekly/00.md",
+    "cards/202305251950.md",
     "cards/202305172016.md",
     "weekly/01-.md",
     "template/cards.md",
