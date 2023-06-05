@@ -24,17 +24,28 @@ const sortedPosts = posts
   <PageMeta title={`cards | ${SITE_TITLE}`} slot="meta" />
   <style>
     .masonry {
-      columns: 3;
+      columns: 1;
+    }
+    @media (min-width: 1000px) {
+      .masonry {
+        columns: 2;
+      }
+    }
+    @media (min-width: 1440px) {
+      .masonry {
+        columns: 3;
+        width: 1440px;
+        transform: translateX(-288px);
+      }
+    }
+    .masonry {
       column-gap: 30px;
-      width: 1440px;
-      transform: translateX(-288px);
     }
     .masonry-item {
       width: 100%;
       break-inside: avoid;
       margin-bottom: 30px;
     }
-
   </style>
   <section slot="main" class="section">
     <div class="masonry">
@@ -56,7 +67,10 @@ const sortedPosts = posts
                 <figcaption class="font-medium">
                   {post.frontmatter.pos ? (
                     <div>
-                      笔于 <span class="text-sky-500 dark:text-sky-400">{post.frontmatter.pos}</span>
+                      笔于{" "}
+                      <span class="text-sky-500 dark:text-sky-400">
+                        {post.frontmatter.pos}
+                      </span>
                     </div>
                   ) : null}
                   <div class="text-slate-700 dark:text-slate-500">

@@ -34,7 +34,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "weekly/01.md",
+                "file": "cards/202306052020.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -108,7 +108,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "weekly/01.md",
+                "file": "cards/202306052020.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -120,7 +120,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "weekly/01.md"
+                "file": "cards/202306052020.md"
               }
             }
           },
@@ -159,9 +159,11 @@
   },
   "active": "c20adf7fc6d96337",
   "lastOpenFiles": [
-    "weekly/00.md",
-    "weekly/01.md",
+    "cards/202306052018.md",
+    "cards/202306052020.md",
     "cards/202305251950.md",
+    "weekly/01.md",
+    "weekly/00.md",
     "cards/202305172016.md",
     "weekly/01-.md",
     "template/cards.md",
