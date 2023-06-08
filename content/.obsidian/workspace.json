@@ -34,7 +34,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cards/202306052020.md",
+                "file": "weekly/02.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -108,7 +108,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cards/202306052020.md",
+                "file": "weekly/02.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -120,7 +120,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cards/202306052020.md"
+                "file": "weekly/02.md"
               }
             }
           },
@@ -159,15 +159,18 @@
   },
   "active": "c20adf7fc6d96337",
   "lastOpenFiles": [
-    "cards/202306052018.md",
-    "cards/202306052020.md",
-    "cards/202305251950.md",
-    "weekly/01.md",
     "weekly/00.md",
-    "cards/202305172016.md",
-    "weekly/01-.md",
+    "weekly/02.md",
+    "template/weekly.md",
+    "weekly/02.md",
     "template/cards.md",
     "template/link.md",
+    "weekly/01.md",
+    "cards/202306052020.md",
+    "cards/202306052018.md",
+    "cards/202305251950.md",
+    "cards/202305172016.md",
+    "weekly/01-.md",
     "cards/202305171957.md",
     "cards/202305171956.md",
     "cards/202305162002.md",
@@ -182,8 +185,6 @@
     "未命名.canvas",
     "ppt/basic-markdown-style-guide.md",
     "link/LLM.md",
-    "link/link.md",
-    "projects/draft-project.md",
-    "life/thoughts-of-mid-autumn-festival.md"
+    "link/link.md"
   ]
 }
