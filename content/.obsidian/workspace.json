@@ -4,45 +4,23 @@
     "type": "split",
     "children": [
       {
-        "id": "e171a8dd909027fc",
+        "id": "477ebe57207b156e",
         "type": "tabs",
         "children": [
           {
-            "id": "d06ea9c6604ff4c2",
-            "type": "leaf",
-            "state": {
-              "type": "empty",
-              "state": {}
-            }
-          },
-          {
-            "id": "1571352f451ad729",
+            "id": "0b998e63e80d0c91",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cards/202305251950.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": true
-              }
-            }
-          },
-          {
-            "id": "c20adf7fc6d96337",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "weekly/02.md",
+                "file": "blog/passenger-and-drivers.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -108,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "weekly/02.md",
+                "file": "blog/passenger-and-drivers.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -120,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "weekly/02.md"
+                "file": "blog/passenger-and-drivers.md"
               }
             }
           },
@@ -157,18 +135,18 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "c20adf7fc6d96337",
+  "active": "0b998e63e80d0c91",
   "lastOpenFiles": [
+    "cards/202305251950.md",
+    "weekly/02.md",
+    "blog/passenger-and-drivers.md",
     "weekly/00.md",
-    "weekly/02.md",
     "template/weekly.md",
-    "weekly/02.md",
     "template/cards.md",
     "template/link.md",
     "weekly/01.md",
     "cards/202306052020.md",
     "cards/202306052018.md",
-    "cards/202305251950.md",
     "cards/202305172016.md",
     "weekly/01-.md",
     "cards/202305171957.md",
@@ -184,7 +162,6 @@
     "cards/202305162001.md",
     "未命名.canvas",
     "ppt/basic-markdown-style-guide.md",
-    "link/LLM.md",
-    "link/link.md"
+    "link/LLM.md"
   ]
 }
