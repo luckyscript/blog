@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/passenger-and-drivers.md",
+                "file": "cards/202307052008.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/passenger-and-drivers.md",
+                "file": "cards/202307052008.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/passenger-and-drivers.md"
+                "file": "cards/202307052008.md"
               }
             }
           },
@@ -137,9 +137,10 @@
   },
   "active": "0b998e63e80d0c91",
   "lastOpenFiles": [
+    "blog/passenger-and-drivers.md",
+    "cards/202307052008.md",
     "cards/202305251950.md",
     "weekly/02.md",
-    "blog/passenger-and-drivers.md",
     "weekly/00.md",
     "template/weekly.md",
     "template/cards.md",
