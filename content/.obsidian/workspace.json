@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cards/202307052008.md",
+                "file": "cards/202307052023.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cards/202307052008.md",
+                "file": "cards/202307052023.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cards/202307052008.md"
+                "file": "cards/202307052023.md"
               }
             }
           },
@@ -137,13 +137,15 @@
   },
   "active": "0b998e63e80d0c91",
   "lastOpenFiles": [
-    "blog/passenger-and-drivers.md",
     "cards/202307052008.md",
+    "cards/202307052023.md",
+    "cards/202305162002.md",
+    "template/cards.md",
+    "blog/passenger-and-drivers.md",
     "cards/202305251950.md",
     "weekly/02.md",
     "weekly/00.md",
     "template/weekly.md",
-    "template/cards.md",
     "template/link.md",
     "weekly/01.md",
     "cards/202306052020.md",
@@ -152,7 +154,6 @@
     "weekly/01-.md",
     "cards/202305171957.md",
     "cards/202305171956.md",
-    "cards/202305162002.md",
     "cards/202305171958.md",
     "cards/202305171920.md",
     "cards/202305171955.md",
@@ -162,7 +163,6 @@
     "cards/202305042248.md",
     "cards/202305162001.md",
     "未命名.canvas",
-    "ppt/basic-markdown-style-guide.md",
-    "link/LLM.md"
+    "ppt/basic-markdown-style-guide.md"
   ]
 }
