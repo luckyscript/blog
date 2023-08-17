@@ -13,14 +13,28 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cards/202307052023.md",
+                "file": "blog/osaka-trip-2023.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": true
+              }
+            }
+          },
+          {
+            "id": "2916b757ce6e32f3",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "weekly/03.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -86,7 +100,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cards/202307052023.md",
+                "file": "weekly/03.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +112,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cards/202307052023.md"
+                "file": "weekly/03.md"
               }
             }
           },
@@ -135,17 +149,20 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "0b998e63e80d0c91",
+  "active": "2916b757ce6e32f3",
   "lastOpenFiles": [
-    "cards/202307052008.md",
+    "weekly/02.md",
+    "weekly/03.md",
+    "template/weekly.md",
+    "blog/osaka-trip-2023.md",
+    "blog/passenger-and-drivers.md",
+    "blog/zelda-game-leak.md",
     "cards/202307052023.md",
+    "cards/202307052008.md",
     "cards/202305162002.md",
     "template/cards.md",
-    "blog/passenger-and-drivers.md",
     "cards/202305251950.md",
-    "weekly/02.md",
     "weekly/00.md",
-    "template/weekly.md",
     "template/link.md",
     "weekly/01.md",
     "cards/202306052020.md",
@@ -160,9 +177,6 @@
     "template/blog.md",
     "cards/202305171954.md",
     "cards/202305171959.md",
-    "cards/202305042248.md",
-    "cards/202305162001.md",
-    "未命名.canvas",
-    "ppt/basic-markdown-style-guide.md"
+    "未命名.canvas"
   ]
 }
