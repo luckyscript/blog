@@ -19,22 +19,8 @@
                 "source": true
               }
             }
-          },
-          {
-            "id": "2916b757ce6e32f3",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "weekly/03.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": true
-              }
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -100,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "weekly/03.md",
+                "file": "blog/osaka-trip-2023.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -112,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "weekly/03.md"
+                "file": "blog/osaka-trip-2023.md"
               }
             }
           },
@@ -149,12 +135,14 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "2916b757ce6e32f3",
+  "active": "0b998e63e80d0c91",
   "lastOpenFiles": [
-    "weekly/02.md",
-    "weekly/03.md",
-    "template/weekly.md",
+    "blog/未命名.md",
     "blog/osaka-trip-2023.md",
+    "weekly/未命名.md",
+    "weekly/03.md",
+    "weekly/02.md",
+    "template/weekly.md",
     "blog/passenger-and-drivers.md",
     "blog/zelda-game-leak.md",
     "cards/202307052023.md",
@@ -175,8 +163,6 @@
     "cards/202305171920.md",
     "cards/202305171955.md",
     "template/blog.md",
-    "cards/202305171954.md",
-    "cards/202305171959.md",
     "未命名.canvas"
   ]
 }

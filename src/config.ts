@@ -12,7 +12,7 @@ const BASE_URL = new URL(import.meta.env.SITE);
 
 export const SITE_URL = BASE_URL.origin;
 
-export const CDN_URL = import.meta.env.PROD ? 'http://static.rainonpiano.com' : SITE_URL;
+export const CDN_URL = SITE_URL;
 
 export const WEIBO_CONFIG = {
   value: 5351049607,
