@@ -30,6 +30,8 @@ self.addEventListener('fetch', function (event) {
     || pathname.startsWith('/images')
     || pathname.startsWith('/fontawesome')
     || pathname.startsWith('/js')
+    || pathname.startsWith('/_astro')
+    || pathname.startsWith('/favicon.ico')
   ) {
     event.respondWith(
       caches.match(event.request)
