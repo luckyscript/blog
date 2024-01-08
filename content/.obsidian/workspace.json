@@ -4,47 +4,18 @@
     "type": "split",
     "children": [
       {
-        "id": "477ebe57207b156e",
+        "id": "037e4570db9083f5",
         "type": "tabs",
         "children": [
           {
-            "id": "0b998e63e80d0c91",
+            "id": "cb750c01cb5c5cea",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "weekly/04.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": true
-              }
-            }
-          },
-          {
-            "id": "2cc251ebe19864f2",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "weekly/05.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": true
-              }
-            }
-          },
-          {
-            "id": "4bf9549c4c33dac4",
-            "type": "leaf",
-            "state": {
-              "type": "release-notes",
-              "state": {
-                "currentVersion": "1.4.5"
-              }
+              "type": "empty",
+              "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -110,7 +81,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "weekly/05.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -121,9 +91,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "weekly/05.md"
-              }
+              "state": {}
             }
           },
           {
@@ -169,17 +137,22 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "2cc251ebe19864f2",
+  "active": "cb750c01cb5c5cea",
   "lastOpenFiles": [
+    "blog/passenger-and-drivers.md",
+    "blog/thoughts-of-mid-autumn-festival.md",
+    "blog/continuation-callback.md",
+    "blog/cup-buying-diary.md",
+    "blog/opensuse-env-config.md",
+    "blog/osaka-trip-2023.md",
     "weekly/04.md",
     "weekly/05.md",
+    "blog/motocycle.md",
+    "blog/awesome-iOS.md",
     "weekly/02.md",
     "weekly/01.md",
     "weekly/03.md",
-    "blog/osaka-trip-2023.md",
-    "blog/未命名.md",
     "template/weekly.md",
-    "blog/passenger-and-drivers.md",
     "blog/zelda-game-leak.md",
     "cards/202307052023.md",
     "cards/202307052008.md",
@@ -192,11 +165,6 @@
     "cards/202306052018.md",
     "cards/202305172016.md",
     "weekly/01-.md",
-    "cards/202305171957.md",
-    "cards/202305171956.md",
-    "cards/202305171958.md",
-    "cards/202305171920.md",
-    "cards/202305171955.md",
     "未命名.canvas"
   ]
 }
