@@ -11,8 +11,13 @@
             "id": "cb750c01cb5c5cea",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "blog/2023前端有哪些热门技术.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": true
+              }
             }
           }
         ]
@@ -81,6 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "blog/2023前端有哪些热门技术.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -91,7 +97,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "blog/2023前端有哪些热门技术.md"
+              }
             }
           },
           {
@@ -139,16 +147,21 @@
   },
   "active": "cb750c01cb5c5cea",
   "lastOpenFiles": [
+    "blog/awesome-iOS.md",
+    "blog/2023前端有哪些热门技术.md",
+    "link/blog.md",
+    "link/LLM.md",
+    "link/link.md",
+    "blog/continuation-callback.md",
+    "blog/basic-markdown-style-guide.md",
     "blog/passenger-and-drivers.md",
     "blog/thoughts-of-mid-autumn-festival.md",
-    "blog/continuation-callback.md",
     "blog/cup-buying-diary.md",
     "blog/opensuse-env-config.md",
     "blog/osaka-trip-2023.md",
     "weekly/04.md",
     "weekly/05.md",
     "blog/motocycle.md",
-    "blog/awesome-iOS.md",
     "weekly/02.md",
     "weekly/01.md",
     "weekly/03.md",
@@ -160,11 +173,6 @@
     "template/cards.md",
     "cards/202305251950.md",
     "weekly/00.md",
-    "template/link.md",
-    "cards/202306052020.md",
-    "cards/202306052018.md",
-    "cards/202305172016.md",
-    "weekly/01-.md",
     "未命名.canvas"
   ]
 }

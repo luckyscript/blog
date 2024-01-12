@@ -7,7 +7,6 @@ import PPTLayout from "../../layouts/PPTLayout.astro";
 import { SITE_URL } from "../../config";
 
 
-// console.log(Reveal, 'xxx')
 export async function getStaticPaths() {
   const posts = await readAll({
     directory: "ppt",
