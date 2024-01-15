@@ -1,14 +1,15 @@
 ---
 import HeaderLink from "./HeaderLink.astro";
 import { NAV } from '../config';
+import TreeNavItem from "./TreeNavItem.astro";
 ---
 
 <Fragment>
   <nav class="hidden md:inline">
     <section class="text-text-bold">
       <ul class="unset flex gap-4 [&>li]:p-0">
-        {Object.entries(NAV).map(([key, value]) => (
-          <li><HeaderLink href={value}>{key}</HeaderLink></li>
+        {Object.entries(NAV).map((item) => (
+          <TreeNavItem item={item}></TreeNavItem>
         ))}
       </ul>
     </section>
@@ -33,7 +34,15 @@ import { NAV } from '../config';
         </button>
         <ul class="unset flex flex-col text-text-bold gap-4 [&>li]:p-0 px-6">
           {Object.entries(NAV).map(([key, value]) => (
-            <li><HeaderLink href={value}>{key}</HeaderLink></li>
+            typeof value === 'string' ? (
+              <li><HeaderLink href={value}>{key}</HeaderLink></li>
+            ) : (
+            Object.entries(value).map(([name, href]) => (
+              <HeaderLink href={href as any}>
+                {name}
+              </HeaderLink>
+            ))
+            )
           ))}
         </ul>
       </div>
