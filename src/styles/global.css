@@ -229,3 +229,9 @@
     display: none;
     opacity: 0;
 }
+
+.blog-post {
+    a,code {
+        margin: 0 5px;
+    }
+}
