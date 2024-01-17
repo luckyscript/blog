@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2023前端有哪些热门技术.md",
+                "file": "blog/continuation-callback.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2023前端有哪些热门技术.md",
+                "file": "blog/continuation-callback.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2023前端有哪些热门技术.md"
+                "file": "blog/continuation-callback.md"
               }
             }
           },
@@ -124,7 +124,9 @@
             "state": {
               "type": "all-properties",
               "state": {
-                "sortOrder": "frequency"
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
               }
             }
           }
@@ -147,6 +149,8 @@
   },
   "active": "cb750c01cb5c5cea",
   "lastOpenFiles": [
+    "blog/2023-fe-hot-tech.md",
+    "weekly/06.md",
     "blog/awesome-iOS.md",
     "blog/2023前端有哪些热门技术.md",
     "link/blog.md",
@@ -171,8 +175,6 @@
     "cards/202307052008.md",
     "cards/202305162002.md",
     "template/cards.md",
-    "cards/202305251950.md",
-    "weekly/00.md",
     "未命名.canvas"
   ]
 }

@@ -221,7 +221,7 @@
 .tree-nav-item:hover .tree-nav-submenu {
     display: flex;
     flex-direction: column;
-    opacity: 1;
+    opacity: .9;
     transition: opacity 0.2s ease-in-out;
 }
 
@@ -230,8 +230,6 @@
     opacity: 0;
 }
 
-.blog-post {
-    a,code {
-        margin: 0 5px;
-    }
+.blog-post a,code {
+    margin: 0 5px;
 }

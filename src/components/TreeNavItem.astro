@@ -11,7 +11,7 @@ const hasChildren = typeof href !== 'string';
   </HeaderLink>
 
   {hasChildren && (
-    <div class="tree-nav-submenu min-w-32 absolute left-0 top-full w-full py-2 bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700 z-10 hidden">
+    <div class="tree-nav-submenu p-2 min-w-32 absolute left-0 shadow backdrop-blur rounded top-full w-full py-2 bg-white dark:bg-gray-800 dark:border-gray-700 z-10 hidden">
       {Object.entries(href).map(([name, href]) => (
         <HeaderLink href={href as any} class="text-gray-600 dark:text-gray-900 hover:text-gray-800 dark:hover:text-white transition-colors duration-200">
           {name}
