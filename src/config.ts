@@ -24,6 +24,7 @@ export const NAV = {
   Home: '/',
   Blog: '/blog',
   About: '/about',
+  Tech: 'https://note.luckyscript.me/blog/',
   More: {
     Link: '/link',
     Note: 'https://note.luckyscript.me',
