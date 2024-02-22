@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/continuation-callback.md",
+                "file": "weekly/06.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/continuation-callback.md",
+                "file": "weekly/06.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/continuation-callback.md"
+                "file": "weekly/06.md"
               }
             }
           },
@@ -149,8 +149,12 @@
   },
   "active": "cb750c01cb5c5cea",
   "lastOpenFiles": [
-    "blog/2023-fe-hot-tech.md",
+    "Pasted image 20240222194620.png",
     "weekly/06.md",
+    "weekly/00.md",
+    "weekly/05.md",
+    "weekly/04.md",
+    "blog/2023-fe-hot-tech.md",
     "blog/awesome-iOS.md",
     "blog/2023前端有哪些热门技术.md",
     "link/blog.md",
@@ -163,8 +167,6 @@
     "blog/cup-buying-diary.md",
     "blog/opensuse-env-config.md",
     "blog/osaka-trip-2023.md",
-    "weekly/04.md",
-    "weekly/05.md",
     "blog/motocycle.md",
     "weekly/02.md",
     "weekly/01.md",
@@ -173,8 +175,6 @@
     "blog/zelda-game-leak.md",
     "cards/202307052023.md",
     "cards/202307052008.md",
-    "cards/202305162002.md",
-    "template/cards.md",
     "未命名.canvas"
   ]
 }
