@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "weekly/07.md",
+                "file": "cards/202402292016.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "weekly/07.md",
+                "file": "cards/202402292016.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "weekly/07.md"
+                "file": "cards/202402292016.md"
               }
             }
           },
@@ -149,8 +149,9 @@
   },
   "active": "cb750c01cb5c5cea",
   "lastOpenFiles": [
-    "weekly/06.md",
     "weekly/07.md",
+    "cards/202402292016.md",
+    "weekly/06.md",
     "cards/202402261959.md",
     "cards/202307052023.md",
     "cards/202305162002.md",
@@ -175,7 +176,6 @@
     "blog/motocycle.md",
     "weekly/02.md",
     "weekly/01.md",
-    "weekly/03.md",
     "未命名.canvas"
   ]
 }
