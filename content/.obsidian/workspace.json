@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cards/202402292016.md",
+                "file": "cards/202403041918.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cards/202402292016.md",
+                "file": "cards/202403041918.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cards/202402292016.md"
+                "file": "cards/202403041918.md"
               }
             }
           },
@@ -149,8 +149,9 @@
   },
   "active": "cb750c01cb5c5cea",
   "lastOpenFiles": [
-    "weekly/07.md",
     "cards/202402292016.md",
+    "cards/202403041918.md",
+    "weekly/07.md",
     "weekly/06.md",
     "cards/202402261959.md",
     "cards/202307052023.md",
@@ -175,7 +176,6 @@
     "blog/osaka-trip-2023.md",
     "blog/motocycle.md",
     "weekly/02.md",
-    "weekly/01.md",
     "未命名.canvas"
   ]
 }
