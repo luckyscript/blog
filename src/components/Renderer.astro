@@ -6,6 +6,7 @@ import BilibiliEmbed from "./Bilibili.astro";
 import TweetEmbed from "./TweetEmbed.astro";
 import CodePenEmbed from "./CodePenEmbed.astro";
 import GitHubGistEmbed from "./GitHubGistEmbed.astro";
+import Notion from "./Notion.astro";
 import CodeBlock from "./CodeBlock.astro";
 import Heading from "./Heading.astro";
 
@@ -30,6 +31,10 @@ const components = {
   },
   BilibiliEmbed: {
     Component: BilibiliEmbed,
+    props: {},
+  },
+  Notion: {
+    Component: Notion,
     props: {},
   },
   TweetEmbed: {

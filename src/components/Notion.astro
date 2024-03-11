@@ -1,0 +1,16 @@
+---
+type Props = {
+  id: string;
+};
+
+const { id } = Astro.props;
+---
+<div>
+  <iframe
+  class="notion-iframe"
+  width="100%"
+  style="border:0;"
+  id={`notion-${id}`}
+  data-id={id}
+  src={`https://luckyscript.notion.site/${id}`}></iframe>
+</div>

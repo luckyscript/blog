@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "037e4570db9083f5",
+        "id": "7eb72996e5e7ff2e",
         "type": "tabs",
         "children": [
           {
-            "id": "cb750c01cb5c5cea",
+            "id": "3481c19ed685771b",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cards/202403041918.md",
+                "file": "weekly/08.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cards/202403041918.md",
+                "file": "weekly/08.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cards/202403041918.md"
+                "file": "weekly/08.md"
               }
             }
           },
@@ -147,11 +147,17 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "cb750c01cb5c5cea",
+  "active": "3481c19ed685771b",
   "lastOpenFiles": [
-    "cards/202402292016.md",
-    "cards/202403041918.md",
     "weekly/07.md",
+    "weekly/08.md",
+    "link/myReadList.md",
+    "link/link.md",
+    "link/blog.md",
+    "link/LLM.md",
+    "cards/202403061605.md",
+    "cards/202403041918.md",
+    "cards/202402292016.md",
     "weekly/06.md",
     "cards/202402261959.md",
     "cards/202307052023.md",
@@ -164,18 +170,12 @@
     "blog/2023-fe-hot-tech.md",
     "blog/awesome-iOS.md",
     "blog/2023前端有哪些热门技术.md",
-    "link/blog.md",
-    "link/LLM.md",
-    "link/link.md",
     "blog/continuation-callback.md",
     "blog/basic-markdown-style-guide.md",
     "blog/passenger-and-drivers.md",
     "blog/thoughts-of-mid-autumn-festival.md",
     "blog/cup-buying-diary.md",
     "blog/opensuse-env-config.md",
-    "blog/osaka-trip-2023.md",
-    "blog/motocycle.md",
-    "weekly/02.md",
     "未命名.canvas"
   ]
 }

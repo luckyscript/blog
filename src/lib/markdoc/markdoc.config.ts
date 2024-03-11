@@ -106,6 +106,13 @@ export const config: Config = {
       },
       selfClosing: true,
     },
+    notion: {
+      render: "Notion",
+      attributes: {
+        id: { type: String, required: true },
+      },
+      selfClosing: true,
+    },
   },
   nodes: {
     heading: {
