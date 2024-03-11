@@ -1,19 +1,18 @@
 ---
 import HeaderLink from '../components/HeaderLink.astro';
 const { item } = Astro.props;
-console.log(item)
 const [name, href] = item;
 const hasChildren = typeof href !== 'string';
 ---
 <li class="tree-nav-item relative cursor-pointer">
-  <HeaderLink href={hasChildren ? '' : href} class="block text-gray-600 dark:text-gray-900 hover:text-gray-800 dark:hover:text-white transition-colors duration-200">
+  <HeaderLink href={hasChildren ? '' : href} >
     {name}
   </HeaderLink>
 
   {hasChildren && (
     <div class="tree-nav-submenu p-2 min-w-32 absolute left-0 shadow backdrop-blur rounded top-full w-full py-2 bg-white dark:bg-gray-800 dark:border-gray-700 z-10 hidden">
       {Object.entries(href).map(([name, href]) => (
-        <HeaderLink href={href as any} class="text-gray-600 dark:text-gray-900 hover:text-gray-800 dark:hover:text-white transition-colors duration-200">
+        <HeaderLink href={href as any}>
           {name}
         </HeaderLink>
       ))}

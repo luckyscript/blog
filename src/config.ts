@@ -22,12 +22,11 @@ export const WEIBO_CONFIG = {
 
 export const NAV = {
   Home: '/',
-  Blog: '/blog',
-  About: '/about',
-  Tech: 'https://note.luckyscript.me/blog/',
+  Article: '/blog',
+  Tech: 'https://luckyscript.me/blog/',
   More: {
+    About: '/about',
     Link: '/link',
-    Note: 'https://note.luckyscript.me',
     Card: '/cards',
     PPT: '/ppt',
     Weekly: '/weekly',
