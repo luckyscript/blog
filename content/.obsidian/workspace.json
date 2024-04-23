@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "weekly/08.md",
+                "file": "blog/2024-04-22-moto-taihu-lake.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "weekly/08.md",
+                "file": "blog/2024-04-22-moto-taihu-lake.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "weekly/08.md"
+                "file": "blog/2024-04-22-moto-taihu-lake.md"
               }
             }
           },
@@ -149,11 +149,13 @@
   },
   "active": "3481c19ed685771b",
   "lastOpenFiles": [
-    "weekly/07.md",
     "weekly/08.md",
+    "weekly/07.md",
+    "blog/2024-04-22-moto-taihu-lake.md",
+    "blog/home-network.md",
+    "link/blog.md",
     "link/myReadList.md",
     "link/link.md",
-    "link/blog.md",
     "link/LLM.md",
     "cards/202403061605.md",
     "cards/202403041918.md",
@@ -174,8 +176,6 @@
     "blog/basic-markdown-style-guide.md",
     "blog/passenger-and-drivers.md",
     "blog/thoughts-of-mid-autumn-festival.md",
-    "blog/cup-buying-diary.md",
-    "blog/opensuse-env-config.md",
     "未命名.canvas"
   ]
 }
