@@ -19,8 +19,22 @@
                 "source": true
               }
             }
+          },
+          {
+            "id": "a5e782e80b93db94",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "cards/202404281124.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": true
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -86,7 +100,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2024-04-22-moto-taihu-lake.md",
+                "file": "cards/202404281124.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +112,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2024-04-22-moto-taihu-lake.md"
+                "file": "cards/202404281124.md"
               }
             }
           },
@@ -147,11 +161,15 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "3481c19ed685771b",
+  "active": "a5e782e80b93db94",
   "lastOpenFiles": [
+    "cards/202305162002.md",
+    "ppt/basic-markdown-style-guide.md",
+    "cards/202404281124.md",
     "weekly/08.md",
-    "weekly/07.md",
     "blog/2024-04-22-moto-taihu-lake.md",
+    "blog/awesome-iOS.md",
+    "weekly/07.md",
     "blog/home-network.md",
     "link/blog.md",
     "link/myReadList.md",
@@ -163,19 +181,15 @@
     "weekly/06.md",
     "cards/202402261959.md",
     "cards/202307052023.md",
-    "cards/202305162002.md",
     "cards/202305172016.md",
     "Pasted image 20240222194620.png",
     "weekly/00.md",
     "weekly/05.md",
     "weekly/04.md",
     "blog/2023-fe-hot-tech.md",
-    "blog/awesome-iOS.md",
     "blog/2023前端有哪些热门技术.md",
     "blog/continuation-callback.md",
     "blog/basic-markdown-style-guide.md",
-    "blog/passenger-and-drivers.md",
-    "blog/thoughts-of-mid-autumn-festival.md",
     "未命名.canvas"
   ]
 }
