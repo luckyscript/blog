@@ -1,7 +1,7 @@
 // Place any global data in this file.
 // You can import this data from anywhere in your site by using the `import` keyword.
 
-export const SITE_TITLE = "luckyscript.me";
+export const SITE_TITLE = "下雨就像弹钢琴";
 export const SITE_DESCRIPTION =
   "Welcome to my blog!Wish you have a lucky script of your life";
 export const TWITTER_HANDLE = "@_luckyscript";
@@ -23,7 +23,7 @@ export const WEIBO_CONFIG = {
 export const NAV = {
   Home: '/',
   Article: '/blog',
-  Tech: 'https://luckyscript.me/blog/',
+  Tech: 'https://sailor.ink/blog/',
   More: {
     About: '/about',
     Link: '/link',
