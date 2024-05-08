@@ -4,7 +4,7 @@ layout: post
 title: 考了摩托车驾照
 date: 2023-11-17 16:00:00
 update: 2023-11-17 16:00:00
-summary: 前几周终于考了摩托车驾照，增驾成功。但是拿到证之后并没有想象的那么快乐～
+description: 前几周终于考了摩托车驾照，增驾成功。但是拿到证之后并没有想象的那么快乐～
 category: Life
 tags: [Life, Thinking]
 ---

@@ -4,7 +4,7 @@ layout: post
 title: iOS最佳实践
 date: 2019-05-07 16:00:00
 update: 2019-05-07 16:00:00
-summary: 用了几年iOS系统，也算是有些心得体会。所以以一个程序员的角度来写写我是怎么用iOS系统的。
+description: 用了几年iOS系统，也算是有些心得体会。所以以一个程序员的角度来写写我是怎么用iOS系统的。
 category: Network
 tags: [Linux, Tech]
 ---
