@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cards/202405060954.md",
+                "file": "blog/2024-05-07-rss.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cards/202405060954.md",
+                "file": "blog/2024-05-07-rss.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cards/202405060954.md"
+                "file": "blog/2024-05-07-rss.md"
               }
             }
           },
@@ -150,13 +150,19 @@
   "active": "3481c19ed685771b",
   "lastOpenFiles": [
     "blog/2024-04-22-moto-taihu-lake.md",
+    "blog/awesome-iOS.md",
+    "blog/2024-05-07-rss.md",
+    "blog/xian.md",
+    "blog/zelda-game-leak.md",
+    "blog/cup-buying-diary.md",
+    "blog/be-a-rational-observer.md",
+    "blog/basic-markdown-style-guide.md",
     "cards/202405060954.md",
     "blog/2024-04-28-my-blog.md",
     "cards/202404281124.md",
     "cards/202305162002.md",
     "ppt/basic-markdown-style-guide.md",
     "weekly/08.md",
-    "blog/awesome-iOS.md",
     "weekly/07.md",
     "blog/home-network.md",
     "link/blog.md",
@@ -169,13 +175,7 @@
     "weekly/06.md",
     "cards/202402261959.md",
     "cards/202307052023.md",
-    "cards/202305172016.md",
     "Pasted image 20240222194620.png",
-    "weekly/00.md",
-    "weekly/05.md",
-    "weekly/04.md",
-    "blog/2023-fe-hot-tech.md",
-    "blog/2023前端有哪些热门技术.md",
     "未命名.canvas"
   ]
 }
