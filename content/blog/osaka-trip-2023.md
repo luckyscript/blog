@@ -2,7 +2,7 @@
 external: false
 title: "日本游记：初见关西"
 date: 2023-07-18 18:04:56
-draft: true
+draft: false
 category: Life
 ---
 
