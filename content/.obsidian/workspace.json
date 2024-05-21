@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/osaka-trip-2023.md",
+                "file": "blog/2024-05-21-moto-qiandao-lake.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/osaka-trip-2023.md",
+                "file": "blog/2024-05-21-moto-qiandao-lake.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/osaka-trip-2023.md"
+                "file": "blog/2024-05-21-moto-qiandao-lake.md"
               }
             }
           },
@@ -149,10 +149,12 @@
   },
   "active": "3481c19ed685771b",
   "lastOpenFiles": [
-    "blog/passenger-and-drivers.md",
-    "blog/osaka-trip-2023.md",
-    "blog/2024-05-07-rss.md",
+    "blog/2023-07-18-osaka-trip-2023.md",
+    "cards/202405211904.md",
+    "blog/2024-05-21-moto-qiandao-lake.md",
     "blog/2024-04-22-moto-taihu-lake.md",
+    "blog/2024-05-07-rss.md",
+    "blog/passenger-and-drivers.md",
     "blog/awesome-iOS.md",
     "blog/xian.md",
     "blog/zelda-game-leak.md",
@@ -173,8 +175,6 @@
     "link/LLM.md",
     "cards/202403061605.md",
     "cards/202403041918.md",
-    "cards/202402292016.md",
-    "weekly/06.md",
     "Pasted image 20240222194620.png",
     "未命名.canvas"
   ]
