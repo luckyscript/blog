@@ -52,7 +52,7 @@ toc: true
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20240521194328.png)
 
 
-可是我已经感受到骑行的乐趣啦，这就足够了。
+可是我已经感受到骑行的乐趣啦，这不正是此行的目的吗？
 
 
 
