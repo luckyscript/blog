@@ -103,3 +103,16 @@ export async function readAll<T extends z.ZodTypeAny>({
 
   return Promise.all(paths.map((path) => read({ filepath: path, schema })));
 }
+
+export async function readBlog<T extends z.ZodTypeAny>({
+  frontmatterSchema: schema,
+}: {
+  frontmatterSchema: T;
+}) {
+  const pathToDir = path.posix.join(contentDirectory, 'blog');
+  const years = await fs.readdir(pathToDir, { withFileTypes: true});
+  return Promise.all(years.filter(item => item.isDirectory()).map(async item => ({
+    year: item.name,
+    posts: await readAll({ directory: `blog/${item.name}`, frontmatterSchema: schema }),
+  })));
+}

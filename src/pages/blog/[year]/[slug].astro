@@ -1,0 +1,56 @@
+---
+import { readOne, readBlog } from "../../../lib/markdoc/read";
+import { blog } from "../../../lib/markdoc/frontmatter.schema";
+import Renderer from "../../../components/Renderer.astro";
+import BlogPostMeta from "../../../components/BlogPostMeta.astro";
+import ContentLayout from "../../../layouts/ContentLayout.astro";
+import { SITE_URL } from "../../../config";
+
+export async function getStaticPaths() {
+  const blogs = await readBlog({
+    frontmatterSchema: blog,
+  });
+
+  const result: Array<any> = [];
+
+  blogs.forEach(blog => {
+    blog.posts.forEach(post => {
+      result.push({
+        params: {
+          slug: post.slug,
+          year: blog.year,
+        },
+      });
+    });
+  })
+  return result;
+}
+
+const { slug, year } = Astro.params;
+if (typeof slug !== "string") {
+  throw Error(`slug or year should be string. Received: ${slug} & ${year}`);
+}
+
+const { content, frontmatter } = await readOne({
+  directory: `blog/${year}`,
+  slug,
+  frontmatterSchema: blog,
+});
+
+const ogImageAbsoluteUrl =
+  frontmatter.external !== true && frontmatter.ogImagePath
+    ? new URL(frontmatter.ogImagePath, SITE_URL).toString()
+    : undefined;
+---
+
+<ContentLayout title={frontmatter.title} date={frontmatter.date}>
+  <BlogPostMeta
+    title={frontmatter.title}
+    description={frontmatter.external ? undefined : frontmatter.description}
+    publishDate={frontmatter.date.toISOString()}
+    pagePath={`/blog/${year}/${slug}`}
+    ogImageAbsoluteUrl={ogImageAbsoluteUrl}
+    slot="meta"
+  />
+  <Renderer content={content} slot="content" />
+</ContentLayout>

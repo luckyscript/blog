@@ -11,13 +11,8 @@
             "id": "3481c19ed685771b",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "blog/2024-05-24-买了一台咖啡机.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": true
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -86,7 +81,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2024-05-24-买了一台咖啡机.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -147,34 +141,43 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "3481c19ed685771b",
+  "active": "1b9ce93d8767f92e",
   "lastOpenFiles": [
-    "blog/2000-11-01-extended-markdown-style-guide.md",
-    "blog/2000-11-11-external-link-example.md",
-    "blog/2000-01-01-basic-markdown-style-guide.md",
-    "blog/2024-05-24-买了一台咖啡机.md",
-    "blog/2023-05-02-zelda-game-leak.md",
-    "blog/2017-05-26-xian.md",
-    "blog/2008-10-26-thoughts-of-mid-autumn-festival.md",
-    "blog/2023-06-19-passenger-and-drivers.md",
-    "blog/2023-11-17-motocycle.md",
-    "blog/2020-04-26-home-network.md",
-    "blog/2011-11-13-cup-buying-diary.md",
-    "blog/2022-11-22draft-post.md",
-    "blog/2022-08-11-be-a-rational-observer.md",
-    "blog/2019-05-07-awesome-iOS.md",
-    "blog/2024-05-21-moto-qiandao-lake.md",
-    "blog/2023-07-18-osaka-trip-2023.md",
-    "cards/202405211904.md",
-    "blog/2024-04-22-moto-taihu-lake.md",
-    "blog/2024-05-07-rss.md",
-    "cards/202405060954.md",
-    "blog/2024-04-28-my-blog.md",
-    "cards/202404281124.md",
-    "cards/202305162002.md",
-    "ppt/basic-markdown-style-guide.md",
-    "weekly/08.md",
-    "weekly/07.md",
+    "cards/202405241729.md",
+    "cards/20240524172925.md",
+    "blog/2024/moto-qiandao-lake.md",
+    "blog/2024/rss.md",
+    "blog/2024/moto-taihu-lake.md",
+    "blog/2023/motocycle.md",
+    "blog/2023/osaka-trip-2023.md",
+    "blog/2023/passenger-and-drivers.md",
+    "blog/2023/zelda-game-leak.md",
+    "blog/2022/be-a-rational-observer.md",
+    "blog/2020/home-network.md",
+    "blog/2019/awesome-iOS.md",
+    "blog/2017/xian.md",
+    "blog/2011/cup-buying-diary.md",
+    "blog/2008/thoughts-of-mid-autumn-festival.md",
+    "blog/0000/extended-markdown-style-guide.md",
+    "blog/0000/external-link-example.md",
+    "blog/0000/basic-markdown-style-guide.md",
+    "blog/0000/2000-11-11-external-link-example.md",
+    "blog/0000/2000-11-01-extended-markdown-style-guide.md",
+    "blog/0000/2000-01-01-basic-markdown-style-guide.md",
+    "blog/0000",
+    "blog/2008/2008-10-26-thoughts-of-mid-autumn-festival.md",
+    "blog/2008",
+    "blog/2011/2011-11-13-cup-buying-diary.md",
+    "blog/2011",
+    "blog/2017/2017-05-26-xian.md",
+    "blog/2017",
+    "blog/2019/2019-05-07-awesome-iOS.md",
+    "blog/2019",
+    "blog/2020/2020-04-26-home-network.md",
+    "blog/2020",
+    "blog/2022",
+    "blog/2023",
+    "blog/2024",
     "Pasted image 20240222194620.png",
     "未命名.canvas"
   ]
