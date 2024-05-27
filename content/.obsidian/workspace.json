@@ -11,8 +11,13 @@
             "id": "3481c19ed685771b",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "link/myReadList.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": true
+              }
             }
           }
         ]
@@ -81,6 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "link/myReadList.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -92,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2024-05-24-买了一台咖啡机.md"
+                "file": "link/myReadList.md"
               }
             }
           },
@@ -141,9 +147,19 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "1b9ce93d8767f92e",
+  "active": "3481c19ed685771b",
   "lastOpenFiles": [
+    "link/link.md",
+    "link/LLM.md",
+    "link/blog.md",
+    "template/link.md",
+    "template/cards.md",
+    "template/weekly.md",
+    "template/blog.md",
     "cards/202405241729.md",
+    "cards/202405241742.md",
+    "cards/202405241741.md",
+    "blog/2024-05-24-买了一台咖啡机.md",
     "cards/20240524172925.md",
     "blog/2024/moto-qiandao-lake.md",
     "blog/2024/rss.md",
@@ -159,21 +175,11 @@
     "blog/2011/cup-buying-diary.md",
     "blog/2008/thoughts-of-mid-autumn-festival.md",
     "blog/0000/extended-markdown-style-guide.md",
-    "blog/0000/external-link-example.md",
-    "blog/0000/basic-markdown-style-guide.md",
-    "blog/0000/2000-11-11-external-link-example.md",
-    "blog/0000/2000-11-01-extended-markdown-style-guide.md",
-    "blog/0000/2000-01-01-basic-markdown-style-guide.md",
     "blog/0000",
-    "blog/2008/2008-10-26-thoughts-of-mid-autumn-festival.md",
     "blog/2008",
-    "blog/2011/2011-11-13-cup-buying-diary.md",
     "blog/2011",
-    "blog/2017/2017-05-26-xian.md",
     "blog/2017",
-    "blog/2019/2019-05-07-awesome-iOS.md",
     "blog/2019",
-    "blog/2020/2020-04-26-home-network.md",
     "blog/2020",
     "blog/2022",
     "blog/2023",
