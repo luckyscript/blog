@@ -11,13 +11,8 @@
             "id": "3481c19ed685771b",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "link/myReadList.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": true
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -86,7 +81,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "link/myReadList.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -97,9 +91,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "link/myReadList.md"
-              }
+              "state": {}
             }
           },
           {
@@ -149,6 +141,8 @@
   },
   "active": "3481c19ed685771b",
   "lastOpenFiles": [
+    "link/myReadList.md",
+    "blog/2024/notion-replace-instapaper.md",
     "link/link.md",
     "link/LLM.md",
     "link/blog.md",
@@ -173,8 +167,6 @@
     "blog/2019/awesome-iOS.md",
     "blog/2017/xian.md",
     "blog/2011/cup-buying-diary.md",
-    "blog/2008/thoughts-of-mid-autumn-festival.md",
-    "blog/0000/extended-markdown-style-guide.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
