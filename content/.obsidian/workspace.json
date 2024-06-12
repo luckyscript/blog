@@ -11,8 +11,13 @@
             "id": "3481c19ed685771b",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "blog/2024/blog-image-upload.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": true
+              }
             }
           }
         ]
@@ -81,6 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "blog/2024/blog-image-upload.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -91,7 +97,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "blog/2024/blog-image-upload.md"
+              }
             }
           },
           {
@@ -141,6 +149,9 @@
   },
   "active": "3481c19ed685771b",
   "lastOpenFiles": [
+    "blog/2024/coffee.md",
+    "blog/2024/blog-image-upload.md",
+    "cards/202406121911.md",
     "link/myReadList.md",
     "blog/2024/notion-replace-instapaper.md",
     "link/link.md",
@@ -164,9 +175,6 @@
     "blog/2023/zelda-game-leak.md",
     "blog/2022/be-a-rational-observer.md",
     "blog/2020/home-network.md",
-    "blog/2019/awesome-iOS.md",
-    "blog/2017/xian.md",
-    "blog/2011/cup-buying-diary.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",

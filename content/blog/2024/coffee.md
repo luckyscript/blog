@@ -4,7 +4,7 @@ layout: post
 title: 买了一台咖啡机
 date: 2024-05-24 14:20:50
 update: 2024-05-24 14:20:50
-category: Coffee
+category: Life
 tags: Life,Coffee
 ---
 
