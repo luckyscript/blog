@@ -4,6 +4,7 @@ import { blog } from "../../../lib/markdoc/frontmatter.schema";
 import Renderer from "../../../components/Renderer.astro";
 import BlogPostMeta from "../../../components/BlogPostMeta.astro";
 import ContentLayout from "../../../layouts/ContentLayout.astro";
+import Frontmatter from '../../../components/Frontmatter.astro';
 import { SITE_URL } from "../../../config";
 
 export async function getStaticPaths() {
@@ -43,7 +44,11 @@ const ogImageAbsoluteUrl =
     : undefined;
 ---
 
-<ContentLayout title={frontmatter.title} date={frontmatter.date}>
+<ContentLayout
+  title={frontmatter.title}
+  date={frontmatter.date}
+  update={frontmatter.update}
+>
   <BlogPostMeta
     title={frontmatter.title}
     description={frontmatter.external ? undefined : frontmatter.description}
@@ -52,5 +57,15 @@ const ogImageAbsoluteUrl =
     ogImageAbsoluteUrl={ogImageAbsoluteUrl}
     slot="meta"
   />
-  <Renderer content={content} slot="content" />
+  <Renderer 
+    content={content}
+    slot="content"
+    category={frontmatter.category}
+    tags={frontmatter.tags}
+    update={frontmatter.update}
+  />
+  <Frontmatter
+    frontmatter={frontmatter}
+    slot="frontmatter"
+  />
 </ContentLayout>

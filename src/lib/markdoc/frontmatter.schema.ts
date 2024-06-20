@@ -31,11 +31,15 @@ export const blog = z.discriminatedUnion("external", [
     ogImagePath: z.optional(z.string()),
     canonicalUrl: z.optional(z.string()),
     category: z.optional(z.string()),
+    tags: z.optional(z.array(z.string())),
+    update: z.optional(z.date()),
   }),
   // external link
   baseSchema.extend({
     external: z.literal(true),
     category: z.optional(z.string()),
+    tags: z.optional(z.array(z.string())),
+    update: z.optional(z.date()),
     url: z.string({
       required_error:
         "external is true but url is missing. url must be set for posts marked as external.",

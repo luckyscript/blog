@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2024/blog-image-upload.md",
+                "file": "blog/2024/europe-cup-2024.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2024/blog-image-upload.md",
+                "file": "blog/2024/europe-cup-2024.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2024/blog-image-upload.md"
+                "file": "blog/2024/europe-cup-2024.md"
               }
             }
           },
@@ -129,13 +129,23 @@
                 "searchQuery": ""
               }
             }
+          },
+          {
+            "id": "efe95fbb5c42d664",
+            "type": "leaf",
+            "state": {
+              "type": "file-properties",
+              "state": {
+                "file": "blog/2024/europe-cup-2024.md"
+              }
+            }
           }
         ],
         "currentTab": 3
       }
     ],
     "direction": "horizontal",
-    "width": 235.5
+    "width": 282.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -149,8 +159,10 @@
   },
   "active": "3481c19ed685771b",
   "lastOpenFiles": [
-    "blog/2024/coffee.md",
+    "cards/202406132013.md",
+    "blog/2024/europe-cup-2024.md",
     "blog/2024/blog-image-upload.md",
+    "blog/2024/coffee.md",
     "cards/202406121911.md",
     "link/myReadList.md",
     "blog/2024/notion-replace-instapaper.md",
@@ -173,8 +185,6 @@
     "blog/2023/osaka-trip-2023.md",
     "blog/2023/passenger-and-drivers.md",
     "blog/2023/zelda-game-leak.md",
-    "blog/2022/be-a-rational-observer.md",
-    "blog/2020/home-network.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",

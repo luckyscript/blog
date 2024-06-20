@@ -5,7 +5,7 @@ title: 环太湖
 date: 2024-04-22 16:00:00
 update: 2024-04-22 16:00:00
 description: 两人一车环太湖
-category: Awesome
+category: Moto
 tags: [Awesome]
 toc: true
 ---

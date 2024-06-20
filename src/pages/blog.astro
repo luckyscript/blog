@@ -24,8 +24,9 @@ const sortedPosts = posts
 ---
 
 <PageLayout>
-  <PageMeta title={`Blog | ${SITE_TITLE}`} slot="meta" />
+  <PageMeta title={`Life Blog | ${SITE_TITLE}`} slot="meta" />
   <section slot="main">
+    <p class="pl-6 relative block leading-[150%] before:absolute before:content-[''] before:w-2 before:h-full before:top-0 before:left-0 before:bg-primary-blue mb-10">此处为雪泥鸿爪，专注记录生活点滴，技术博客请移步<a href="https://sailor.ink/blog">青瓦淡墨</a></p>
     <ul>
       {
         sortedPosts.map((post) => {
@@ -58,6 +59,7 @@ const sortedPosts = posts
                 ) : (
                   <a
                     href={`/blog/${post.year}/${post.slug}`}
+                    title={post.frontmatter.description}
                     class="unset
                         transition-[background-size] duration-300 
                         bg-gradient-to-r bg-left-bottom bg-no-repeat
@@ -70,6 +72,7 @@ const sortedPosts = posts
                 )}
               </div>
               <div class="text-text-muted text-sm italic pt-1">
+                <span class="mr-2 unset gradient-link tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#00abda] to-[#1476ff] hover:after:bg-gradient-to-r hover:after:from-[#00abda] hover:after:to-[#1476ff]">{post.frontmatter.category}</span>
                 <time datetime={post.frontmatter.date.toISOString()}>
                   {formattedDate}
                 </time>

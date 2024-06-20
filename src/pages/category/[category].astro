@@ -1,35 +1,39 @@
 ---
-import { readAll } from "src/lib/markdoc/read";
+import { readBlog } from "src/lib/markdoc/read";
 import { blog } from "src/lib/markdoc/frontmatter.schema";
 import PageLayout from "src/layouts/PageLayout.astro";
 import PageMeta from "src/components/PageMeta.astro";
 import { SITE_TITLE } from "src/config";
 
 export async function getStaticPaths() {
-  const posts = await readAll({
-    directory: "blog",
+  const blogs = await readBlog({
     frontmatterSchema: blog,
   });
 
-  // we don't want to generate pages for posts that link to external websites
-  const filteredPosts = posts
-    .filter((p) => p.frontmatter.draft !== true)
-    .filter(({ frontmatter }) => !frontmatter.external);
+  const result: Array<any> = [];
 
-  return filteredPosts.map((post) => {
-    return { params: { category: post.frontmatter.category } };
-  });
+  blogs.forEach(blog => {
+    blog.posts.forEach(post => {
+      result.push({
+        params: {
+          category: post.frontmatter.category,
+        },
+      });
+    });
+  })
+  return result;
 }
 
-const posts = await readAll({
-  directory: "blog",
+const { category } = Astro.params;
+
+const blogs = await readBlog({
   frontmatterSchema: blog,
 });
 
-const { category } = Astro.params;
-if (typeof category !== "string") {
-  throw Error(`category should be string. Received: ${category}`);
-}
+const posts = blogs
+  .map(item => item.posts
+    .map(post => ({ ...post, year: item.year})))
+    .flat();
 
 const sortedPosts = posts
   .filter((p) => p.frontmatter.draft !== true && p.frontmatter.category === category)

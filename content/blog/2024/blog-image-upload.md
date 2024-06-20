@@ -5,7 +5,7 @@ title: 博客图片上传方案-使用PicGo上传图片
 date: 2024-06-12 19:19:07
 update: 2024-06-12 19:19:07
 category: Blog
-tags: Blog
+tags: [Blog]
 ---
 
 写博客，上传图片资源是一件很常见的事情。我在去年把博客从自建迁移到Github Pages上，但是总感觉图片上传非常难受。

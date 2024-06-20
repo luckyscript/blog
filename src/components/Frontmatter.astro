@@ -1,0 +1,23 @@
+---
+const { frontmatter } = Astro.props;
+
+---
+
+{frontmatter.category && (
+  <div class="font-mono text-sm border-t border-gray-200 pt-5">
+    分类 <a href={`/category/${frontmatter.category}`} class="text-blue-500 hover:underline">{frontmatter.category}</a>
+  </div>
+)}
+{frontmatter.tags && (
+  <div class="font-mono text-sm mt-5">
+    标签 {frontmatter.tags.map((tag, index) => (
+      <span>
+        <a class="text-yellow-500 decoration-yellow m-0">{tag}</a>
+        {index < (frontmatter.tags as any).length - 1 && <span>·</span>}
+      </span>
+    ))}
+  </div>
+)}
+{frontmatter.update && (
+  <div class="font-mono text-xs mt-10">本文最后更新于：{new Date(frontmatter.update).toLocaleDateString()}</div>
+)}
