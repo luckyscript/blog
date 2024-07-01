@@ -26,7 +26,7 @@ const sortedPosts = posts
     .masonry {
       columns: 1;
     }
-    @media (min-width: 1000px) {
+    /* @media (min-width: 1000px) {
       .masonry {
         columns: 2;
       }
@@ -37,7 +37,7 @@ const sortedPosts = posts
         width: 1440px;
         transform: translateX(-288px);
       }
-    }
+    } */
     .masonry {
       column-gap: 30px;
     }
@@ -48,6 +48,7 @@ const sortedPosts = posts
     }
   </style>
   <section slot="main" class="section">
+    <p class="pl-6 relative block leading-[150%] before:absolute before:content-[''] before:w-2 before:h-full before:top-0 before:left-0 before:bg-primary-blue mb-10">我的碎碎念</p>
     <div class="masonry">
       {
         sortedPosts.map((post) => {
@@ -59,7 +60,7 @@ const sortedPosts = posts
             day: "numeric",
           });
           return (
-            <figure class="masonry-item md:flex bg-slate-100 rounded-xl p-8 md:p-0 dark:bg-slate-800">
+            <figure class="masonry-item md:flex bg-slate-100 rounded-l p-8 md:p-0 dark:bg-slate-800">
               <div class="pt-6 md:p-8 text-center md:text-left space-y-4">
                 <blockquote class="blog-post prose prose-bubblegum">
                   <Renderer content={post.content} />

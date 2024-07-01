@@ -1,3 +1,17 @@
+---
+import Renderer from "../components/Renderer.astro";
+import { read } from "src/lib/markdoc/read";
+import path from "path";
+import matter from "gray-matter";
+import fs from "fs/promises";
+import { globby } from "globby";
+import { parseAndTransform } from 'src/lib/markdoc/read'
+
+const rawString = await fs.readFile('src/pages/about.md', "utf8");
+const { content, data: frontmatter } = matter(rawString);
+const transformedContent = await parseAndTransform({ content });
+---
+
 <div class="mt-10">
   <p>👋 Hi, I'm RainOnPiano, Welcome to my personal website. </p>
   <p>🧑🏻‍💻 I'm a full-stack developer from Earth, working on Alibaba Cloud Group.</p>

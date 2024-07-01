@@ -9,7 +9,7 @@ import { config } from "./markdoc.config";
 // path is relative to where you run the `yarn build` command
 const contentDirectory = path.normalize("./content");
 
-async function parseAndTransform({ content }: { content: string }) {
+export async function parseAndTransform({ content }: { content: string }) {
   const ast = Markdoc.parse(content);
 
   const errors = Markdoc.validate(ast, config);
