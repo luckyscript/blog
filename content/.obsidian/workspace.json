@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cards/202407011953.md",
+                "file": "cards/202407021929.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "cards/202407011953.md",
+                "file": "cards/202407021929.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "cards/202407011953.md"
+                "file": "cards/202407021929.md"
               }
             }
           },
@@ -136,7 +136,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "cards/202407011953.md"
+                "file": "cards/202407021929.md"
               }
             }
           }
@@ -159,12 +159,14 @@
   },
   "active": "3481c19ed685771b",
   "lastOpenFiles": [
+    "template/cards.md",
+    "cards/202407021929.md",
     "cards/202407021906.md",
+    "cards/202407011953.md",
     "blog/2024/moto-qiandao-lake.md",
     "blog/2024/moto-taihu-lake.md",
     "blog/2024/rss.md",
     "blog/2024/coffee.md",
-    "cards/202407011953.md",
     "link/blog.md",
     "link/LLM.md",
     "weekly/08.md",
@@ -176,7 +178,6 @@
     "blog/2024/notion-replace-instapaper.md",
     "link/link.md",
     "template/link.md",
-    "template/cards.md",
     "template/weekly.md",
     "template/blog.md",
     "cards/202405241729.md",
@@ -184,7 +185,6 @@
     "cards/202405241741.md",
     "blog/2024-05-24-买了一台咖啡机.md",
     "cards/20240524172925.md",
-    "blog/2023/motocycle.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
