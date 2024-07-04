@@ -71,7 +71,7 @@ export const project = baseSchema.extend({
   url: z.string(),
 });
 
-export const cards = baseSchema.extend({
+export const card = baseSchema.extend({
   pos: z.string(),
   tags: z.optional(z.array(z.string())),
 });

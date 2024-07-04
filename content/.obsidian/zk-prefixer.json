@@ -1,4 +1,4 @@
 {
-  "template": "template/cards",
-  "folder": "cards"
+  "template": "template/card",
+  "folder": "card"
 }

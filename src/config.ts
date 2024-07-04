@@ -2,8 +2,7 @@
 // You can import this data from anywhere in your site by using the `import` keyword.
 
 export const SITE_TITLE = "下雨就像弹钢琴";
-export const SITE_DESCRIPTION =
-  "Welcome to my blog!Wish you have a lucky script of your life";
+export const SITE_DESCRIPTION = "";
 export const TWITTER_HANDLE = "@_luckyscript";
 export const MY_NAME = "luckyscript";
 
@@ -24,7 +23,7 @@ export const NAV = {
   Home: '/',
   About: '/about',
   Blog: '/blog',
-  Card: '/cards',
+  Card: '/card',
   Tech: 'https://sailor.ink/blog/',
   More: {
     Link: '/link',
