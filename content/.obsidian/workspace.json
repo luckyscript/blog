@@ -11,8 +11,13 @@
             "id": "7ad6e41078884cef",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "card/202407120945.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": true
+              }
             }
           }
         ]
@@ -81,6 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "card/202407120945.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -91,7 +97,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "card/202407120945.md"
+              }
             }
           },
           {
@@ -127,7 +135,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {}
+              "state": {
+                "file": "card/202407120945.md"
+              }
             }
           }
         ],
@@ -149,8 +159,9 @@
   },
   "active": "7ad6e41078884cef",
   "lastOpenFiles": [
-    "card/202407041929.md",
     "template/card.md",
+    "card/202407120945.md",
+    "card/202407041929.md",
     "card/202407021906.md",
     "card/202407011953.md",
     "blog/2024/moto-qiandao-lake.md",
@@ -174,7 +185,6 @@
     "card/202405241742.md",
     "card/202405241741.md",
     "blog/2024-05-24-买了一台咖啡机.md",
-    "card/20240524172925.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
