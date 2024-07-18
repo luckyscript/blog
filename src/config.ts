@@ -23,7 +23,6 @@ export const NAV = {
   Home: '/',
   About: '/about',
   Blog: '/blog',
-  Card: '/card',
   Tech: 'https://sailor.ink/blog/',
   More: {
     Link: '/link',
