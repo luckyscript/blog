@@ -67,7 +67,9 @@ const sortedPosts = posts
                     <div class="text-sm italic text-blue-500 dark:text-slate-500">{post.frontmatter.tags.map(item => '#' + item).join("  ")}</div>
                   ) : null}
                   <blockquote class="blog-post prose prose-bubblegum">
-                    <Renderer content={post.content} />
+                    <object>
+                      <Renderer content={post.content} />
+                    </object>
                   </blockquote>
                   <figcaption class="font-medium">
                     {post.frontmatter.pos ? (
