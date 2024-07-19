@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "ba4dc0cfd8a61ade",
+        "id": "09b47ad2f367be2f",
         "type": "tabs",
         "children": [
           {
-            "id": "7ad6e41078884cef",
+            "id": "3c4ea9a03f2c8f96",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "card/202407120945.md",
+                "file": "card/202407192217.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "card/202407120945.md",
+                "file": "card/202407192217.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "card/202407120945.md"
+                "file": "card/202407192217.md"
               }
             }
           },
@@ -136,7 +136,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "card/202407120945.md"
+                "file": "card/202407192217.md"
               }
             }
           }
@@ -157,10 +157,12 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "7ad6e41078884cef",
+  "active": "3c4ea9a03f2c8f96",
   "lastOpenFiles": [
-    "template/card.md",
+    "card/202407182324.md",
     "card/202407120945.md",
+    "card/202407192217.md",
+    "template/card.md",
     "card/202407041929.md",
     "card/202407021906.md",
     "card/202407011953.md",
@@ -183,8 +185,6 @@
     "template/blog.md",
     "card/202405241729.md",
     "card/202405241742.md",
-    "card/202405241741.md",
-    "blog/2024-05-24-买了一台咖啡机.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
