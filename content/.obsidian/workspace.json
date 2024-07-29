@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2024/2024-olympic-games.md",
+                "file": "card/202407292045.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -100,7 +100,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2024/2024-olympic-games.md",
+                "file": "card/202407292045.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -112,7 +112,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2024/2024-olympic-games.md"
+                "file": "card/202407292045.md"
               }
             }
           },
@@ -150,7 +150,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "blog/2024/2024-olympic-games.md"
+                "file": "card/202407292045.md"
               }
             }
           }
@@ -173,8 +173,9 @@
   },
   "active": "7c33fcccf254db94",
   "lastOpenFiles": [
-    "card/202407232016.md",
     "blog/2024/2024-olympic-games.md",
+    "card/202407292045.md",
+    "card/202407232016.md",
     "card/202407282110.md",
     "card/202407182324.md",
     "card/202407120945.md",
@@ -198,7 +199,6 @@
     "blog/2024/notion-replace-instapaper.md",
     "link/link.md",
     "template/link.md",
-    "template/weekly.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
