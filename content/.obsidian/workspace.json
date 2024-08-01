@@ -21,12 +21,12 @@
             }
           },
           {
-            "id": "7c33fcccf254db94",
+            "id": "2113df0f6c5be718",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "card/202407292045.md",
+                "file": "card/202408012300.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -100,7 +100,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "card/202407292045.md",
+                "file": "card/202408012300.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -112,7 +112,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "card/202407292045.md"
+                "file": "card/202408012300.md"
               }
             }
           },
@@ -150,7 +150,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "card/202407292045.md"
+                "file": "card/202408012300.md"
               }
             }
           }
@@ -167,16 +167,23 @@
       "graph:查看关系图谱": false,
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
-      "workspaces:管理工作区布局": false,
-      "zk-prefixer:创建时间戳笔记": false
+      "zk-prefixer:创建时间戳笔记": false,
+      "workspaces:管理工作区布局": false
     }
   },
-  "active": "7c33fcccf254db94",
+  "active": "2113df0f6c5be718",
   "lastOpenFiles": [
-    "blog/2024/2024-olympic-games.md",
+    "card/202408012300.md",
     "card/202407292045.md",
+    "blog/2024/2024-olympic-games.md",
+    "blog/2024/blog-image-upload.md",
+    "blog/2024/未命名.md",
+    "blog/2024/coffee.md",
+    "blog/2024/moto-taihu-lake.md",
+    "blog/2024/rss.md",
+    "template/blog.md",
+    "projects/draft-project.md",
     "card/202407232016.md",
-    "card/202407282110.md",
     "card/202407182324.md",
     "card/202407120945.md",
     "card/202407192217.md",
@@ -185,20 +192,13 @@
     "card/202407021906.md",
     "card/202407011953.md",
     "blog/2024/moto-qiandao-lake.md",
-    "blog/2024/moto-taihu-lake.md",
-    "blog/2024/rss.md",
-    "blog/2024/coffee.md",
     "link/blog.md",
     "link/LLM.md",
     "weekly/08.md",
     "card/202406132013.md",
     "blog/2024/europe-cup-2024.md",
-    "blog/2024/blog-image-upload.md",
     "card/202406121911.md",
     "link/myReadList.md",
-    "blog/2024/notion-replace-instapaper.md",
-    "link/link.md",
-    "template/link.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
