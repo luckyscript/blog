@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2024/rss.md",
+                "file": "card/202408031231.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -100,7 +100,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2024/rss.md",
+                "file": "card/202408031231.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -112,7 +112,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2024/rss.md"
+                "file": "card/202408031231.md"
               }
             }
           },
@@ -150,7 +150,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "blog/2024/rss.md"
+                "file": "card/202408031231.md"
               }
             }
           }
@@ -173,6 +173,10 @@
   },
   "active": "2113df0f6c5be718",
   "lastOpenFiles": [
+    "card/202408031230.md",
+    "card/202408031231.md",
+    "card/202408031226.md",
+    "blog/2024/rss.md",
     "card/202408012300.md",
     "card/202407292045.md",
     "blog/2024/2024-olympic-games.md",
@@ -180,7 +184,6 @@
     "blog/2024/未命名.md",
     "blog/2024/coffee.md",
     "blog/2024/moto-taihu-lake.md",
-    "blog/2024/rss.md",
     "template/blog.md",
     "projects/draft-project.md",
     "card/202407232016.md",
@@ -196,9 +199,6 @@
     "link/LLM.md",
     "weekly/08.md",
     "card/202406132013.md",
-    "blog/2024/europe-cup-2024.md",
-    "card/202406121911.md",
-    "link/myReadList.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
