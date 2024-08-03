@@ -3,7 +3,7 @@ external: false
 layout: post
 title: 我为什么使用RSS获取信息
 date: 2024-05-07 16:00:00
-update: 2024-05-07 16:00:00
+update: 2024-08-03 10:09:00
 description: 我为什么使用RSS获取信息
 category: Awesome
 tags: [Awesome]
@@ -63,3 +63,5 @@ RssHub是Github开源出来的一个项目，其本质是一个爬虫，将获�
 ### 写在最后
 RSS在现在快速发展的互联网中，感觉已经是一个很远古的东西了。我还是很推荐你去尝试一下。也欢迎你通过RSS来订阅我的博客。
 
+### 2024-08更新
+RssHub团队最近在开发一款Rss阅读器，基于Electron + React 开发，目前alpla版本已经出来了。我前两天试用了以下，有很多惊喜。期待更多Feature的更新。个人干掉吊打Apple生态的Reeder。

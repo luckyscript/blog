@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "card/202408012300.md",
+                "file": "blog/2024/rss.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -100,7 +100,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "card/202408012300.md",
+                "file": "blog/2024/rss.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -112,7 +112,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "card/202408012300.md"
+                "file": "blog/2024/rss.md"
               }
             }
           },
@@ -150,7 +150,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "card/202408012300.md"
+                "file": "blog/2024/rss.md"
               }
             }
           }
