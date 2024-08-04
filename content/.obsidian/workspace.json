@@ -26,7 +26,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "card/202408031231.md",
+                "file": "card/202408042303.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -100,7 +100,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "card/202408031231.md",
+                "file": "card/202408042303.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -112,7 +112,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "card/202408031231.md"
+                "file": "card/202408042303.md"
               }
             }
           },
@@ -150,7 +150,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "card/202408031231.md"
+                "file": "card/202408042303.md"
               }
             }
           }
@@ -173,8 +173,10 @@
   },
   "active": "2113df0f6c5be718",
   "lastOpenFiles": [
-    "card/202408031230.md",
     "card/202408031231.md",
+    "card/202408042303.md",
+    "card/202407192217.md",
+    "card/202408031230.md",
     "card/202408031226.md",
     "blog/2024/rss.md",
     "card/202408012300.md",
@@ -189,7 +191,6 @@
     "card/202407232016.md",
     "card/202407182324.md",
     "card/202407120945.md",
-    "card/202407192217.md",
     "template/card.md",
     "card/202407041929.md",
     "card/202407021906.md",
@@ -198,7 +199,6 @@
     "link/blog.md",
     "link/LLM.md",
     "weekly/08.md",
-    "card/202406132013.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
