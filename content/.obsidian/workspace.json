@@ -32,9 +32,20 @@
                 "source": true
               }
             }
+          },
+          {
+            "id": "54c5f1d6bf5cc4af",
+            "type": "leaf",
+            "state": {
+              "type": "diff-view",
+              "state": {
+                "file": "content/.obsidian/workspace.json",
+                "staged": false
+              }
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -100,7 +111,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2024/2024-olympic-games.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -111,9 +121,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "blog/2024/2024-olympic-games.md"
-              }
+              "state": {}
             }
           },
           {
@@ -149,9 +157,7 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "blog/2024/2024-olympic-games.md"
-              }
+              "state": {}
             }
           }
         ],
@@ -171,10 +177,16 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "7c33fcccf254db94",
+  "active": "54c5f1d6bf5cc4af",
   "lastOpenFiles": [
-    "card/202407292045.md",
+    "conflict-files-obsidian-git.md",
     "blog/2024/2024-olympic-games.md",
+    "card/202408042303.md",
+    "card/202408031231.md",
+    "card/202408031230.md",
+    "card/202408031226.md",
+    "card/202408012300.md",
+    "card/202407292045.md",
     "card/202407232016.md",
     "card/202407282110.md",
     "card/202407182324.md",
@@ -193,12 +205,6 @@
     "weekly/08.md",
     "card/202406132013.md",
     "blog/2024/europe-cup-2024.md",
-    "blog/2024/blog-image-upload.md",
-    "card/202406121911.md",
-    "link/myReadList.md",
-    "blog/2024/notion-replace-instapaper.md",
-    "link/link.md",
-    "template/link.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
