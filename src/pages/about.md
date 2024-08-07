@@ -6,13 +6,15 @@ title: About
 # 本博客使用:
 
 * `Astro` + `Tailwind CSS`驱动
-* `Github Pages`承载
+* `cloudflare Pages`承载
 
 
 ***
 
 
 # 关于
+## 本人身份公钥
+[这里](/public/publicKey.pem)是本人的公钥，后续在博客文章中，我都会采用我的私钥进行签名，未签名的不视为本人发表。
 
 ## 关于我自己
 * 曾经喜欢简洁文艺的风格，现在变得很佛系。
