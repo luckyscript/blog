@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "2dbc309db4b5a6d5",
+        "id": "b0293d14297af9e3",
         "type": "tabs",
         "children": [
           {
-            "id": "eb73a337f6a89b13",
+            "id": "e7418152b8117444",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "card/202408071959.md",
+                "file": "blog/2024/moive-upstream.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "card/202408071959.md",
+                "file": "blog/2024/moive-upstream.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "card/202408071959.md"
+                "file": "blog/2024/moive-upstream.md"
               }
             }
           },
@@ -136,7 +136,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "card/202408071959.md"
+                "file": "blog/2024/moive-upstream.md"
               }
             }
           }
@@ -157,15 +157,17 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "eb73a337f6a89b13",
+  "active": "e7418152b8117444",
   "lastOpenFiles": [
-    "blog/2024/未命名.md",
+    "blog/2024/coffee.md",
+    "blog/2024/moive-upstream.md",
+    "card/202408152156.md",
     "card/202408071959.md",
+    "conflict-files-obsidian-git.md",
     "card/202408031231.md",
     "card/202408042303.md",
     "blog/2024/2024-olympic-games.md",
     "card/202407192217.md",
-    "conflict-files-obsidian-git.md",
     "card/202408031230.md",
     "card/202408031226.md",
     "card/202408012300.md",
@@ -181,10 +183,8 @@
     "blog/2024/moto-qiandao-lake.md",
     "blog/2024/moto-taihu-lake.md",
     "blog/2024/rss.md",
-    "blog/2024/coffee.md",
     "link/blog.md",
     "link/LLM.md",
-    "weekly/08.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
