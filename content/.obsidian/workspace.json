@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "b0293d14297af9e3",
+        "id": "1cbcfaffd3c8c02d",
         "type": "tabs",
         "children": [
           {
-            "id": "e7418152b8117444",
+            "id": "5ccde6c663f5fcc5",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2024/moive-upstream.md",
+                "file": "card/202407182324.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2024/moive-upstream.md",
+                "file": "card/202407182324.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2024/moive-upstream.md"
+                "file": "card/202407182324.md"
               }
             }
           },
@@ -136,7 +136,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "blog/2024/moive-upstream.md"
+                "file": "card/202407182324.md"
               }
             }
           }
@@ -157,22 +157,23 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "e7418152b8117444",
+  "active": "5ccde6c663f5fcc5",
   "lastOpenFiles": [
-    "blog/2024/coffee.md",
-    "blog/2024/moive-upstream.md",
-    "card/202408152156.md",
-    "card/202408071959.md",
-    "conflict-files-obsidian-git.md",
+    "card/202407192217.md",
+    "card/202407232016.md",
+    "card/202407292045.md",
+    "card/202408012300.md",
+    "card/202408031226.md",
+    "card/202408031230.md",
     "card/202408031231.md",
     "card/202408042303.md",
+    "card/202408152156.md",
+    "card/202408091110.md",
+    "blog/2024/moive-upstream.md",
+    "conflict-files-obsidian-git.md",
+    "card/202408071959.md",
+    "blog/2024/未命名.md",
     "blog/2024/2024-olympic-games.md",
-    "card/202407192217.md",
-    "card/202408031230.md",
-    "card/202408031226.md",
-    "card/202408012300.md",
-    "card/202407292045.md",
-    "card/202407232016.md",
     "card/202407282110.md",
     "card/202407182324.md",
     "card/202407120945.md",
@@ -183,8 +184,7 @@
     "blog/2024/moto-qiandao-lake.md",
     "blog/2024/moto-taihu-lake.md",
     "blog/2024/rss.md",
-    "link/blog.md",
-    "link/LLM.md",
+    "blog/2024/coffee.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
