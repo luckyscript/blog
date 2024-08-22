@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "1cbcfaffd3c8c02d",
+        "id": "0d8ca74a74d14f02",
         "type": "tabs",
         "children": [
           {
-            "id": "5ccde6c663f5fcc5",
+            "id": "18fb949e7756023b",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "card/202407182324.md",
+                "file": "weekly/10.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
@@ -86,7 +86,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "card/202407182324.md",
+                "file": "weekly/10.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "card/202407182324.md"
+                "file": "weekly/10.md"
               }
             }
           },
@@ -136,7 +136,7 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "card/202407182324.md"
+                "file": "weekly/10.md"
               }
             }
           }
@@ -157,8 +157,13 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "5ccde6c663f5fcc5",
+  "active": "18fb949e7756023b",
   "lastOpenFiles": [
+    "ppt/web3.md",
+    "weekly/10.md",
+    "ppt/passkey.md",
+    "projects/draft-project.md",
+    "card/202407182324.md",
     "card/202407192217.md",
     "card/202407232016.md",
     "card/202407292045.md",
@@ -175,16 +180,11 @@
     "blog/2024/未命名.md",
     "blog/2024/2024-olympic-games.md",
     "card/202407282110.md",
-    "card/202407182324.md",
     "card/202407120945.md",
     "template/card.md",
     "card/202407041929.md",
     "card/202407021906.md",
     "card/202407011953.md",
-    "blog/2024/moto-qiandao-lake.md",
-    "blog/2024/moto-taihu-lake.md",
-    "blog/2024/rss.md",
-    "blog/2024/coffee.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
