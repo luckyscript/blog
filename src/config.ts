@@ -21,12 +21,9 @@ export const WEIBO_CONFIG = {
 
 export const NAV = {
   Home: '/',
-  About: '/about',
   Life: '/blog',
   Tech: 'https://sailor.ink/blog/',
-  More: {
-    Link: '/link',
-    PPT: '/ppt',
-    Weekly: '/weekly',
-  }
+  Link: '/link',
+  PPT: '/ppt',
+  Weekly: '/weekly',
 }

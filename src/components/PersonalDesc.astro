@@ -7,9 +7,6 @@ import fs from "fs/promises";
 import { globby } from "globby";
 import { parseAndTransform } from 'src/lib/markdoc/read'
 
-const rawString = await fs.readFile('src/pages/about.md', "utf8");
-const { content, data: frontmatter } = matter(rawString);
-const transformedContent = await parseAndTransform({ content });
 ---
 
 <div class="mt-10">
