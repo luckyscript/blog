@@ -4,20 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "0d8ca74a74d14f02",
+        "id": "1fa2ee4337878fd1",
         "type": "tabs",
         "children": [
           {
-            "id": "18fb949e7756023b",
+            "id": "e805c43147b79e00",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "weekly/10.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": true
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -86,7 +81,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "weekly/10.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -97,9 +91,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "weekly/10.md"
-              }
+              "state": {}
             }
           },
           {
@@ -135,9 +127,7 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "weekly/10.md"
-              }
+              "state": {}
             }
           }
         ],
@@ -157,10 +147,11 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "18fb949e7756023b",
+  "active": "e805c43147b79e00",
   "lastOpenFiles": [
-    "ppt/web3.md",
+    "blog/2024/aliyun-sg-breakdown.md",
     "weekly/10.md",
+    "ppt/web3.md",
     "ppt/passkey.md",
     "projects/draft-project.md",
     "card/202407182324.md",
@@ -184,7 +175,6 @@
     "template/card.md",
     "card/202407041929.md",
     "card/202407021906.md",
-    "card/202407011953.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
