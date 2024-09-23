@@ -1,6 +1,6 @@
 import rss from "@astrojs/rss";
 import { blog } from "../lib/markdoc/frontmatter.schema";
-import { readAll, readBlog } from "../lib/markdoc/read";
+import { readOne, readBlog } from "../lib/markdoc/read";
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from "../config";
 
 export const GET = async () => {
@@ -27,7 +27,7 @@ export const GET = async () => {
   // https://example.com/ => https://example.com
   baseUrl = baseUrl.replace(/\/+$/g, "");
 
-  const rssItems = sortedPosts.map(({ frontmatter, slug }) => {
+  const rssItems = await Promise.all(sortedPosts.map(async ({ frontmatter, slug, year }) => {
     if (frontmatter.external) {
       const title = frontmatter.title;
       const pubDate = frontmatter.date;
@@ -43,16 +43,21 @@ export const GET = async () => {
     const title = frontmatter.title;
     const pubDate = frontmatter.date;
     const description = frontmatter.description;
-    const link = `${baseUrl}/blog/${slug}`;
+    const link = `${baseUrl}/blog/${year}/${slug}`;
+    const { html } = await readOne({
+      directory: `blog/${year}`,
+      slug,
+      frontmatterSchema: blog,
+    });
 
     return {
       title,
       pubDate,
       description,
       link,
-      content: description,
+      content: html,
     };
-  });
+  }));
 
   return rss({
     title: SITE_TITLE,

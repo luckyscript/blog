@@ -53,6 +53,7 @@ export async function read<T extends z.ZodTypeAny>({
   const rawString = await fs.readFile(filepath, "utf8");
   const { content, data: frontmatter } = matter(rawString);
   const transformedContent = await parseAndTransform({ content });
+  const html = Markdoc.renderers.html(transformedContent);
   const brief = await parseAndTransform({ content: content.split('<!--more-->')[0] })
   const validatedFrontmatter = validateFrontmatter({
     frontmatter,
@@ -72,6 +73,7 @@ export async function read<T extends z.ZodTypeAny>({
     brief,
     rawContent: content,
     frontmatter: validatedFrontmatter,
+    html,
   };
 }
 
