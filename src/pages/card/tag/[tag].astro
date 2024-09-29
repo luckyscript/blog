@@ -1,44 +1,50 @@
 ---
-import { readAll } from "../lib/markdoc/read";
-import { card } from "../lib/markdoc/frontmatter.schema";
-import PageLayout from "../layouts/PageLayout.astro";
-import PageMeta from "../components/PageMeta.astro";
-import { SITE_TITLE } from "../config";
-import Renderer from "../components/Renderer.astro";
-import VirtualScroll from "src/components/VirtualScroll.jsx";
+import { readAll } from "../../../lib/markdoc/read";
+import { card } from "../../../lib/markdoc/frontmatter.schema";
+import PageLayout from "../../../layouts/PageLayout.astro";
+import PageMeta from "../../../components/PageMeta.astro";
+import { SITE_TITLE } from "../../../config";
+import Renderer from "../../../components/Renderer.astro";
+
+export async function getStaticPaths() {
+  const posts = await readAll({
+    directory: "card",
+    frontmatterSchema: card,
+  });
+
+  // we don't want to generate pages for posts that link to external websites
+  const filteredPosts = posts;
+
+  return filteredPosts.map((post) => post.frontmatter.tags).flat().filter((tag) => tag).map((tag) => {
+    return { params: { tag: tag } };
+  });
+}
+
+const { tag } = Astro.params;
+if (typeof tag !== "string") {
+
+  throw Error(`tag should be string. Received: ${tag}`);
+}
 
 const posts = await readAll({
-  directory: "card",
-  frontmatterSchema: card,
-});
+    directory: "card",
+    frontmatterSchema: card,
+  });
 
 const sortedPosts = posts
   .filter((p) => p.frontmatter.draft !== true)
+  .filter((p) => p.frontmatter.tags?.includes(tag))
   .sort(
     (a, b) =>
       new Date(b.frontmatter.date).valueOf() -
       new Date(a.frontmatter.date).valueOf()
   );
+
 ---
 
 <PageLayout>
-  <PageMeta title={`card | ${SITE_TITLE}`} slot="meta" />
+  <PageMeta title={`card tag: ${tag} | ${SITE_TITLE}`} slot="meta" />
   <style>
-    .masonry {
-      columns: 1;
-    }
-    /* @media (min-width: 1000px) {
-      .masonry {
-        columns: 2;
-      }
-    }
-    @media (min-width: 1440px) {
-      .masonry {
-        columns: 3;
-        width: 1440px;
-        transform: translateX(-288px);
-      }
-    } */
     .masonry {
       column-gap: 30px;
     }
@@ -65,7 +71,7 @@ const sortedPosts = posts
               <div class="pt-6 md:p-8 text-center md:text-left space-y-4 w-full">
                 {post.frontmatter.tags? (
                   <div class="text-sm italic text-blue-500 dark:text-slate-500">{post.frontmatter.tags.map(item =>(<a href={`/card/tag/${item}`} class="mr-2">#{item}</a>))}</div>
-                ) : null}
+                  ) : null}
                 <blockquote class="blog-post prose prose-bubblegum">
                   <object>
                     <Renderer content={post.content} />
