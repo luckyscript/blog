@@ -22,6 +22,7 @@ export const WEIBO_CONFIG = {
 export const NAV = {
   Home: '/',
   Life: '/blog',
+  Tech: '/tech',
   Note: 'https://sailor.ink/',
   Link: '/link',
   PPT: '/ppt',
