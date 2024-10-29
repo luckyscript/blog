@@ -20,11 +20,11 @@ export const WEIBO_CONFIG = {
 }
 
 export const NAV = {
-  Home: '/',
-  Life: '/blog',
-  Tech: '/tech',
-  Note: 'https://sailor.ink/',
-  Link: '/link',
+  首页: '/',
+  生活: '/blog',
+  技术: '/tech',
+  数字花园: 'https://sailor.ink/',
+  链接: '/link',
   PPT: '/ppt',
-  Weekly: '/weekly',
+  周刊: '/weekly',
 }

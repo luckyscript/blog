@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        body: ["Space Grotesk", "sans-serif"],
+        body: ["CangEr"],
         heading: ["Space Grotesk", "sans-serif"],
       },
       colors: {
