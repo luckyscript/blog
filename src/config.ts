@@ -27,4 +27,5 @@ export const NAV = {
   链接: '/link',
   PPT: '/ppt',
   周刊: '/weekly',
+  碎碎念: 'https://channel.rainonpiano.com',
 }
