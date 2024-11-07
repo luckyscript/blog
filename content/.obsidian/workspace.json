@@ -4,20 +4,20 @@
     "type": "split",
     "children": [
       {
-        "id": "1fa2ee4337878fd1",
+        "id": "556bc0e1aada600d",
         "type": "tabs",
         "children": [
           {
-            "id": "e805c43147b79e00",
+            "id": "5874e9c4328714f4",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "diff-view",
               "state": {
-                "file": "card/202410192109.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": true
-              }
+                "file": "content/.obsidian/core-plugins.json",
+                "staged": false
+              },
+              "icon": "git-pull-request",
+              "title": "Diff View (core-plugins.json)"
             }
           }
         ]
@@ -40,7 +40,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical"
-              }
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
             }
           },
           {
@@ -55,7 +57,9 @@
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical"
-              }
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
             }
           },
           {
@@ -63,7 +67,9 @@
             "type": "leaf",
             "state": {
               "type": "bookmarks",
-              "state": {}
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
             }
           }
         ]
@@ -86,10 +92,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "card/202410192109.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
-              }
+              },
+              "icon": "links-going-out",
+              "title": "出链"
             }
           },
           {
@@ -97,9 +104,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "card/202410192109.md"
-              }
+              "state": {},
+              "icon": "lucide-list",
+              "title": "大纲"
             }
           },
           {
@@ -107,7 +114,9 @@
             "type": "leaf",
             "state": {
               "type": "git-history-view",
-              "state": {}
+              "state": {},
+              "icon": "history",
+              "title": "History"
             }
           },
           {
@@ -115,7 +124,9 @@
             "type": "leaf",
             "state": {
               "type": "git-view",
-              "state": {}
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
             }
           },
           {
@@ -127,7 +138,9 @@
                 "sortOrder": "frequency",
                 "showSearch": false,
                 "searchQuery": ""
-              }
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
             }
           },
           {
@@ -135,9 +148,9 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {
-                "file": "card/202410192109.md"
-              }
+              "state": {},
+              "icon": "lucide-info",
+              "title": "笔记属性"
             }
           }
         ],
@@ -157,10 +170,11 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "e805c43147b79e00",
+  "active": "5874e9c4328714f4",
   "lastOpenFiles": [
-    "card/202410192011.md",
+    "weekly/12.md",
     "card/202410192109.md",
+    "card/202410192011.md",
     "weekly/11.md",
     "weekly/00.md",
     "weekly/10.md",
@@ -184,7 +198,6 @@
     "blog/2024/moive-upstream.md",
     "conflict-files-obsidian-git.md",
     "card/202408071959.md",
-    "blog/2024/未命名.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
