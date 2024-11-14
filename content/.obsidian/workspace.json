@@ -19,8 +19,24 @@
               "icon": "git-pull-request",
               "title": "Diff View (core-plugins.json)"
             }
+          },
+          {
+            "id": "8e1276c1ffcc7a2f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "weekly/13.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "13"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -170,9 +186,10 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "5874e9c4328714f4",
+  "active": "8e1276c1ffcc7a2f",
   "lastOpenFiles": [
     "weekly/12.md",
+    "weekly/13.md",
     "card/202410192109.md",
     "card/202410192011.md",
     "weekly/11.md",
@@ -197,7 +214,6 @@
     "card/202408091110.md",
     "blog/2024/moive-upstream.md",
     "conflict-files-obsidian-git.md",
-    "card/202408071959.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
