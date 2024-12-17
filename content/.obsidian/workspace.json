@@ -4,39 +4,25 @@
     "type": "split",
     "children": [
       {
-        "id": "556bc0e1aada600d",
+        "id": "f6f75a649c411fb1",
         "type": "tabs",
         "children": [
           {
-            "id": "5874e9c4328714f4",
-            "type": "leaf",
-            "state": {
-              "type": "diff-view",
-              "state": {
-                "file": "content/.obsidian/core-plugins.json",
-                "staged": false
-              },
-              "icon": "git-pull-request",
-              "title": "Diff View (core-plugins.json)"
-            }
-          },
-          {
-            "id": "8e1276c1ffcc7a2f",
+            "id": "2e35e0f6c5df0289",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "weekly/13.md",
+                "file": "blog/2024/education-for-child.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "13"
+              "title": "education-for-child"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -186,8 +172,16 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "8e1276c1ffcc7a2f",
+  "active": "2e35e0f6c5df0289",
   "lastOpenFiles": [
+    "blog/2024/coffee.md",
+    "blog/2024/education-for-child.md",
+    "blog/2024/2024-olympic-games.md",
+    "未命名.md",
+    "blog/2008/thoughts-of-mid-autumn-festival.md",
+    "blog/2024/my-work-route.md",
+    "blog/2024/moto-taihu-lake.md",
+    "blog/2024/blog-image-upload.md",
     "weekly/12.md",
     "weekly/13.md",
     "card/202410192109.md",
@@ -206,14 +200,6 @@
     "card/202407232016.md",
     "card/202407292045.md",
     "card/202408012300.md",
-    "card/202408031226.md",
-    "card/202408031230.md",
-    "card/202408031231.md",
-    "card/202408042303.md",
-    "card/202408152156.md",
-    "card/202408091110.md",
-    "blog/2024/moive-upstream.md",
-    "conflict-files-obsidian-git.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
