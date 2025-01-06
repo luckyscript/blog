@@ -8,18 +8,18 @@
         "type": "tabs",
         "children": [
           {
-            "id": "2e35e0f6c5df0289",
+            "id": "7e9baac8a472d406",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2024/education-for-child.md",
-                "mode": "source",
+                "file": "blog/2025/hk-trip-2024.md",
+                "mode": "preview",
                 "backlinks": false,
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "education-for-child"
+              "title": "hk-trip-2024"
             }
           }
         ]
@@ -172,8 +172,11 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "2e35e0f6c5df0289",
+  "active": "7e9baac8a472d406",
   "lastOpenFiles": [
+    "blog/2023/osaka-trip-2023.md",
+    "blog/2025/hk-trip-2024.md",
+    "blog/2025",
     "blog/2024/coffee.md",
     "blog/2024/education-for-child.md",
     "blog/2024/2024-olympic-games.md",
@@ -198,8 +201,6 @@
     "card/202407182324.md",
     "card/202407192217.md",
     "card/202407232016.md",
-    "card/202407292045.md",
-    "card/202408012300.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
