@@ -13,13 +13,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2025/invest-new-guy.md",
+                "file": "blog/2025/2024-trip.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "invest-new-guy"
+              "title": "2024-trip"
             }
           }
         ]
@@ -94,12 +94,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2025/invest-new-guy.md",
+                "file": "blog/2025/2024-trip.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "invest-new-guy 的出链列表"
+              "title": "2024-trip 的出链列表"
             }
           },
           {
@@ -108,10 +108,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2025/invest-new-guy.md"
+                "file": "blog/2025/2024-trip.md"
               },
               "icon": "lucide-list",
-              "title": "invest-new-guy 的大纲"
+              "title": "2024-trip 的大纲"
             }
           },
           {
@@ -154,10 +154,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "blog/2025/invest-new-guy.md"
+                "file": "blog/2025/2024-trip.md"
               },
               "icon": "lucide-info",
-              "title": "invest-new-guy的笔记属性"
+              "title": "2024-trip的笔记属性"
             }
           }
         ],
@@ -179,14 +179,15 @@
   },
   "active": "e805c43147b79e00",
   "lastOpenFiles": [
+    "blog/2025/hk-trip-2024.md",
+    "blog/2025/2024-trip.md",
+    "blog/2025/invest-new-guy.md",
     "card/202410071909.md",
     "card/202410192011.md",
     "card/202410192109.md",
     "card/202410292112.md",
     "card/201208241808.md",
     "card/201007131307.md",
-    "blog/2025/invest-new-guy.md",
-    "blog/2025/hk-trip-2024.md",
     "tech/2024/what-is-a-good-arch.md",
     "tech/2024/race-condition-in-js.md",
     "tech/2024/how-to-verify-you-is-you.md",
@@ -208,7 +209,6 @@
     "tech/2018/co-promise.md",
     "tech/2018",
     "tech/2017/metaball.md",
-    "tech/2017/js-prototype.md",
     "tech/2017",
     "tech/2016",
     "blog/2025",

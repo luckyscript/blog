@@ -29,6 +29,7 @@ category: Life
 
 
 不过幸运的是，广州的“坑”并不多。随意选的一家肠粉店、点心铺和牛肉粿条店皆令人惊喜，那种“无心插柳柳成荫”的满足感难以言喻，宛如骑着摩托车随意拐入乡道，却意外撞见一片美景。
+
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106203936659.png)
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106203944880.png)
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106203956916.png)
@@ -42,6 +43,7 @@ category: Life
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204023196.png)
 
 在这座灯火辉煌的城市中，茶餐厅是不可错过的体验。第二天的茶楼之行让我们见识了广州人悠闲的茶文化。身边的食客们点心寥寥，更多是饮茶闲聊。我们却点了一整只烧鹅，引得服务员惊讶不已，尴尬中更添几分趣味。
+
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204039769.png)
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204048923.png)
 
@@ -63,11 +65,13 @@ category: Life
   
 
 汇丰银行的错过了预约，我们决定一早到沙田排队碰碰运气。天未破晓，5点多起床，6点出发。清晨的罗湖口岸已人头攒动，大多数是周末返港工作的香港居民。过关后，老婆用18年的八达通尝试充值，却被没收。好在如今的港铁全面支持支付宝，出行便利许多。
+
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204136502.png)
 
   
 
 小红书上多推荐粉岭和元朗等近口岸的汇丰分行，但正因如此，排队长且拒绝率高。我们选择了稍远的沙田门店。7点半抵达时，门口已有三两人等候。8点开门时，才发现那些人是银行员工，而我们成为了第一批排队客户。9点开门，我们顺利拿到1号牌。
+
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204145624.png)
 
   
@@ -77,8 +81,8 @@ category: Life
   
 
 酒店位于天后地铁站，虽空间局促，但整洁舒适。短暂休息后，我们踏上港岛的漫步之旅，前往恒生银行总部完成另一张银行卡的开设。相较汇丰，恒生的业务流程似乎由同一团队开发，界面风格如出一辙。因已是优越理财用户，开户过程十分顺利。聊天间，理财经理推荐了保本型产品，我暗下决心告别“亏多赚少”的股票生涯。
-![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204303579.png)
 
+![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204303579.png)
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204252467.png)
 
   
@@ -92,6 +96,7 @@ category: Life
 
 
 下午，我们乘天星小轮从中环驶向尖沙咀。维港的风景依旧熟悉，摩天轮旁的游乐场添了些许新意。尖沙咀熙攘如昔，游客照留影后，我们闲逛商场，买了个10元的利是封。晚餐在茶餐厅享用了一顿人均70港币的美味佳肴。本打算夜游觅甜品，但citywalk的疲惫感让我们一回酒店便沉沉睡去。
+
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204234607.png)
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204244509.png)
 
@@ -102,6 +107,7 @@ category: Life
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204352538.png)
 
 次日清晨，深水埗迎来新一天的烟火气。预约的中银开卡更加严格，柜员仔细核对我们每份材料。幸运的是，阿里巴巴的收入证明成了通行证，一句“哦，阿里的”让整个过程顺畅无阻。开卡后，我们购买了一万美元的存款保险，聊以打理闲钱。回杭州前，还打卡了网红甜品店，借中银小哥分享的链接跳过了长长的排队人群。
+
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204402492.png)
 ![image.png](https://raw.githubusercontent.com/luckyscript/image/master/20250106204411493.png)
 
