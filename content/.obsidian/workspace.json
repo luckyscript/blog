@@ -13,13 +13,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2025/2024-trip.md",
+                "file": "blog/2025/invest-new-guy.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "2024-trip"
+              "title": "invest-new-guy"
             }
           }
         ]
@@ -94,12 +94,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/2025/2024-trip.md",
+                "file": "blog/2025/invest-new-guy.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "2024-trip 的出链列表"
+              "title": "invest-new-guy 的出链列表"
             }
           },
           {
@@ -108,10 +108,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2025/2024-trip.md"
+                "file": "blog/2025/invest-new-guy.md"
               },
               "icon": "lucide-list",
-              "title": "2024-trip 的大纲"
+              "title": "invest-new-guy 的大纲"
             }
           },
           {
@@ -154,10 +154,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "blog/2025/2024-trip.md"
+                "file": "blog/2025/invest-new-guy.md"
               },
               "icon": "lucide-info",
-              "title": "2024-trip的笔记属性"
+              "title": "invest-new-guy的笔记属性"
             }
           }
         ],
@@ -179,8 +179,9 @@
   },
   "active": "e805c43147b79e00",
   "lastOpenFiles": [
-    "blog/2025/hk-trip-2024.md",
     "blog/2025/2024-trip.md",
+    "blog/2024/2024-olympic-games.md",
+    "blog/2025/hk-trip-2024.md",
     "blog/2025/invest-new-guy.md",
     "card/202410071909.md",
     "card/202410192011.md",
@@ -208,7 +209,6 @@
     "tech/2018/cpp-keyword-extern.md",
     "tech/2018/co-promise.md",
     "tech/2018",
-    "tech/2017/metaball.md",
     "tech/2017",
     "tech/2016",
     "blog/2025",
