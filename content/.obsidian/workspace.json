@@ -4,22 +4,22 @@
     "type": "split",
     "children": [
       {
-        "id": "f6f75a649c411fb1",
+        "id": "1fa2ee4337878fd1",
         "type": "tabs",
         "children": [
           {
-            "id": "7e9baac8a472d406",
+            "id": "e805c43147b79e00",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2025/hk-trip-2024.md",
+                "file": "blog/2025/invest-new-guy.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "hk-trip-2024"
+              "title": "invest-new-guy"
             }
           }
         ]
@@ -94,11 +94,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "blog/2025/invest-new-guy.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "出链"
+              "title": "invest-new-guy 的出链列表"
             }
           },
           {
@@ -106,9 +107,11 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {},
+              "state": {
+                "file": "blog/2025/invest-new-guy.md"
+              },
               "icon": "lucide-list",
-              "title": "大纲"
+              "title": "invest-new-guy 的大纲"
             }
           },
           {
@@ -150,9 +153,11 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {},
+              "state": {
+                "file": "blog/2025/invest-new-guy.md"
+              },
               "icon": "lucide-info",
-              "title": "笔记属性"
+              "title": "invest-new-guy的笔记属性"
             }
           }
         ],
@@ -172,44 +177,44 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "7e9baac8a472d406",
+  "active": "e805c43147b79e00",
   "lastOpenFiles": [
-    "blog/2023/osaka-trip-2023.md",
-    "blog/2025/hk-trip-2024.md",
-    "blog/2025",
-    "blog/2024/coffee.md",
-    "blog/2024/education-for-child.md",
-    "blog/2024/2024-olympic-games.md",
-    "未命名.md",
-    "blog/2008/thoughts-of-mid-autumn-festival.md",
-    "blog/2024/my-work-route.md",
-    "blog/2024/moto-taihu-lake.md",
-    "blog/2024/blog-image-upload.md",
-    "weekly/12.md",
-    "weekly/13.md",
-    "card/202410192109.md",
-    "card/202410192011.md",
-    "weekly/11.md",
-    "weekly/00.md",
-    "weekly/10.md",
     "card/202410071909.md",
-    "card/202407021906.md",
-    "blog/2024/aliyun-sg-breakdown.md",
-    "ppt/web3.md",
-    "ppt/passkey.md",
-    "projects/draft-project.md",
-    "card/202407182324.md",
-    "card/202407192217.md",
-    "card/202407232016.md",
+    "card/202410192011.md",
+    "card/202410192109.md",
+    "card/202410292112.md",
+    "card/201208241808.md",
+    "card/201007131307.md",
+    "blog/2025/invest-new-guy.md",
+    "blog/2025/hk-trip-2024.md",
+    "tech/2024/what-is-a-good-arch.md",
+    "tech/2024/race-condition-in-js.md",
+    "tech/2024/how-to-verify-you-is-you.md",
+    "tech/2024/absolute-security.md",
+    "tech/2024/2023hot-FE-tech.md",
+    "tech/2024",
+    "tech/2020/js-call-stack.md",
+    "tech/2020",
+    "tech/2019/x-filter.md",
+    "tech/2019/opensuse-env-config.md",
+    "tech/2019/blog-optimize.md",
+    "tech/2019/fe-router-deploy.md",
+    "tech/2019",
+    "tech/2018/wasm.md",
+    "tech/2018/virtual-method-table-in-cpp.md",
+    "tech/2018/cpp-rvalue.md",
+    "tech/2018/global-var-in-nodejs.md",
+    "tech/2018/cpp-keyword-extern.md",
+    "tech/2018/co-promise.md",
+    "tech/2018",
+    "tech/2017/metaball.md",
+    "tech/2017/js-prototype.md",
+    "tech/2017",
+    "tech/2016",
+    "blog/2025",
+    "tech",
     "blog/0000",
     "blog/2008",
-    "blog/2011",
-    "blog/2017",
-    "blog/2019",
-    "blog/2020",
-    "blog/2022",
-    "blog/2023",
-    "blog/2024",
     "Pasted image 20240222194620.png",
     "未命名.canvas"
   ]
