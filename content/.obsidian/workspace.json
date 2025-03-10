@@ -13,13 +13,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2025/cd-trip-2025.md",
+                "file": "blog/2025/ai.md",
                 "mode": "source",
                 "source": true,
                 "backlinks": false
               },
               "icon": "lucide-file",
-              "title": "cd-trip-2025"
+              "title": "ai"
             }
           }
         ]
@@ -175,9 +175,10 @@
   },
   "active": "7e9baac8a472d406",
   "lastOpenFiles": [
-    "blog/2025/hk-trip-2024.md",
-    "blog/2025/cd-trip-2025.md",
     "blog/2025/2025-chinese-new-year.md",
+    "blog/2025/ai.md",
+    "blog/2025/cd-trip-2025.md",
+    "blog/2025/hk-trip-2024.md",
     "blog/2025/invest-new-guy.md",
     "blog/2025/2024-trip.md",
     "weekly/14.md",
@@ -201,7 +202,6 @@
     "weekly/10.md",
     "card/202410071909.md",
     "card/202407021906.md",
-    "blog/2024/aliyun-sg-breakdown.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
