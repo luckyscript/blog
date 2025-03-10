@@ -13,13 +13,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "blog/2025/2025-chinese-new-year.md",
+                "file": "blog/2025/cd-trip-2025.md",
                 "mode": "source",
                 "source": true,
                 "backlinks": false
               },
               "icon": "lucide-file",
-              "title": "2025-chinese-new-year"
+              "title": "cd-trip-2025"
             }
           }
         ]
@@ -175,12 +175,13 @@
   },
   "active": "7e9baac8a472d406",
   "lastOpenFiles": [
-    "blog/2025/invest-new-guy.md",
+    "blog/2025/hk-trip-2024.md",
+    "blog/2025/cd-trip-2025.md",
     "blog/2025/2025-chinese-new-year.md",
+    "blog/2025/invest-new-guy.md",
     "blog/2025/2024-trip.md",
     "weekly/14.md",
     "blog/2025/loss-land.md",
-    "blog/2025/hk-trip-2024.md",
     "blog/2023/osaka-trip-2023.md",
     "blog/2025",
     "blog/2024/coffee.md",
@@ -201,7 +202,6 @@
     "card/202410071909.md",
     "card/202407021906.md",
     "blog/2024/aliyun-sg-breakdown.md",
-    "ppt/web3.md",
     "blog/0000",
     "blog/2008",
     "blog/2011",
