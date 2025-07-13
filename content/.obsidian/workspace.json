@@ -11,13 +11,15 @@
             "id": "ef6bb334778cd42b",
             "type": "leaf",
             "state": {
-              "type": "diff-view",
+              "type": "markdown",
               "state": {
-                "file": "content/blog/2025/ai.md",
-                "staged": false
+                "file": "blog/2025/ai2.md",
+                "mode": "source",
+                "source": true,
+                "backlinks": false
               },
-              "icon": "git-pull-request",
-              "title": "Diff View (ai)"
+              "icon": "lucide-file",
+              "title": "ai2"
             }
           }
         ]
@@ -107,10 +109,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/2025/invest-new-guy.md"
+                "file": "blog/2025/ai2.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "invest-new-guy 的大纲"
+              "title": "ai2 的大纲"
             }
           },
           {
@@ -153,10 +158,20 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "blog/2025/invest-new-guy.md"
+                "file": "blog/2025/ai2.md"
               },
               "icon": "lucide-info",
-              "title": "invest-new-guy的笔记属性"
+              "title": "ai2的笔记属性"
+            }
+          },
+          {
+            "id": "1e978c6e8fd55a09",
+            "type": "leaf",
+            "state": {
+              "type": "copilot-chat-view",
+              "state": {},
+              "icon": "message-square",
+              "title": "Copilot"
             }
           }
         ],
@@ -173,11 +188,27 @@
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
       "workspaces:管理工作区布局": false,
-      "zk-prefixer:创建时间戳笔记": false
+      "zk-prefixer:创建时间戳笔记": false,
+      "obsidian-git:Open Git source control": false,
+      "copilot:Open Copilot Chat": false
     }
   },
   "active": "1b9ce93d8767f92e",
   "lastOpenFiles": [
+    "copilot-custom-prompts/Rewrite as tweet thread.md",
+    "copilot-custom-prompts/Rewrite as tweet.md",
+    "copilot-custom-prompts/Remove URLs.md",
+    "copilot-custom-prompts/Generate glossary.md",
+    "copilot-custom-prompts/Generate table of contents.md",
+    "copilot-custom-prompts/Make longer.md",
+    "copilot-custom-prompts/Make shorter.md",
+    "copilot-custom-prompts/Emojify.md",
+    "copilot-custom-prompts/Explain like I am 5.md",
+    "copilot-custom-prompts/Simplify.md",
+    "copilot-custom-prompts/Summarize.md",
+    "copilot-custom-prompts/Translate to Chinese.md",
+    "copilot-custom-prompts/Fix grammar and spelling.md",
+    "copilot-custom-prompts",
     "blog/2025/ai2.md",
     "blog/2025/ai.md",
     "blog/2025/urticarial-vasculitis.md",
@@ -191,29 +222,15 @@
     "card/202410192011.md",
     "card/202410192109.md",
     "card/202410292112.md",
-    "card/201208241808.md",
-    "card/201007131307.md",
-    "tech/2024/what-is-a-good-arch.md",
-    "tech/2024/race-condition-in-js.md",
-    "tech/2024/how-to-verify-you-is-you.md",
-    "tech/2024/absolute-security.md",
-    "tech/2024/2023hot-FE-tech.md",
     "tech/2024",
-    "tech/2020/js-call-stack.md",
     "tech/2020",
-    "tech/2019/x-filter.md",
-    "tech/2019/opensuse-env-config.md",
-    "tech/2019/blog-optimize.md",
-    "tech/2019/fe-router-deploy.md",
     "tech/2019",
-    "tech/2018/wasm.md",
     "tech/2018",
     "tech/2017",
     "tech/2016",
     "blog/2025",
     "tech",
     "blog/0000",
-    "blog/2008",
     "Pasted image 20240222194620.png",
     "未命名.canvas"
   ]
