@@ -4,22 +4,20 @@
     "type": "split",
     "children": [
       {
-        "id": "f6f75a649c411fb1",
+        "id": "35f84f0131c137d6",
         "type": "tabs",
         "children": [
           {
-            "id": "7e9baac8a472d406",
+            "id": "ef6bb334778cd42b",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "diff-view",
               "state": {
-                "file": "blog/2025/ai.md",
-                "mode": "source",
-                "source": true,
-                "backlinks": false
+                "file": "content/blog/2025/ai.md",
+                "staged": false
               },
-              "icon": "lucide-file",
-              "title": "ai"
+              "icon": "git-pull-request",
+              "title": "Diff View (ai)"
             }
           }
         ]
@@ -45,7 +43,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "文件列表"
             }
           },
           {
@@ -95,11 +93,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "blog/2025/invest-new-guy.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "出链"
+              "title": "invest-new-guy 的出链列表"
             }
           },
           {
@@ -107,9 +106,11 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {},
+              "state": {
+                "file": "blog/2025/invest-new-guy.md"
+              },
               "icon": "lucide-list",
-              "title": "大纲"
+              "title": "invest-new-guy 的大纲"
             }
           },
           {
@@ -118,8 +119,8 @@
             "state": {
               "type": "git-history-view",
               "state": {},
-              "icon": "lucide-file",
-              "title": "Plugin no longer active"
+              "icon": "history",
+              "title": "History"
             }
           },
           {
@@ -151,9 +152,11 @@
             "type": "leaf",
             "state": {
               "type": "file-properties",
-              "state": {},
+              "state": {
+                "file": "blog/2025/invest-new-guy.md"
+              },
               "icon": "lucide-info",
-              "title": "笔记属性"
+              "title": "invest-new-guy的笔记属性"
             }
           }
         ],
@@ -165,52 +168,52 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "zk-prefixer:Create new unique note": false,
-      "workspaces:Manage workspace layouts": false
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "workspaces:管理工作区布局": false,
+      "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "7e9baac8a472d406",
+  "active": "1b9ce93d8767f92e",
   "lastOpenFiles": [
-    "blog/2025/2025-chinese-new-year.md",
+    "blog/2025/ai2.md",
     "blog/2025/ai.md",
-    "blog/2025/cd-trip-2025.md",
-    "blog/2025/hk-trip-2024.md",
+    "blog/2025/urticarial-vasculitis.md",
     "blog/2025/invest-new-guy.md",
+    "blog/2025/cd-trip-2025.md",
+    "blog/2025/2025-chinese-new-year.md",
     "blog/2025/2024-trip.md",
-    "weekly/14.md",
-    "blog/2025/loss-land.md",
-    "blog/2023/osaka-trip-2023.md",
-    "blog/2025",
-    "blog/2024/coffee.md",
-    "blog/2024/education-for-child.md",
     "blog/2024/2024-olympic-games.md",
-    "未命名.md",
-    "blog/2008/thoughts-of-mid-autumn-festival.md",
-    "blog/2024/my-work-route.md",
-    "blog/2024/moto-taihu-lake.md",
-    "blog/2024/blog-image-upload.md",
-    "weekly/12.md",
-    "weekly/13.md",
-    "card/202410192109.md",
-    "card/202410192011.md",
-    "weekly/11.md",
-    "weekly/00.md",
-    "weekly/10.md",
+    "blog/2025/hk-trip-2024.md",
     "card/202410071909.md",
-    "card/202407021906.md",
+    "card/202410192011.md",
+    "card/202410192109.md",
+    "card/202410292112.md",
+    "card/201208241808.md",
+    "card/201007131307.md",
+    "tech/2024/what-is-a-good-arch.md",
+    "tech/2024/race-condition-in-js.md",
+    "tech/2024/how-to-verify-you-is-you.md",
+    "tech/2024/absolute-security.md",
+    "tech/2024/2023hot-FE-tech.md",
+    "tech/2024",
+    "tech/2020/js-call-stack.md",
+    "tech/2020",
+    "tech/2019/x-filter.md",
+    "tech/2019/opensuse-env-config.md",
+    "tech/2019/blog-optimize.md",
+    "tech/2019/fe-router-deploy.md",
+    "tech/2019",
+    "tech/2018/wasm.md",
+    "tech/2018",
+    "tech/2017",
+    "tech/2016",
+    "blog/2025",
+    "tech",
     "blog/0000",
     "blog/2008",
-    "blog/2011",
-    "blog/2017",
-    "blog/2019",
-    "blog/2020",
-    "blog/2022",
-    "blog/2023",
-    "blog/2024",
     "Pasted image 20240222194620.png",
     "未命名.canvas"
   ]
