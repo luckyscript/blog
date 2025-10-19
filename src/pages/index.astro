@@ -8,6 +8,14 @@ import Hyperdrive from "src/components/Hyperdrive.astro";
 import Starfield from "src/components/Starfield.astro";
 import PersonalDesc from "src/components/PersonalDesc.astro";
 import GithubRecord from "src/components/GithubRecord.astro";
+import TelegramList from 'src/components/TelegramList.astro'
+
+
+import { getChannelInfo } from '../lib/telegram'
+
+const channel = await getChannelInfo(Astro)
+
+export const prerender = false
 ---
 
 <PageLayout>
@@ -16,12 +24,9 @@ import GithubRecord from "src/components/GithubRecord.astro";
     <Intro />
     <div class="w-full text-center unset gradient-link tracking-wider font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500">Never Give Up!</div>
     <!-- <GithubRecord /> -->
-    <div class="w-full h-96 relative py-px bg-gradient-to-br overflow-hidden">
-      <Starfield noGradient />
-      <Hyperdrive class="z-0 w-full h-full" />
-      <ArmStrong />
-    </div>
-    <GithubRecord />
     <PersonalDesc />
+    <div class="w-full text-center unset gradient-link tracking-wider font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 mt-20">
+      <a href="https://channel.rainonpiano.com">碎碎念</a></div>
+    <TelegramList channel={channel} />
   </Fragment>
 </PageLayout>

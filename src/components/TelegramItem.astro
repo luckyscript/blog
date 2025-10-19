@@ -1,0 +1,24 @@
+---
+import 'src/styles/telegramItem.css'
+import 'prismjs/themes/prism.css'
+import dayjs from 'src/lib/dayjs'
+import { getEnv } from 'src/lib/env'
+
+const locale = getEnv(import.meta.env, Astro, 'LOCALE')
+const timezone = getEnv(import.meta.env, Astro, 'TIMEZONE')
+
+locale && dayjs.locale(locale)
+
+const { SITE_URL } = Astro.locals
+const { post } = Astro.props
+
+const datetime = dayjs(post.datetime).tz(timezone)
+const timeago = datetime.isBefore(dayjs().subtract(1, 'w')) ? datetime.format('HH:mm · ll · ddd') : datetime.fromNow()
+---
+
+<div class="telegram-item" style={{ 'view-transition-name': `post-${post.id}` }}>
+  {post.content.length > 0 && <div class={`text-box telegram-content`} set:html={post.content} />}
+  <div class="telegram-time">
+    <time datetime={post.datetime} title={timeago}>{timeago}</time>
+  </div>
+</div>
