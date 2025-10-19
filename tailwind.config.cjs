@@ -48,7 +48,12 @@ module.exports = {
                 color: "rgb(var(--color-text-link))",
               },
             },
-            "h1, h2, h3, h4, h5": {
+            "img": {
+              "border-radius": "8px",
+              "max-width": '60%',
+            },
+            "h1, h2, h3, h4, h5": { 
+              "font-family": "CangEr",
               color: "rgb(var(--color-text-heading))",
             },
             "code::before": {
