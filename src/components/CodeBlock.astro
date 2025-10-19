@@ -1,10 +1,20 @@
 ---
-import { Prism } from "@astrojs/prism";
+import prism from '../lib/prism'
 
 const { language, content } = Astro.props;
+
+// 确保语言存在，否则使用默认语言
+const lang = prism.languages[language] ? language : 'text';
+
+// 执行代码高亮
+const highlightedCode = lang !== 'text' 
+  ? prism.highlight(content, prism.languages[lang], lang)
+  : content;
 ---
 
-<Prism lang={language} code={content} />
+<pre class="language-{lang}">
+  <code class="language-{lang}" set:html={highlightedCode}></code>
+</pre>
 
 <style is:global>
   /**
