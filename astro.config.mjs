@@ -3,6 +3,9 @@ import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import markdoc from '@astrojs/markdoc';
+import cloudflare from '@astrojs/cloudflare'
+import { provider } from 'std-env'
+import node from '@astrojs/node'
 
 /*
   We are doing some URL mumbo jumbo here to tell Astro what the URL of your website will be.
@@ -28,11 +31,19 @@ if (isBuild) {
   BASE_URL = LIVE_URL;
 }
 
+const providers = {
+  cloudflare_pages: cloudflare(),
+  node: node({
+    mode: 'standalone',
+  }),
+}
+
 // https://astro.build/config
 export default defineConfig({
   server: {
     port: SERVER_PORT
   },
+  adapter: providers[provider] || providers.node,
   site: BASE_URL,
   integrations: [
     sitemap(),
