@@ -119,6 +119,19 @@ export async function readBlog<T extends z.ZodTypeAny>({
   })));
 }
 
+export async function readSight<T extends z.ZodTypeAny>({
+  frontmatterSchema: schema,
+}: {
+  frontmatterSchema: T;
+}) {
+  const pathToDir = path.posix.join(contentDirectory, 'sight');
+  const years = await fs.readdir(pathToDir, { withFileTypes: true});
+  return Promise.all(years.filter(item => item.isDirectory()).map(async item => ({
+    year: item.name,
+    posts: await readAll({ directory: `sight/${item.name}`, frontmatterSchema: schema }),
+  })));
+}
+
 export async function readTech<T extends z.ZodTypeAny>({
   frontmatterSchema: schema,
 }: {

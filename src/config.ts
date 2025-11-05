@@ -26,6 +26,6 @@ export const NAV = {
   数字花园: 'https://sailor.ink/',
   链接: '/link',
   PPT: '/ppt',
-  周刊: '/weekly',
+  观察: '/sight',
   碎碎念: 'https://channel.rainonpiano.com',
 }

@@ -76,6 +76,13 @@ export const config: Config = {
       },
       selfClosing: true,
     },
+    stock: {
+      render: "Stock",
+      attributes: {
+        id: { type: String, required: true },
+      },
+      selfClosing: true,
+    },
     tweet: {
       render: "TweetEmbed",
       attributes: {
