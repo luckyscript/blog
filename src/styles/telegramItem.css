@@ -1,7 +1,6 @@
 
 .telegram-item:hover {
   .telegram-time {
-    color: #fff!important;
     font-size: 14px;
   }
   .telegram-content {
