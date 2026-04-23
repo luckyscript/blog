@@ -1,18 +1,69 @@
 ---
-import Renderer from "../components/Renderer.astro";
-import { read } from "src/lib/markdoc/read";
-import path from "path";
-import matter from "gray-matter";
-import fs from "fs/promises";
-import { globby } from "globby";
-import { parseAndTransform } from 'src/lib/markdoc/read'
-
 ---
 
-<div class="mt-10 flex flex-col items-center">
-  <p>🎮 御三家全制霸·次元壁穿梭者 </p>
-  <p>🏍️ 跨上铁骑追逐地平线的冒险家</p>
-  <p>💻 用键盘编织代码的二进制诗人</p>
-  <p>⚽️ 二十年美凌格·银河战舰永不沉没</p>
-  <p>✒️ 执钢笔写春秋的器物美学家</p>
+<div class="desc-container">
+  <div class="desc-card">
+    <span class="desc-icon">🎮</span>
+    <span class="desc-text">御三家全制霸·次元壁穿梭者</span>
+  </div>
+  <div class="desc-card">
+    <span class="desc-icon">🏍️</span>
+    <span class="desc-text">跨上铁骑追逐地平线的冒险家</span>
+  </div>
+  <div class="desc-card">
+    <span class="desc-icon">💻</span>
+    <span class="desc-text">用键盘编织代码的二进制诗人</span>
+  </div>
+  <div class="desc-card">
+    <span class="desc-icon">⚽️</span>
+    <span class="desc-text">二十年美凌格·银河战舰永不沉没</span>
+  </div>
+  <div class="desc-card">
+    <span class="desc-icon">✒️</span>
+    <span class="desc-text">执钢笔写春秋的器物美学家</span>
+  </div>
 </div>
+
+<style>
+  .desc-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.4s forwards;
+  }
+  .desc-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 12px;
+    background: rgb(var(--color-bg-body));
+    border: 1px solid rgb(var(--color-text-muted) / 0.08);
+    transition: all 0.25s ease;
+    max-width: 28rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .desc-card:hover {
+    border-color: rgb(var(--color-primary-blue) / 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgb(var(--color-primary-blue) / 0.08);
+  }
+  .desc-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .desc-text {
+    color: rgb(var(--color-text-body));
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>

@@ -22,11 +22,107 @@ export const prerender = false
   <PageMeta title={`${SITE_TITLE} | Home`} slot="meta" />
   <Fragment slot="main">
     <Intro />
-    <div class="w-full text-center unset gradient-link tracking-wider font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500">Never Give Up!</div>
+    <div class="hero-banner">
+      <span class="hero-text">Never Give Up!</span>
+    </div>
     <!-- <GithubRecord /> -->
+    <div class="section-divider">
+      <span class="divider-dot"></span>
+    </div>
     <PersonalDesc />
-    <div class="w-full text-center unset gradient-link tracking-wider font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 mt-20">
-      <a href="https://channel.rainonpiano.com">碎碎念</a></div>
+    <div class="section-divider">
+      <span class="divider-dot"></span>
+    </div>
+    <div class="channel-link-wrap">
+      <a class="channel-link" href="https://channel.rainonpiano.com">
+        <i class="fa-solid fa-comments"></i> 碎碎念
+      </a>
+    </div>
+    <div class="section-divider">
+      <span class="divider-dot"></span>
+    </div>
     <TelegramList channel={channel} />
   </Fragment>
 </PageLayout>
+
+<style>
+  .hero-banner {
+    width: 100%;
+    text-align: center;
+    padding: 1.5rem 0;
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.2s forwards;
+  }
+  .hero-text {
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg, #fbbf24, #ef4444, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.25rem;
+  }
+
+  .section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 2rem auto;
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+  .section-divider:nth-of-type(2) { animation-delay: 0.4s; }
+  .section-divider:nth-of-type(3) { animation-delay: 0.7s; }
+  .section-divider:nth-of-type(4) { animation-delay: 0.9s; }
+  .divider-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgb(var(--color-text-muted) / 0.4);
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgb(var(--color-text-muted) / 0.2), transparent);
+  }
+
+  .channel-link-wrap {
+    text-align: center;
+    margin: 1.5rem 0;
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.6s forwards;
+  }
+  .channel-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    font-size: 1.1rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #fbbf24, #ef4444, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    border: 1.5px solid rgb(var(--color-text-muted) / 0.15);
+    transition: all 0.3s ease;
+  }
+  .channel-link:hover {
+    border-color: rgb(var(--color-text-muted) / 0.35);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgb(var(--color-text-muted) / 0.1);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+</style>

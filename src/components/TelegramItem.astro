@@ -17,8 +17,26 @@ const timeago = datetime.isBefore(dayjs().subtract(1, 'w')) ? datetime.format('H
 ---
 
 <div class="telegram-item" style={{ 'view-transition-name': `post-${post.id}` }}>
-  {post.content.length > 0 && <div class={`text-box telegram-content`} set:html={post.content} />}
-  <div class="telegram-time">
+  <div class="time-wrapper">
     <time datetime={post.datetime} title={timeago}>{timeago}</time>
   </div>
+  {post.content.length > 0 && <div class={`text-box telegram-content`} set:html={post.content} />}
 </div>
+
+<style>
+  .telegram-item {
+    position: relative;
+    padding: 2rem 0 2.5rem;
+    border-bottom: 1px solid rgb(var(--color-text-muted) / 0.06);
+  }
+  .telegram-item:last-child {
+    border-bottom: none;
+  }
+  .time-wrapper {
+    font-size: 0.75rem;
+    color: rgb(var(--color-text-muted) / 0.5);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+</style>

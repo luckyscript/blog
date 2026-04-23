@@ -1,17 +1,12 @@
 
-.telegram-item:hover {
-  .telegram-time {
-    font-size: 14px;
-  }
-  .telegram-content {
-    background: linear-gradient(45deg, #ff0000, #ffa500);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 19px;
-    transform-origin: center;
-    text-fill-color: transparent;
-  }
+.telegram-item:hover .telegram-content {
+  background: linear-gradient(45deg, #ff0000, #ffa500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 19px;
+  transform-origin: center;
+  text-fill-color: transparent;
 }
 
 .telegram-content {
@@ -288,22 +283,3 @@
   }
 }
 
-
-.telegram-item {
-  position: relative;
-  padding: 36px 0 60px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
-
-.telegram-time {
-  transition: all .3s;
-  color: #aaa!important;
-  position: absolute;
-  top: -20px;
-  left: 0;
-  font-size: 12px;
-  width: 180px;
-}
