@@ -5,17 +5,20 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        body: ["CangEr"],
-        heading: ["Space Grotesk", "sans-serif"],
+        body: ["Source Serif Pro", "Songti SC", "Noto Serif SC", "Georgia", "serif"],
+        heading: ["Source Serif Pro", "Songti SC", "Georgia", "serif"],
+        mono: ["JetBrains Mono", "Sarasa Mono SC", "Menlo", "monospace"],
+        kai: ["CangEr", "Kaiti SC", "STKaiti", "serif"],
       },
       colors: {
         transparent: "transparent",
         current: "currentColor",
-        primary: {
-          blue: "rgb(var(--color-primary-blue) / <alpha-value>)",
-          green: "rgb(var(--color-primary-green) / <alpha-value>)",
-          yellow: "rgb(var(--color-primary-yellow) / <alpha-value>)",
+        ink: {
+          DEFAULT: "rgb(var(--color-ink) / <alpha-value>)",
+          soft: "rgb(var(--color-ink-soft) / <alpha-value>)",
+          muted: "rgb(var(--color-ink-muted) / <alpha-value>)",
         },
+        stamp: "rgb(var(--color-stamp) / <alpha-value>)",
         text: {
           body: "rgb(var(--color-text-body) / <alpha-value>)",
           bold: "rgb(var(--color-text-bold) / <alpha-value>)",
@@ -27,34 +30,36 @@ module.exports = {
         },
         bg: {
           body: "rgb(var(--color-bg-body) / <alpha-value>)",
+          panel: "rgb(var(--color-bg-panel) / <alpha-value>)",
           code: "rgb(var(--color-bg-code) / <alpha-value>)",
           selection: "rgb(var(--color-bg-selection) / <alpha-value>)",
         },
         border: {
+          DEFAULT: "rgb(var(--color-border) / <alpha-value>)",
+          soft: "rgb(var(--color-border-soft) / <alpha-value>)",
           code: "rgb(var(--color-border-code) / <alpha-value>)",
         },
       },
-      typography: (theme) => ({
+      typography: () => ({
         DEFAULT: {
           css: {
             a: {
               "text-decoration": "none",
-              "background-repeat": "no-repeat",
-              "background-size": "100% 1.5px",
-              "background-position": "0 100%",
-              "background-image":
-                "linear-gradient(to right, rgb(var(--color-text-link)/1), rgb(var(--color-text-link)/1))",
+              color: "rgb(var(--color-stamp))",
+              "background-image": "none",
               "&:hover": {
-                color: "rgb(var(--color-text-link))",
+                color: "rgb(var(--color-stamp) / 0.8)",
               },
             },
             "img": {
-              "border-radius": "8px",
-              "max-width": '60%',
+              "border-radius": "4px",
+              "max-width": "60%",
+              border: "1px solid rgb(var(--color-border) / 0.3)",
             },
-            "h1, h2, h3, h4, h5": { 
-              "font-family": "CangEr",
+            "h1, h2, h3, h4, h5": {
+              "font-family": "Source Serif Pro, Songti SC, Georgia, serif",
               color: "rgb(var(--color-text-heading))",
+              "font-weight": "600",
             },
             "code::before": {
               content: "none",
@@ -65,22 +70,17 @@ module.exports = {
             blockquote: {
               border: "none",
               position: "relative",
-              width: "96%",
-              margin: "0 auto",
               "font-size": "1.0625em",
               "padding-top": "1.5rem",
               "padding-bottom": "0.5rem",
               "padding-left": "1.5rem",
               "padding-right": "1.5rem",
+              "border-left": "2px solid rgb(var(--color-stamp) / 0.5)",
+              "font-style": "italic",
+              color: "rgb(var(--color-ink-soft))",
             },
             "blockquote::before": {
-              "font-family": "Arial",
-              content: "'“'",
-              "font-size": "4em",
-              color: "rgb(var(--color-text-bold))",
-              position: "absolute",
-              left: "-10px",
-              top: "-10px",
+              content: "none",
             },
             "blockquote::after": {
               content: "",
@@ -91,27 +91,27 @@ module.exports = {
             "blockquote p:last-of-type::after": {
               content: "",
             },
+            hr: {
+              "border-color": "rgb(var(--color-border-soft))",
+            },
           },
         },
-        bubblegum: {
+        inkrain: {
           css: {
             "--tw-prose-body": "rgb(var(--color-text-body))",
             "--tw-prose-headings": "rgb(var(--color-text-heading))",
-            "--tw-prose-lead": "rgb(var(--color-text-body))",
-            "--tw-prose-links": "rgb(var(--color-text-body))",
+            "--tw-prose-links": "rgb(var(--color-stamp))",
             "--tw-prose-bold": "rgb(var(--color-text-bold))",
-            "--tw-prose-counters": "rgb(var(--color-text-body))",
-            "--tw-prose-bullets": "rgb(var(--color-text-body))",
-            "--tw-prose-hr": "rgb(var(--color-text-muted))",
-            "--tw-prose-quotes": "rgb(var(--color-text-body))",
-            "--tw-prose-quote-borders": "rgb(var(--color-text-muted))",
-            "--tw-prose-captions": "rgb(var(--color-primary-heading))",
-            "--tw-prose-quote-captions": "rgb(var(--color-primary-heading))",
+            "--tw-prose-counters": "rgb(var(--color-ink-muted))",
+            "--tw-prose-bullets": "rgb(var(--color-ink-muted))",
+            "--tw-prose-hr": "rgb(var(--color-border-soft))",
+            "--tw-prose-quotes": "rgb(var(--color-ink-soft))",
+            "--tw-prose-quote-borders": "rgb(var(--color-stamp) / 0.5)",
             "--tw-prose-code": "rgb(var(--color-text-code))",
             "--tw-prose-pre-code": "rgb(var(--color-text-code))",
             "--tw-prose-pre-bg": "rgb(var(--color-bg-code))",
-            "--tw-prose-th-borders": "rgb(var(--color-text-muted))",
-            "--tw-prose-td-borders": "rgb(var(--color-text-muted))",
+            "--tw-prose-th-borders": "rgb(var(--color-border-soft))",
+            "--tw-prose-td-borders": "rgb(var(--color-border-soft))",
           },
         },
       }),

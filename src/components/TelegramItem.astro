@@ -26,17 +26,17 @@ const timeago = datetime.isBefore(dayjs().subtract(1, 'w')) ? datetime.format('H
 <style>
   .telegram-item {
     position: relative;
-    padding: 2rem 0 2.5rem;
-    border-bottom: 1px solid rgb(var(--color-text-muted) / 0.06);
+    padding: 1.5rem 0 2rem;
+    border-bottom: 1px solid rgb(var(--color-border-soft));
   }
   .telegram-item:last-child {
     border-bottom: none;
   }
   .time-wrapper {
-    font-size: 0.75rem;
-    color: rgb(var(--color-text-muted) / 0.5);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.7rem;
+    color: rgb(var(--color-ink-muted) / 0.6);
     margin-bottom: 0.5rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
   }
 </style>

@@ -34,7 +34,7 @@ export const prerender = false
       <span class="divider-dot"></span>
     </div>
     <div class="channel-link-wrap">
-      <a class="channel-link" href="https://channel.rainonpiano.com">
+      <a class="channel-link unset" href="https://channel.rainonpiano.com">
         <i class="fa-solid fa-comments"></i> 碎碎念
       </a>
     </div>
@@ -49,18 +49,17 @@ export const prerender = false
   .hero-banner {
     width: 100%;
     text-align: center;
-    padding: 1.5rem 0;
+    padding: 1.25rem 0;
     opacity: 0;
     animation: fadeUp 0.8s ease-out 0.2s forwards;
   }
   .hero-text {
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    background: linear-gradient(135deg, #fbbf24, #ef4444, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    color: rgb(var(--color-ink-muted));
+    text-transform: uppercase;
   }
 
   .section-divider {
@@ -79,14 +78,14 @@ export const prerender = false
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: rgb(var(--color-text-muted) / 0.4);
+    background: rgb(var(--color-ink-muted) / 0.3);
   }
   .section-divider::before,
   .section-divider::after {
     content: '';
     width: 60px;
     height: 1px;
-    background: linear-gradient(to right, transparent, rgb(var(--color-text-muted) / 0.2), transparent);
+    background: linear-gradient(to right, transparent, rgb(var(--color-border) / 0.5), transparent);
   }
 
   .channel-link-wrap {
@@ -99,22 +98,19 @@ export const prerender = false
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    font-size: 1.1rem;
-    padding: 0.5rem 1.5rem;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, #fbbf24, #ef4444, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    border: 1.5px solid rgb(var(--color-text-muted) / 0.15);
-    transition: all 0.3s ease;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    font-size: 0.9rem;
+    padding: 0.45rem 1.25rem;
+    border-radius: 4px;
+    color: rgb(var(--color-stamp));
+    border: 1px solid rgb(var(--color-stamp) / 0.3);
+    font-family: "JetBrains Mono", monospace;
+    transition: all 0.25s ease;
   }
   .channel-link:hover {
-    border-color: rgb(var(--color-text-muted) / 0.35);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgb(var(--color-text-muted) / 0.1);
+    border-color: rgb(var(--color-stamp) / 0.5);
+    background: rgb(var(--color-stamp) / 0.05);
   }
 
   @keyframes fadeUp {

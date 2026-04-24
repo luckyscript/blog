@@ -3,23 +3,23 @@
 
 <div class="desc-container">
   <div class="desc-card">
-    <span class="desc-icon">🎮</span>
+    <span class="desc-seal">游</span>
     <span class="desc-text">御三家全制霸·次元壁穿梭者</span>
   </div>
   <div class="desc-card">
-    <span class="desc-icon">🏍️</span>
+    <span class="desc-seal">骑</span>
     <span class="desc-text">跨上铁骑追逐地平线的冒险家</span>
   </div>
   <div class="desc-card">
-    <span class="desc-icon">💻</span>
+    <span class="desc-seal">码</span>
     <span class="desc-text">用键盘编织代码的二进制诗人</span>
   </div>
   <div class="desc-card">
-    <span class="desc-icon">⚽️</span>
+    <span class="desc-seal">球</span>
     <span class="desc-text">二十年美凌格·银河战舰永不沉没</span>
   </div>
   <div class="desc-card">
-    <span class="desc-icon">✒️</span>
+    <span class="desc-seal">墨</span>
     <span class="desc-text">执钢笔写春秋的器物美学家</span>
   </div>
 </div>
@@ -37,24 +37,33 @@
   .desc-card {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
     padding: 0.6rem 1.5rem;
-    border-radius: 12px;
-    background: rgb(var(--color-bg-body));
-    border: 1px solid rgb(var(--color-text-muted) / 0.08);
+    border-radius: 4px;
+    background: rgb(var(--color-bg-panel));
+    border: 1px solid rgb(var(--color-border-soft));
     transition: all 0.25s ease;
     max-width: 28rem;
     width: 100%;
     justify-content: center;
   }
   .desc-card:hover {
-    border-color: rgb(var(--color-primary-blue) / 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgb(var(--color-primary-blue) / 0.08);
+    border-color: rgb(var(--color-stamp) / 0.3);
+    box-shadow: 0 2px 12px rgb(var(--color-ink-muted) / 0.08);
   }
-  .desc-icon {
-    font-size: 1.2rem;
+  .desc-seal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
     flex-shrink: 0;
+    font-family: "CangEr", "Kaiti SC", "STKaiti", serif;
+    font-size: 0.95rem;
+    color: rgb(var(--color-stamp));
+    border: 1px solid rgb(var(--color-stamp) / 0.6);
+    border-radius: 3px;
+    line-height: 1;
   }
   .desc-text {
     color: rgb(var(--color-text-body));

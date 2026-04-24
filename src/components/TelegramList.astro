@@ -31,22 +31,23 @@ const beforeCursor = posts[posts.length - 1]?.id;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.8rem;
-    color: rgb(var(--color-text-muted) / 0.6);
-    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    color: rgb(var(--color-ink-muted) / 0.7);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-family: "JetBrains Mono", monospace;
     margin-bottom: 1.5rem;
-    font-weight: 600;
   }
   .telegram-dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
-    background: rgb(var(--color-primary-blue));
+    background: rgb(var(--color-stamp));
     animation: pulse 2s ease-in-out infinite;
   }
   @keyframes pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    50% { opacity: 0.3; }
   }
 
   @keyframes fadeUp {

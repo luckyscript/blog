@@ -17,7 +17,37 @@ const isActive = isHome || isOtherPages
   class:list={[
     className,
     { "show": isActive },
-    "unset animated-link",
+    "unset inkrain-link",
   ]}
   {...props}
 ><slot /></a>
+
+<style>
+  .inkrain-link {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(var(--color-ink-soft));
+    position: relative;
+    padding: 0.25rem 0;
+    text-decoration: none;
+  }
+  .inkrain-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: rgb(var(--color-stamp));
+    transition: width 0.2s ease;
+  }
+  .inkrain-link.show::after,
+  .inkrain-link:hover::after {
+    width: 100%;
+  }
+  .inkrain-link.show {
+    color: rgb(var(--color-ink));
+  }
+</style>

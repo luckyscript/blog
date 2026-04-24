@@ -1,16 +1,17 @@
 ---
-import HeaderLink from '../components/HeaderLink.astro';
+import HeaderLink from "./HeaderLink.astro";
 const { item } = Astro.props;
 const [name, href] = item;
 const hasChildren = typeof href !== 'string';
 ---
+
 <li class="tree-nav-item relative cursor-pointer">
   <HeaderLink href={hasChildren ? '' : href} >
     {name}
   </HeaderLink>
 
   {hasChildren && (
-    <div class="tree-nav-submenu p-2 min-w-32 absolute left-0 shadow backdrop-blur rounded top-full w-full py-2 bg-white dark:bg-gray-800 dark:border-gray-700 z-10 hidden">
+    <div class="tree-nav-submenu">
       {Object.entries(href).map(([name, href]) => (
         <HeaderLink href={href as any}>
           {name}
@@ -19,3 +20,25 @@ const hasChildren = typeof href !== 'string';
     </div>
   )}
 </li>
+
+<style>
+  .tree-nav-submenu {
+    display: none;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 10;
+    min-width: 8rem;
+    padding: 0.5rem;
+    background: rgb(var(--color-bg-panel));
+    border: 1px solid rgb(var(--color-border-soft));
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgb(var(--color-ink) / 0.08);
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .tree-nav-submenu a {
+    font-size: 0.85rem !important;
+  }
+</style>

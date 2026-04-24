@@ -21,55 +21,46 @@ const sortedPosts = posts
 
 <PageLayout>
   <PageMeta title={`Life | ${SITE_TITLE}`} slot="meta" />
-  <section slot="main">
+  <section slot="main" class="inkrain-blog-listing">
+    <h2 class="listing-heading">生活 <span class="listing-subtitle">Life</span></h2>
     <ul>
       {
         sortedPosts.map((post) => {
           const formattedDate = new Date(
             post.frontmatter.date
-          ).toLocaleDateString("en-us", {
+          ).toLocaleDateString("zh-CN", {
             year: "numeric",
             month: "short",
             day: "numeric",
           });
           return (
-            <li class="grid grid-cols-[1fr] md:grid-cols-[1fr_auto] mb-3 md:gap-2 items-start">
-              <div class="title">
-                {post.frontmatter.external ? (
-                  <a
-                    href={post.frontmatter.url}
-                    target="_blank"
-                    class="unset
-                        transition-[background-size] duration-300 
-                        bg-gradient-to-r bg-left-bottom bg-no-repeat
-                        bg-[length:0%_55%] hover:bg-[length:100%_55%] dark:bg-[length:0%_2px] hover:dark:bg-[length:100%_2px]
-                        from-primary-blue to-primary-blue dark:from-primary-blue dark:to-primary-blue
-                      "
-                  >
-                    <span>{post.frontmatter.title}</span>
-                    <span>
-                      <i class="ml-1 mr-1 text-[12px] pb-2 fa-solid fa-up-right-from-square" />
-                    </span>
-                  </a>
-                ) : (
-                  <a
-                    href={`/life/${post.slug}`}
-                    class="unset
-                        transition-[background-size] duration-300 
-                        bg-gradient-to-r bg-left-bottom bg-no-repeat
-                        bg-[length:0%_55%] hover:bg-[length:100%_55%] dark:bg-[length:0%_2px] hover:dark:bg-[length:100%_2px]
-                        from-primary-blue to-primary-blue dark:from-primary-blue dark:to-primary-blue
-                      "
-                  >
-                    {post.frontmatter.title}
-                  </a>
-                )}
-              </div>
-              <div class="text-text-muted text-sm italic pt-1">
-                <time datetime={post.frontmatter.date.toISOString()}>
-                  {formattedDate}
-                </time>
-              </div>
+            <li class="post-row">
+              {post.frontmatter.external ? (
+                <a
+                  href={post.frontmatter.url}
+                  target="_blank"
+                  class="unset post-link"
+                >
+                  <span class="post-title">{post.frontmatter.title}</span>
+                  <span class="post-meta">
+                    <time datetime={post.frontmatter.date.toISOString()}>
+                      {formattedDate}
+                    </time>
+                  </span>
+                </a>
+              ) : (
+                <a
+                  href={`/life/${post.slug}`}
+                  class="unset post-link"
+                >
+                  <span class="post-title">{post.frontmatter.title}</span>
+                  <span class="post-meta">
+                    <time datetime={post.frontmatter.date.toISOString()}>
+                      {formattedDate}
+                    </time>
+                  </span>
+                </a>
+              )}
             </li>
           );
         })
@@ -77,3 +68,81 @@ const sortedPosts = posts
     </ul>
   </section>
 </PageLayout>
+
+<style>
+  .inkrain-blog-listing {
+    padding: 1.5rem 0 3rem;
+  }
+  .listing-heading {
+    font-family: "CangEr", "Kaiti SC", "STKaiti", serif;
+    font-size: 2rem;
+    font-weight: 400;
+    color: rgb(var(--color-text-heading));
+    margin: 0 0 0.25rem;
+    padding-left: 1rem;
+    position: relative;
+  }
+  .listing-heading::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, rgb(var(--color-stamp)), rgb(var(--color-stamp) / 0.3));
+    border-radius: 2px;
+  }
+  .listing-subtitle {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    color: rgb(var(--color-ink-muted));
+    letter-spacing: 0.1em;
+    font-weight: 400;
+  }
+  .inkrain-blog-listing ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+  }
+  .post-row {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgb(var(--color-border-soft));
+  }
+  .post-row:last-child {
+    border-bottom: none;
+  }
+  .post-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-decoration: none !important;
+  }
+  @media (min-width: 768px) {
+    .post-link {
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+  }
+  .post-link::after {
+    display: none !important;
+  }
+  .post-title {
+    font-family: "Source Serif Pro", "Songti SC", Georgia, serif;
+    font-size: 1.05rem;
+    color: rgb(var(--color-ink));
+    transition: color 0.2s ease;
+  }
+  .post-link:hover .post-title {
+    color: rgb(var(--color-stamp));
+  }
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-family: "JetBrains Mono", monospace;
+    color: rgb(var(--color-ink-muted));
+    letter-spacing: 0.02em;
+  }
+</style>

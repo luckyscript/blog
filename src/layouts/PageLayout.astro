@@ -1,6 +1,6 @@
 ---
-/* 
-  This layout is used in 
+/*
+  This layout is used in
   - pages/index.astro
   - pages/blog.astro
   - pages/projects.astro
@@ -18,7 +18,7 @@ import Footer from "../components/Footer.astro";
 ---
 
 <!DOCTYPE html>
-<html class="theme-bubblegum" lang="en">
+<html class="theme-inkrain" lang="zh-CN">
   <head>
     <!-- Global Metadata -->
     <meta charset="utf-8" />
@@ -33,13 +33,15 @@ import Footer from "../components/Footer.astro";
   </head>
 
   <body
-    class="max-w-3xl mx-auto min-h-screen px-6 sm:px-8"
+    class="min-h-screen"
   >
-    <Header />
-    <main id="main">
-      <slot name="main" />
-    </main>
-    <Footer />
+    <div class="max-w-3xl mx-auto px-6 sm:px-8">
+      <Header />
+      <main id="main">
+        <slot name="main" />
+      </main>
+      <Footer />
+    </div>
     <style>
       body {
         display: grid;
@@ -47,7 +49,7 @@ import Footer from "../components/Footer.astro";
           "header"
           "main"
           "footer";
-        grid-template-rows: 5rem minmax(0, 1fr) 5rem;
+        grid-template-rows: 4.5rem minmax(0, 1fr) 4rem;
         grid-template-columns: minmax(0, 1fr);
       }
       main {

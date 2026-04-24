@@ -10,7 +10,7 @@ import Footer from "../components/Footer.astro";
 ---
 
 <!DOCTYPE html>
-<html class="theme-bubblegum" lang="en">
+<html class="theme-inkrain" lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -22,16 +22,16 @@ import Footer from "../components/Footer.astro";
     <FontAwesome />
   </head>
 
-  <body
-    class="max-w-3xl mx-auto min-h-screen px-6 sm:px-8"
-  >
-    <Header />
-    <main id="main">
-      <section class="blog-post prose max-w-none prose-bubblegum">
-        <slot />
-      </section>
-    </main>
-    <Footer />
+  <body class="min-h-screen">
+    <div class="max-w-3xl mx-auto px-6 sm:px-8">
+      <Header />
+      <main id="main">
+        <section class="blog-post prose prose-inkrain max-w-none">
+          <slot />
+        </section>
+      </main>
+      <Footer />
+    </div>
     <style>
       body {
         display: grid;
@@ -39,7 +39,7 @@ import Footer from "../components/Footer.astro";
           "header"
           "main"
           "footer";
-        grid-template-rows: 5rem minmax(0, 1fr) 5rem;
+        grid-template-rows: 4.5rem minmax(0, 1fr) 4rem;
         grid-template-columns: minmax(0, 1fr);
       }
       main {

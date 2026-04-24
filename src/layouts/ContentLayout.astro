@@ -1,5 +1,5 @@
 ---
-/* 
+/*
   This layout is used in pages that render markdoc content
   - pages/blog/[slug].astro
 */
@@ -22,7 +22,7 @@ export interface Props {
 }
 
 const { title, date, update = new Date() } = Astro.props;
-const formattedDate = new Date(date).toLocaleDateString("en-us", {
+const formattedDate = new Date(date).toLocaleDateString("zh-CN", {
   year: "numeric",
   month: "short",
   day: "numeric",
@@ -33,7 +33,7 @@ const isShowoutDays = outdays > 365;
 ---
 
 <!DOCTYPE html>
-<html class="theme-bubblegum" lang="en">
+<html class="theme-inkrain" lang="zh-CN">
   <head>
     <!-- Global Metadata -->
     <meta charset="utf-8" />
@@ -48,31 +48,30 @@ const isShowoutDays = outdays > 365;
   </head>
 
   <body
-    class="max-w-3xl mx-auto min-h-screen px-6 sm:px-8"
+    class="min-h-screen"
   >
-    <Header />
-    <main id="main">
-      <section class="blog-post prose max-w-none prose-bubblegum">
-        <h1 class="m-0 mb-[0.25em]">
-          <span class="
-              pl-6 relative block leading-[150%]
-              after:absolute after:content-[''] after:w-2 after:h-full after:top-0 after:left-0 after:bg-primary-green
-            ">
-            {title}
-          </span>
-        </h1>
-        <div class="d-flex align-middle justify-between flex-row">
-          <time class="block mb-[2em] text-text-muted">{formattedDate}</time>
-        </div>
-        {isShowoutDays && (
-          <p class="pl-6 relative block leading-[150%] before:absolute before:content-[''] before:w-2 before:h-full before:top-0 before:left-0 before:bg-primary-yellow"> 提醒：本文最后更新于 {outdays}天前，文中所描述的信息可能已发生改变，请谨慎阅读。</p>
-        )}
-        <slot name="content" />
-        <slot name="frontmatter" />
-      <GiscusComment />
-      </section>
-    </main>
-    <Footer />
+    <div class="max-w-3xl mx-auto px-6 sm:px-8">
+      <Header />
+      <main id="main">
+        <article class="inkrain-article">
+          <header class="article-header">
+            <h1 class="article-title">{title}</h1>
+            <time class="article-date">{formattedDate}</time>
+          </header>
+          {isShowoutDays && (
+            <p class="stale-notice">
+              提醒：本文最后更新于 {outdays} 天前，文中所描述的信息可能已发生改变，请谨慎阅读。
+            </p>
+          )}
+          <div class="article-body prose prose-inkrain max-w-none">
+            <slot name="content" />
+          </div>
+          <slot name="frontmatter" />
+          <GiscusComment />
+        </article>
+      </main>
+      <Footer />
+    </div>
     <style>
       body {
         display: grid;
@@ -80,11 +79,87 @@ const isShowoutDays = outdays > 365;
           "header"
           "main"
           "footer";
-        grid-template-rows: 5rem minmax(0, 1fr) 5rem;
+        grid-template-rows: 4.5rem minmax(0, 1fr) 4rem;
         grid-template-columns: minmax(0, 1fr);
       }
       main {
         grid-area: main;
+      }
+
+      .article-header {
+        padding: 2.5rem 0 1.5rem;
+        border-bottom: 1px solid rgb(var(--color-border-soft));
+        margin-bottom: 2rem;
+      }
+      .article-title {
+        font-family: "Source Serif Pro", "Songti SC", Georgia, serif;
+        font-size: 2.25rem;
+        font-weight: 600;
+        line-height: 1.25;
+        color: rgb(var(--color-text-heading));
+        margin: 0 0 0.75rem;
+        letter-spacing: -0.01em;
+        position: relative;
+        padding-left: 1rem;
+      }
+      .article-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(to bottom, rgb(var(--color-stamp)), rgb(var(--color-stamp) / 0.3));
+        border-radius: 2px;
+      }
+      .article-date {
+        display: block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        color: rgb(var(--color-ink-muted));
+        letter-spacing: 0.04em;
+        margin-left: 1rem;
+      }
+
+      .stale-notice {
+        font-size: 0.85rem;
+        color: rgb(var(--color-ink-muted));
+        padding: 0.5rem 1rem;
+        margin: 0 0 2rem;
+        border-left: 3px solid rgb(var(--color-stamp) / 0.5);
+        background: rgb(var(--color-bg-code) / 0.5);
+        border-radius: 0 4px 4px 0;
+      }
+
+      /* InkRain prose overrides */
+      .prose-inkrain {
+        font-family: "Source Serif Pro", "Songti SC", Georgia, serif;
+        font-size: 1.05rem;
+        line-height: 1.85;
+        color: rgb(var(--color-text-body));
+      }
+      .prose-inkrain h1,
+      .prose-inkrain h2,
+      .prose-inkrain h3,
+      .prose-inkrain h4 {
+        font-family: "Source Serif Pro", "Songti SC", Georgia, serif;
+        color: rgb(var(--color-text-heading));
+        font-weight: 600;
+      }
+      .prose-inkrain blockquote {
+        border-left-color: rgb(var(--color-stamp) / 0.5);
+        font-style: italic;
+        color: rgb(var(--color-ink-soft));
+      }
+      .prose-inkrain hr {
+        border-color: rgb(var(--color-border-soft));
+      }
+      .prose-inkrain img {
+        border-radius: 4px;
+        border: 1px solid rgb(var(--color-border) / 0.4);
+      }
+      .prose-inkrain a {
+        color: rgb(var(--color-stamp));
       }
     </style>
   </body>
