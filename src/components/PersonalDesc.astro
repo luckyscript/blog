@@ -1,74 +1,137 @@
 ---
+const items = [
+  { char: '游', text: '御三家全制霸·次元壁穿梭者' },
+  { char: '骑', text: '跨上铁骑追逐地平线的冒险家' },
+  { char: '码', text: '用键盘编织代码的二进制诗人' },
+  { char: '球', text: '二十年美凌格·银河战舰永不沉没' },
+  { char: '墨', text: '执钢笔写春秋的器物美学家' },
+];
 ---
 
-<div class="desc-container">
-  <div class="desc-card">
-    <span class="desc-seal">游</span>
-    <span class="desc-text">御三家全制霸·次元壁穿梭者</span>
-  </div>
-  <div class="desc-card">
-    <span class="desc-seal">骑</span>
-    <span class="desc-text">跨上铁骑追逐地平线的冒险家</span>
-  </div>
-  <div class="desc-card">
-    <span class="desc-seal">码</span>
-    <span class="desc-text">用键盘编织代码的二进制诗人</span>
-  </div>
-  <div class="desc-card">
-    <span class="desc-seal">球</span>
-    <span class="desc-text">二十年美凌格·银河战舰永不沉没</span>
-  </div>
-  <div class="desc-card">
-    <span class="desc-seal">墨</span>
-    <span class="desc-text">执钢笔写春秋的器物美学家</span>
+<div class="desc-section">
+  <div class="desc-grid">
+    {items.map((item) => (
+      <div class="desc-item">
+        <div class="seal-wrap">
+          <span class="seal-char">{item.char}</span>
+        </div>
+        <p class="seal-desc">{item.text}</p>
+      </div>
+    ))}
   </div>
 </div>
 
 <style>
-  .desc-container {
+  .desc-section {
+    margin: 2.5rem 0 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.4s forwards;
+  }
+
+  .desc-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+
+  .desc-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.75rem;
-    margin-top: 2.5rem;
-    opacity: 0;
-    animation: fadeUp 0.8s ease-out 0.4s forwards;
+    text-align: center;
+    padding: 1.25rem 0.5rem;
+    position: relative;
+    border-radius: 4px;
+    transition: all 0.3s ease;
   }
-  .desc-card {
+
+  .desc-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgb(var(--color-stamp) / 0.02), transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgb(var(--color-ink) / 0.02), transparent 60%);
+    pointer-events: none;
+  }
+
+  .desc-item:hover {
+    background: rgb(var(--color-bg-panel) / 0.5);
+    box-shadow: 0 1px 8px rgb(var(--color-ink-muted) / 0.06);
+  }
+
+  .seal-wrap {
+    position: relative;
+    width: 3rem;
+    height: 3rem;
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    padding: 0.6rem 1.5rem;
-    border-radius: 4px;
-    background: rgb(var(--color-bg-panel));
-    border: 1px solid rgb(var(--color-border-soft));
-    transition: all 0.25s ease;
-    max-width: 28rem;
-    width: 100%;
     justify-content: center;
   }
-  .desc-card:hover {
-    border-color: rgb(var(--color-stamp) / 0.3);
-    box-shadow: 0 2px 12px rgb(var(--color-ink-muted) / 0.08);
-  }
-  .desc-seal {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    flex-shrink: 0;
-    font-family: "CangEr", "Kaiti SC", "STKaiti", serif;
-    font-size: 0.95rem;
-    color: rgb(var(--color-stamp));
-    border: 1px solid rgb(var(--color-stamp) / 0.6);
+
+  /* Outer seal border — slightly rotated for authenticity */
+  .seal-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid rgb(var(--color-stamp) / 0.55);
     border-radius: 3px;
-    line-height: 1;
+    transform: rotate(-2deg);
   }
-  .desc-text {
-    color: rgb(var(--color-text-body));
-    font-size: 0.95rem;
+
+  /* Inner seal border */
+  .seal-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgb(var(--color-stamp) / 0.3);
+    border-radius: 2px;
+    transform: rotate(-2deg);
+  }
+
+  .seal-char {
+    font-family: "CangEr", "Ma Shan Zheng", "Kaiti SC", "STKaiti", serif;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: rgb(var(--color-stamp));
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 12px rgb(var(--color-stamp) / 0.15);
+  }
+
+  .seal-desc {
+    font-size: 0.8rem;
     line-height: 1.6;
+    color: rgb(var(--color-ink-soft));
+    margin: 0;
+    max-width: 8rem;
+    letter-spacing: 0.03em;
+  }
+
+  /* Responsive: 3 cols on tablet, 2 on mobile */
+  @media (max-width: 768px) {
+    .desc-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .seal-desc {
+      font-size: 0.75rem;
+      max-width: 7rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .desc-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    .desc-item {
+      padding: 1rem 0.5rem;
+    }
   }
 
   @keyframes fadeUp {

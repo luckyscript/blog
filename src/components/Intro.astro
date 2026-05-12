@@ -3,6 +3,9 @@
 
 <section class="intro-section">
   <div class="intro-inner">
+    <div class="intro-seal-mark">
+      <span class="mark-char">雨</span>
+    </div>
     <h1>
       <span class="intro-title">
         下雨就像弹钢琴
@@ -14,21 +17,51 @@
 
 <style>
   .intro-section {
-    padding: 2rem 0 0;
+    padding: 2.5rem 0 0;
     opacity: 0;
     animation: fadeUp 0.8s ease-out forwards;
   }
   .intro-inner {
     margin-bottom: 0.5rem;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
+
+  /* Small decorative seal mark above the title */
+  .intro-seal-mark {
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 0.25rem;
+  }
+  .intro-seal-mark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid rgb(var(--color-stamp) / 0.45);
+    border-radius: 3px;
+    transform: rotate(-3deg);
+  }
+  .mark-char {
+    font-family: "CangEr", "Ma Shan Zheng", "Kaiti SC", serif;
+    font-size: 1rem;
+    color: rgb(var(--color-stamp) / 0.7);
+    line-height: 1;
+  }
+
   h1 {
     font-weight: 400;
-    font-size: 2.5rem;
+    font-size: 2.75rem;
     color: rgb(var(--color-text-heading));
     line-height: 1.3;
-    padding-top: 1rem;
-    padding-bottom: 0.25rem;
+    padding: 0;
+    margin: 0;
   }
   .intro-title {
     font-family: "CangEr", "Kaiti SC", "STKaiti", serif;
@@ -43,12 +76,12 @@
   }
   .intro-subtitle {
     font-family: "JetBrains Mono", monospace;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: rgb(var(--color-ink-muted));
     margin: 0;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
   }
 
   @keyframes fadeUp {
