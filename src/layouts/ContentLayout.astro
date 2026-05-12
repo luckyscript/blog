@@ -50,28 +50,26 @@ const isShowoutDays = outdays > 365;
   <body
     class="min-h-screen"
   >
-    <div class="max-w-3xl mx-auto px-6 sm:px-8">
-      <Header />
-      <main id="main">
-        <article class="inkrain-article">
-          <header class="article-header">
-            <h1 class="article-title">{title}</h1>
-            <time class="article-date">{formattedDate}</time>
-          </header>
-          {isShowoutDays && (
-            <p class="stale-notice">
-              提醒：本文最后更新于 {outdays} 天前，文中所描述的信息可能已发生改变，请谨慎阅读。
-            </p>
-          )}
-          <div class="article-body prose prose-inkrain max-w-none">
-            <slot name="content" />
-          </div>
-          <slot name="frontmatter" />
-          <GiscusComment />
-        </article>
-      </main>
-      <Footer />
-    </div>
+    <Header />
+    <main id="main" class="max-w-3xl mx-auto px-6 sm:px-8">
+      <article class="inkrain-article">
+        <header class="article-header">
+          <h1 class="article-title">{title}</h1>
+          <time class="article-date">{formattedDate}</time>
+        </header>
+        {isShowoutDays && (
+          <p class="stale-notice">
+            提醒：本文最后更新于 {outdays} 天前，文中所描述的信息可能已发生改变，请谨慎阅读。
+          </p>
+        )}
+        <div class="article-body prose prose-inkrain max-w-none">
+          <slot name="content" />
+        </div>
+        <slot name="frontmatter" />
+        <GiscusComment />
+      </article>
+    </main>
+    <Footer />
     <style>
       body {
         display: grid;
