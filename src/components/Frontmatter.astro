@@ -11,7 +11,7 @@ const { frontmatter } = Astro.props;
     {frontmatter.category && (
       <div class="meta-item">
         <span class="meta-label">分类</span>
-        <a href={`/category/${frontmatter.category}`} class="meta-category">
+        <a href={`/category/${frontmatter.category}`} class="meta-category unset">
           {frontmatter.category}
         </a>
       </div>
