@@ -22,7 +22,7 @@ const sortedProjects = projects
 <PageLayout>
   <PageMeta title={`Projects | ${SITE_TITLE}`} slot="meta" />
   <section slot="main">
-    <ul>
+    <ul class="unset">
       {
         sortedProjects.map((project) => {
           const formattedDate = new Date(
