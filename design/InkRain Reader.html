@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>InkRain — Reader Explorations</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#f0eee9;font-family:"Source Serif Pro",Georgia,serif;-webkit-font-smoothing:antialiased;}
+  *{box-sizing:border-box;}
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#f0ebda"/>
+  <path d="M 40 60 C 70 40, 130 30, 160 70 C 180 110, 170 150, 120 160 C 70 165, 35 130, 40 60 Z" fill="#1a1814" opacity="0.7"/>
+  <text x="100" y="118" text-anchor="middle" font-family="serif" font-size="40" fill="#a8542a" font-weight="400">墨</text>
+</svg>
+</template>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="reader-literary.jsx"></script>
+<script type="text/babel" src="reader-bold.jsx"></script>
+<script type="text/babel" src="view-social.jsx"></script>
+<script type="text/babel" src="view-podcast.jsx"></script>
+<script type="text/babel" src="view-video.jsx"></script>
+<script type="text/babel" src="view-image.jsx"></script>
+<script type="text/babel" src="view-notification.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+function App(){
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "theme": "light",
+    "fontFamily": "serif"
+  }/*EDITMODE-END*/;
+  const [tweaks, setTweaks] = useTweaks(TWEAK_DEFAULTS);
+
+  return (
+    <React.Fragment>
+      <DesignCanvas>
+        <DCSection id="readers" title="墨雨 · Reader explorations" subtitle="Two directions for the main reading view. Click a card to focus. Restrained (A) ↔ Bold (B).">
+          <DCArtboard id="literary" label="A · Restrained literary" width={1280} height={820}>
+            <LitReader theme={tweaks.theme} fontFamily={tweaks.fontFamily} />
+          </DCArtboard>
+          <DCArtboard id="bold" label="B · Bold ink-wash" width={1280} height={820}>
+            <BoldReader theme={tweaks.theme} fontFamily={tweaks.fontFamily} />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="interactive" title="Interactive · click, star, switch articles" subtitle="The bold variant, full-bleed. Clickable feed list, starring, theme + font persist via Tweaks.">
+          <DCArtboard id="live" label="Live prototype" width={1440} height={900}>
+            <BoldReader theme={tweaks.theme} fontFamily={tweaks.fontFamily} />
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="content-types" title="其他內容類型 · Other content types" subtitle="SOCIAL · PODCAST · VIDEO · IMAGE · NOTIFICATION — each treated with the vocabulary that fits it best, same ink-wash language.">
+          <DCArtboard id="social" label="言 · Social — card-is-all" width={1280} height={820}>
+            <SocialView theme={tweaks.theme} fontFamily={tweaks.fontFamily} />
+          </DCArtboard>
+          <DCArtboard id="podcast" label="聲 · Podcast — player + chapters" width={1280} height={820}>
+            <PodcastView theme={tweaks.theme} fontFamily={tweaks.fontFamily} />
+          </DCArtboard>
+          <DCArtboard id="video" label="影 · Video — embedded" width={1280} height={820}>
+            <VideoView theme={tweaks.theme} fontFamily={tweaks.fontFamily} />
+          </DCArtboard>
+          <DCArtboard id="image" label="圖 · Image — masonry" width={1280} height={820}>
+            <ImageView theme={tweaks.theme} fontFamily={tweaks.fontFamily} />
+          </DCArtboard>
+          <DCArtboard id="notif" label="訊 · Notification — log" width={1280} height={820}>
+            <NotifView theme={tweaks.theme} fontFamily={tweaks.fontFamily} />
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection title="Theme">
+          <TweakRadio label="Mood"
+            value={tweaks.theme}
+            onChange={(v) => setTweaks({ theme: v })}
+            options={[
+              { value: 'light', label: 'Rice paper' },
+              { value: 'sepia', label: 'Sepia' },
+              { value: 'ink-dark', label: 'Ink dark' },
+            ]} />
+        </TweakSection>
+        <TweakSection title="Typography">
+          <TweakRadio label="Font family"
+            value={tweaks.fontFamily}
+            onChange={(v) => setTweaks({ fontFamily: v })}
+            options={[
+              { value: 'serif', label: 'Serif (Source Serif)' },
+              { value: 'sans', label: 'Sans (Inter)' },
+              { value: 'kai', label: '苍耳今楷 / Kai' },
+              { value: 'mono', label: 'Mono (JetBrains)' },
+            ]} />
+        </TweakSection>
+      </TweaksPanel>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
