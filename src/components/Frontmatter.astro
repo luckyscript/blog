@@ -1,23 +1,110 @@
 ---
 const { frontmatter } = Astro.props;
-
 ---
 
-{frontmatter.category && (
-  <div class="font-mono text-sm border-t border-gray-200 pt-5">
-    分类 <a href={`/category/${frontmatter.category}`} class="text-blue-500 hover:underline">{frontmatter.category}</a>
+<div class="article-meta">
+  <div class="inkrain-divider">
+    <span class="inkrain-divider-dot"></span>
   </div>
-)}
-{frontmatter.tags && (
-  <div class="font-mono text-sm mt-5">
-    标签 {frontmatter.tags.map((tag, index) => (
-      <span>
-        <a class="text-yellow-500 decoration-yellow m-0">{tag}</a>
-        {index < (frontmatter.tags as any).length - 1 && <span>·</span>}
-      </span>
-    ))}
+
+  <div class="meta-grid">
+    {frontmatter.category && (
+      <div class="meta-item">
+        <span class="meta-label">分类</span>
+        <a href={`/category/${frontmatter.category}`} class="meta-category">
+          {frontmatter.category}
+        </a>
+      </div>
+    )}
+    {frontmatter.tags && frontmatter.tags.length > 0 && (
+      <div class="meta-item">
+        <span class="meta-label">标签</span>
+        <div class="meta-tags">
+          {frontmatter.tags.map((tag: string) => (
+            <span class="meta-tag">{tag}</span>
+          ))}
+        </div>
+      </div>
+    )}
   </div>
-)}
-{frontmatter.update && (
-  <div class="font-mono text-xs mt-10">本文最后更新于：{new Date(frontmatter.update).toLocaleDateString()}</div>
-)}
+
+  {frontmatter.update && (
+    <div class="meta-updated">
+      本文最后更新于 {new Date(frontmatter.update).toLocaleDateString("zh-CN", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })}
+    </div>
+  )}
+</div>
+
+<style>
+  .article-meta {
+    margin-top: 3rem;
+    padding-top: 0;
+  }
+
+  .meta-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.5rem;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .meta-label {
+    font-family: "JetBrains Mono", "Sarasa Mono SC", Menlo, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(var(--color-ink-muted));
+    flex-shrink: 0;
+  }
+
+  .meta-category {
+    font-family: "Source Serif Pro", "Songti SC", Georgia, serif;
+    font-size: 0.85rem;
+    color: rgb(var(--color-stamp));
+    text-decoration: none;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid rgb(var(--color-stamp) / 0.4);
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    line-height: 1.6;
+  }
+
+  .meta-category:hover {
+    background: rgb(var(--color-stamp) / 0.08);
+    border-color: rgb(var(--color-stamp) / 0.7);
+  }
+
+  .meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .meta-tag {
+    font-family: "Source Serif Pro", "Songti SC", Georgia, serif;
+    font-size: 0.8rem;
+    color: rgb(var(--color-ink-soft));
+    padding: 0.1rem 0.5rem;
+    background: rgb(var(--color-bg-code));
+    border: 1px solid rgb(var(--color-border-soft));
+    border-radius: 3px;
+    line-height: 1.6;
+  }
+
+  .meta-updated {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.7rem;
+    color: rgb(var(--color-ink-muted) / 0.7);
+    margin-top: 1.5rem;
+    letter-spacing: 0.02em;
+  }
+</style>

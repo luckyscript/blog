@@ -19,9 +19,10 @@ export interface Props {
   title: string;
   date: Date;
   update?: Date;
+  category?: string;
 }
 
-const { title, date, update = new Date() } = Astro.props;
+const { title, date, update = new Date(), category } = Astro.props;
 const formattedDate = new Date(date).toLocaleDateString("zh-CN", {
   year: "numeric",
   month: "short",
@@ -54,6 +55,9 @@ const isShowoutDays = outdays > 365;
     <main id="main" class="max-w-4xl mx-auto px-6 sm:px-8">
       <article class="inkrain-article">
         <header class="article-header">
+          {category && (
+            <a href={`/category/${category}`} class="article-category">{category}</a>
+          )}
           <h1 class="article-title">{title}</h1>
           <time class="article-date">{formattedDate}</time>
         </header>
@@ -88,6 +92,24 @@ const isShowoutDays = outdays > 365;
         padding: 2.5rem 0 1.5rem;
         border-bottom: 1px solid rgb(var(--color-border-soft));
         margin-bottom: 2rem;
+      }
+      .article-category {
+        display: inline-block;
+        font-family: "JetBrains Mono", "Sarasa Mono SC", Menlo, monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: rgb(var(--color-stamp));
+        text-decoration: none;
+        padding: 0.15rem 0.5rem;
+        border: 1px solid rgb(var(--color-stamp) / 0.3);
+        border-radius: 3px;
+        margin-bottom: 0.75rem;
+        transition: all 0.2s ease;
+      }
+      .article-category:hover {
+        background: rgb(var(--color-stamp) / 0.08);
+        border-color: rgb(var(--color-stamp) / 0.6);
       }
       .article-title {
         font-family: "Source Serif Pro", "Songti SC", Georgia, serif;
