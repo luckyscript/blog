@@ -3,7 +3,6 @@
 <mode-toggle class="inkrain-mode-toggle">
   <button
     class="toggle-btn"
-    id="mode-toggle"
     role="switch"
     type="button"
     tabindex="0"
@@ -12,7 +11,6 @@
   >
     <span class="sr-only">Toggle dark mode</span>
     <span
-      id="mode-circle"
       class="toggle-dot invisible"
     ></span>
   </button>
@@ -67,7 +65,7 @@
         document.documentElement.classList.contains("dark") ? "dark" : "light";
 
       const toggle = this.querySelector("button");
-      const iconElem = toggle?.querySelector("#mode-circle");
+      const iconElem = toggle?.querySelector(".toggle-dot");
 
       if (iconElem) {
         if (currentMode === "dark") {
@@ -104,20 +102,22 @@
     }
   }
 
-  customElements.define("mode-toggle", ModeToggle);
+  if (!customElements.get("mode-toggle")) {
+    customElements.define("mode-toggle", ModeToggle);
+  }
 </script>
 
 <style>
   .inkrain-mode-toggle {
-    justify-self: end;
+    display: inline-flex;
   }
   .toggle-btn {
     position: relative;
     background: transparent;
     border: 1px solid rgb(var(--color-border));
-    width: 2.5rem;
-    height: 1.3rem;
-    border-radius: 9999px;
+    width: 34px;
+    height: 34px;
+    border-radius: 0;
     cursor: pointer;
     padding: 0;
     transition: border-color 0.2s ease;
@@ -127,18 +127,24 @@
   }
   .toggle-dot {
     position: absolute;
-    top: 2px;
-    width: 0.9rem;
-    height: 0.9rem;
-    border-radius: 50%;
+    inset: 8px;
+    width: auto;
+    height: auto;
+    border-radius: 0;
     transition: transform 0.3s ease, background-color 0.3s ease;
   }
+  .toggle-dot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgb(var(--color-stamp));
+  }
   .toggle-dot.light {
-    transform: translateX(3px);
-    background: rgb(var(--color-stamp));
+    transform: rotate(0deg);
+    background: rgb(var(--color-stamp) / 0.15);
   }
   .toggle-dot.dark {
-    transform: translateX(1.3rem);
-    background: rgb(var(--color-stamp));
+    transform: rotate(45deg);
+    background: rgb(var(--color-stamp) / 0.75);
   }
 </style>

@@ -47,7 +47,10 @@ const sortedPosts = posts
 
 <PageLayout>
   <PageMeta title={`Blog | ${SITE_TITLE}`} slot="meta" />
-  <section slot="main">
+  <section slot="main" class="inkrain-blog-listing">
+    <header class="listing-head">
+      <h2 class="listing-heading">{category} <span class="listing-subtitle">Category · Archive</span></h2>
+    </header>
     <ul class="unset">
       {
         sortedPosts.map((post) => {
@@ -59,43 +62,34 @@ const sortedPosts = posts
             day: "numeric",
           });
           return (
-            <li class="grid grid-cols-[1fr] md:grid-cols-[1fr_auto] mb-3 md:gap-2 items-start">
-              <div class="title">
+            <li class="post-row">
                 {post.frontmatter.external ? (
                   <a
                     href={post.frontmatter.url}
                     target="_blank"
-                    class="unset
-                        transition-[background-size] duration-300 
-                        bg-gradient-to-r bg-left-bottom bg-no-repeat
-                        bg-[length:0%_55%] hover:bg-[length:100%_55%] dark:bg-[length:0%_2px] hover:dark:bg-[length:100%_2px]
-                        from-primary-blue to-primary-blue dark:from-primary-blue dark:to-primary-blue
-                      "
+                    class="unset post-link"
                   >
-                    <span>{post.frontmatter.title}</span>
-                    <span>
-                      <i class="ml-1 mr-1 text-[12px] pb-2 fa-solid fa-up-right-from-square" />
+                    <span class="post-title">{post.frontmatter.title}</span>
+                    <span class="post-meta">
+                      <time datetime={post.frontmatter.date.toISOString()}>
+                        {formattedDate}
+                      </time>
+                      <i class="fa-solid fa-up-right-from-square" aria-hidden="true" />
                     </span>
                   </a>
                 ) : (
                   <a
-                    href={`/blog/${post.slug}`}
-                    class="unset
-                        transition-[background-size] duration-300 
-                        bg-gradient-to-r bg-left-bottom bg-no-repeat
-                        bg-[length:0%_55%] hover:bg-[length:100%_55%] dark:bg-[length:0%_2px] hover:dark:bg-[length:100%_2px]
-                        from-primary-blue to-primary-blue dark:from-primary-blue dark:to-primary-blue
-                      "
+                    href={`/blog/${post.year}/${post.slug}`}
+                    class="unset post-link"
                   >
-                    {post.frontmatter.title}
+                    <span class="post-title">{post.frontmatter.title}</span>
+                    <span class="post-meta">
+                      <time datetime={post.frontmatter.date.toISOString()}>
+                        {formattedDate}
+                      </time>
+                    </span>
                   </a>
                 )}
-              </div>
-              <div class="text-text-muted text-sm italic pt-1">
-                <time datetime={post.frontmatter.date.toISOString()}>
-                  {formattedDate}
-                </time>
-              </div>
             </li>
           );
         })

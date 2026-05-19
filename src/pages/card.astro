@@ -47,10 +47,55 @@ const sortedPosts = posts
       break-inside: avoid;
       margin-bottom: 30px;
     }
+    .card-wall {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      padding: 0 0 30px;
+    }
+    .card-intro {
+      margin: 0;
+      padding: 38px 42px 32px;
+      border-bottom: 1px solid var(--border-soft);
+      background: var(--wash);
+    }
+    .card-intro h2 {
+      margin: 0;
+      font-family: var(--font-kai);
+      font-size: clamp(2.4rem, 6vw, 4.8rem);
+      line-height: 0.95;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+    }
+    .card-intro p {
+      margin: 14px 0 0;
+      color: var(--ink-muted);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    .ink-card-note {
+      background: color-mix(in srgb, var(--panel-alt) 45%, var(--panel));
+      border: 1px solid var(--border-soft);
+      border-radius: 0;
+      padding: 28px;
+      color: var(--ink);
+    }
+    .ink-card-note :global(a) {
+      color: var(--stamp);
+    }
+    .ink-card-note :global(blockquote) {
+      margin: 0;
+      border-left: 2px solid var(--stamp);
+      padding-left: 18px;
+    }
   </style>
-  <section slot="main" class="section">
-    <p class="pl-6 relative block leading-[150%] before:absolute before:content-[''] before:w-2 before:h-full before:top-0 before:left-0 before:bg-primary-blue mb-10">从有限的物质世界飞跃到无限的思维空间</p>
-    <div class="masonry">
+  <section slot="main" class="card-wall">
+    <header class="card-intro">
+      <h2>卡片</h2>
+      <p>Card · From finite matter to infinite thought</p>
+    </header>
+    <div class="masonry p-8">
       {
         sortedPosts.map((post) => {
           const formattedDate = new Date(
@@ -61,26 +106,26 @@ const sortedPosts = posts
             day: "numeric",
           });
           return (
-            <figure class="masonry-item md:flex rounded-l p-8 md:p-0 dark:bg-slate-800">
-              <div class="pt-6 md:p-8 text-center md:text-left space-y-4 w-full">
+            <figure class="masonry-item ink-card-note">
+              <div class="space-y-4 w-full">
                 {post.frontmatter.tags? (
-                  <div class="text-sm italic text-blue-500 dark:text-slate-500">{post.frontmatter.tags.map(item =>(<a href={`/card/tag/${item}`} class="mr-2">#{item}</a>))}</div>
+                  <div class="mono-meta">{post.frontmatter.tags.map(item =>(<a href={`/card/tag/${item}`} class="mr-2">#{item}</a>))}</div>
                 ) : null}
-                <blockquote class="blog-post prose prose-bubblegum">
+                <blockquote class="blog-post prose prose-inkrain">
                   <object>
                     <Renderer content={post.content} />
                   </object>
                 </blockquote>
-                <figcaption class="font-medium">
+                <figcaption class="mono-meta">
                   {post.frontmatter.pos ? (
                     <div>
                       笔于{" "}
-                      <span class="text-sky-500 dark:text-sky-400">
+                      <span>
                         {post.frontmatter.pos}
                       </span>
                     </div>
                   ) : null}
-                  <div class="text-slate-700 dark:text-slate-500">
+                  <div>
                     <time datetime={post.frontmatter.date.toISOString()}>
                       {formattedDate}
                     </time>

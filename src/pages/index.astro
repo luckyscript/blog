@@ -13,7 +13,16 @@ import TelegramList from 'src/components/TelegramList.astro'
 
 import { getChannelInfo } from '../lib/telegram'
 
-const channel = await getChannelInfo(Astro)
+const fallbackChannel = {
+  posts: [],
+  title: '碎碎念',
+  description: '',
+}
+
+const channel = await Promise.race([
+  getChannelInfo(Astro),
+  new Promise((resolve) => setTimeout(() => resolve(fallbackChannel), 3000)),
+]).catch(() => fallbackChannel)
 
 export const prerender = false
 ---
@@ -21,96 +30,128 @@ export const prerender = false
 <PageLayout>
   <PageMeta title={`${SITE_TITLE} | Home`} slot="meta" />
   <Fragment slot="main">
-    <Intro />
-    <div class="hero-banner">
-      <span class="hero-text">Never Give Up!</span>
-    </div>
+    <section class="home-sheet">
+      <div class="home-wash">
+        <Intro />
+        <div class="hero-banner">
+          <span class="hero-text">Volume 01 · Rain on piano</span>
+        </div>
+        <div class="ink-divider"><span class="center">墨　雨</span></div>
+      </div>
+    </section>
     <!-- <GithubRecord /> -->
-    <div class="section-divider">
-      <span class="divider-dot"></span>
-    </div>
-    <PersonalDesc />
-    <div class="section-divider">
-      <span class="divider-dot"></span>
-    </div>
-    <div class="channel-link-wrap">
-      <a class="channel-link unset" href="https://channel.rainonpiano.com">
-        <i class="fa-solid fa-comments"></i> 碎碎念
-      </a>
-    </div>
-    <div class="section-divider">
-      <span class="divider-dot"></span>
-    </div>
-    <TelegramList channel={channel} />
+    <section class="home-section">
+      <header class="home-section-head">
+        <span class="home-section-num">壹</span>
+        <div>
+          <div class="mono-over">Personal marks</div>
+          <h2>印 · About</h2>
+        </div>
+      </header>
+      <PersonalDesc />
+    </section>
+
+    <section class="home-section">
+      <header class="home-section-head">
+        <span class="home-section-num">貳</span>
+        <div>
+          <div class="mono-over">Micro notes</div>
+          <h2>言 · Channel</h2>
+        </div>
+        <a class="btn-ghost unset channel-link" href="https://channel.rainonpiano.com">
+          <i class="fa-solid fa-comments" aria-hidden="true"></i> 碎碎念
+        </a>
+      </header>
+      <TelegramList channel={channel} />
+    </section>
   </Fragment>
 </PageLayout>
 
 <style>
+  .home-sheet,
+  .home-section {
+    border: 1px solid var(--border);
+    background: var(--panel);
+  }
+
+  .home-sheet {
+    overflow: hidden;
+  }
+
+  .home-wash {
+    position: relative;
+    padding: 72px 48px 54px;
+    background: var(--wash);
+  }
+
+  .home-wash::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    opacity: 0.18;
+    background:
+      radial-gradient(ellipse at 18% 0%, var(--ink), transparent 40%),
+      radial-gradient(ellipse at 90% 100%, var(--stamp), transparent 42%);
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  .home-wash :global(.intro-section),
+  .home-wash .hero-banner,
+  .home-wash .ink-divider {
+    position: relative;
+  }
+
   .hero-banner {
     width: 100%;
     text-align: center;
-    padding: 1.25rem 0;
+    padding: 1.5rem 0 0;
     opacity: 0;
     animation: fadeUp 0.8s ease-out 0.2s forwards;
   }
   .hero-text {
     font-weight: 500;
     letter-spacing: 0.15em;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.85rem;
-    color: rgb(var(--color-ink-muted));
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--ink-muted);
     text-transform: uppercase;
   }
 
-  .section-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin: 2rem auto;
-    opacity: 0;
-    animation: fadeIn 0.6s ease-out forwards;
-  }
-  .section-divider:nth-of-type(2) { animation-delay: 0.4s; }
-  .section-divider:nth-of-type(3) { animation-delay: 0.7s; }
-  .section-divider:nth-of-type(4) { animation-delay: 0.9s; }
-  .divider-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: rgb(var(--color-ink-muted) / 0.3);
-  }
-  .section-divider::before,
-  .section-divider::after {
-    content: '';
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgb(var(--color-border) / 0.5), transparent);
+  .home-section {
+    margin-top: 28px;
+    padding: 34px 38px 38px;
   }
 
-  .channel-link-wrap {
-    text-align: center;
-    margin: 1.5rem 0;
-    opacity: 0;
-    animation: fadeUp 0.8s ease-out 0.6s forwards;
+  .home-section-head {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+    gap: 22px;
+    align-items: baseline;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 26px;
   }
-  .channel-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
+
+  .home-section-num {
+    font-family: var(--font-kai);
+    font-size: 52px;
+    line-height: 0.82;
+    color: var(--stamp);
+  }
+
+  .home-section h2 {
+    margin: 8px 0 0;
+    font-family: var(--font-kai);
+    font-size: 38px;
+    font-weight: 400;
     letter-spacing: 0.08em;
-    font-size: 0.9rem;
-    padding: 0.45rem 1.25rem;
-    border-radius: 4px;
-    color: rgb(var(--color-stamp));
-    border: 1px solid rgb(var(--color-stamp) / 0.3);
-    font-family: "JetBrains Mono", monospace;
-    transition: all 0.25s ease;
+    color: var(--ink);
   }
-  .channel-link:hover {
-    border-color: rgb(var(--color-stamp) / 0.5);
-    background: rgb(var(--color-stamp) / 0.05);
+
+  .channel-link {
+    gap: 0.5rem;
+    background-image: none !important;
   }
 
   @keyframes fadeUp {
@@ -120,5 +161,24 @@ export const prerender = false
   @keyframes fadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
+  }
+
+  @media (max-width: 767px) {
+    .home-wash {
+      padding: 48px 20px 36px;
+    }
+
+    .home-section {
+      padding: 26px 18px 30px;
+    }
+
+    .home-section-head {
+      grid-template-columns: 44px minmax(0, 1fr);
+    }
+
+    .home-section-head .channel-link {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
   }
 </style>

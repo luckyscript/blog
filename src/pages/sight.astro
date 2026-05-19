@@ -26,7 +26,9 @@ const sortedPosts = posts
 <PageLayout>
   <PageMeta title={`Sight | ${SITE_TITLE}`} slot="meta" />
   <section slot="main" class="inkrain-blog-listing">
-    <h2 class="listing-heading">观察 <span class="listing-subtitle">Sight</span></h2>
+    <header class="listing-head">
+      <h2 class="listing-heading">观察 <span class="listing-subtitle">Sight · Market notes</span></h2>
+    </header>
     <ul class="unset">
       {
         sortedPosts.map((post) => {

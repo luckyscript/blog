@@ -32,27 +32,13 @@ import Footer from "../components/Footer.astro";
     <FontAwesome />
   </head>
 
-  <body
-    class="min-h-screen"
-  >
+  <body class="inkrain-body">
     <Header />
-    <main id="main" class="max-w-4xl mx-auto px-6 sm:px-8">
-      <slot name="main" />
-    </main>
-    <Footer />
-    <style>
-      body {
-        display: grid;
-        grid-template-areas:
-          "header"
-          "main"
-          "footer";
-        grid-template-rows: 4.5rem minmax(0, 1fr) 4rem;
-        grid-template-columns: minmax(0, 1fr);
-      }
-      main {
-        grid-area: main;
-      }
-    </style>
+    <div class="inkrain-workspace">
+      <main id="main" class="inkrain-main inkrain-main--wide">
+        <slot name="main" />
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>

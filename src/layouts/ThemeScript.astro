@@ -8,19 +8,20 @@
   // figure out user's preferred theme and set it as html class for tailwind before paint
   (function () {
     if (typeof window !== "undefined") {
+      const themeColorMetaTag = document.querySelector('meta[name="theme-color"]');
       const isSystemColorSchemeDark = window.matchMedia(
         "(prefers-color-scheme: dark)"
       ).matches;
       const storageTheme = localStorage.getItem("theme");
       if (!storageTheme && isSystemColorSchemeDark) {
         document.documentElement.classList.add("dark");
-        document.head.children.namedItem("theme-color").content = "#0f172a";
+        if (themeColorMetaTag) themeColorMetaTag.content = "#0f1114";
       } else if (storageTheme === "dark") {
         document.documentElement.classList.add("dark");
-        document.head.children.namedItem("theme-color").content = "#0f172a";
+        if (themeColorMetaTag) themeColorMetaTag.content = "#0f1114";
       } else {
         // we already server render light theme
-        document.head.children.namedItem("theme-color").content = "#ffffff";
+        if (themeColorMetaTag) themeColorMetaTag.content = "#eae2ce";
       }
 
       if ('serviceWorker' in navigator) {

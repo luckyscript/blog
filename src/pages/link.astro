@@ -29,7 +29,9 @@ const { content } = await readOne({
 <PageLayout>
   <PageMeta title={`link | ${SITE_TITLE}`} slot="meta" />
   <section slot="main" class="inkrain-link-page">
-    <h2 class="listing-heading">链接 <span class="listing-subtitle">Links</span></h2>
+    <header class="listing-head">
+      <h2 class="listing-heading">链接 <span class="listing-subtitle">Links · Reading paths</span></h2>
+    </header>
     <ul class="unset">
       {sortedPosts.map((post) => {
         const formattedDate = new Date(
