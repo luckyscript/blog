@@ -58,6 +58,41 @@
       localStorage.setItem("theme", "light");
     }
   }
+
+  function updateToggleVisual(iconElem: Element, mode: "light" | "dark") {
+    if (mode === "dark") {
+      iconElem.classList.remove("light");
+      iconElem.classList.add("dark");
+    } else {
+      iconElem.classList.remove("dark");
+      iconElem.classList.add("light");
+    }
+  }
+
+  function setThemeWithTransition(mode: "light" | "dark", iconElem: Element) {
+    const root = document.documentElement;
+    const transitionClass = mode === "dark" ? "theme-turning-dark" : "theme-turning-light";
+    const applyTheme = () => {
+      updateHTMLTheme(mode);
+      updateStorageTheme(mode);
+      updateToggleVisual(iconElem, mode);
+    };
+
+    if (
+      typeof document.startViewTransition !== "function" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      applyTheme();
+      return;
+    }
+
+    root.classList.add(transitionClass);
+    const transition = document.startViewTransition(applyTheme);
+    transition.finished.finally(() => {
+      root.classList.remove(transitionClass);
+    });
+  }
+
   class ModeToggle extends HTMLElement {
     constructor() {
       super();
@@ -80,17 +115,11 @@
         toggle?.addEventListener("click", () => {
           if (currentMode === "dark") {
             const modeToSwitch = "light";
-            iconElem.classList.remove("dark");
-            iconElem.classList.add("light");
-            updateHTMLTheme(modeToSwitch);
-            updateStorageTheme(modeToSwitch);
+            setThemeWithTransition(modeToSwitch, iconElem);
             currentMode = modeToSwitch;
           } else {
             const modeToSwitch = "dark";
-            iconElem.classList.remove("light");
-            iconElem.classList.add("dark");
-            updateHTMLTheme(modeToSwitch);
-            updateStorageTheme(modeToSwitch);
+            setThemeWithTransition(modeToSwitch, iconElem);
             currentMode = modeToSwitch;
           }
 
