@@ -30,7 +30,7 @@ const items = [
 
   .desc-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
     gap: 0;
     max-width: none;
     margin: 0 auto;
@@ -45,7 +45,7 @@ const items = [
     align-items: center;
     gap: 0.85rem;
     text-align: center;
-    padding: 1.4rem 0.7rem;
+    padding: 1.15rem 0.7rem;
     position: relative;
     border-right: 1px solid var(--border-soft);
     border-bottom: 1px solid var(--border-soft);
@@ -116,10 +116,9 @@ const items = [
     letter-spacing: 0.03em;
   }
 
-  /* Responsive: 3 cols on tablet, 2 on mobile */
   @media (max-width: 768px) {
     .desc-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1rem;
     }
     .seal-desc {
@@ -130,7 +129,7 @@ const items = [
 
   @media (max-width: 480px) {
     .desc-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 0.75rem;
     }
     .desc-item {

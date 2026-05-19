@@ -3,69 +3,61 @@ import DarkModeToggle from "./DarkModeToggle.astro";
 import HeaderLink from "./HeaderLink.astro";
 import { NAV } from "../config";
 
-const railMarks: Record<string, string> = {
-  首页: "全",
+const navMarks: Record<string, string> = {
+  首页: "雨",
   生活: "文",
-  笔记: "記",
-  链接: "鏈",
+  笔记: "记",
+  链接: "链",
   PPT: "演",
-  观察: "觀",
+  观察: "观",
   碎碎念: "言",
 };
 ---
 
-<header class="inkrain-header" aria-label="Site navigation">
-  <a
-    class="unset skip-link"
-    href="#main"
-  >
-    Skip to content
-  </a>
+<header class="site-header" aria-label="Site navigation">
+  <a class="unset skip-link" href="#main">Skip to content</a>
 
-  <aside class="inkrain-rail" aria-label="Primary">
-    <a class="unset rail-brand" href="/" aria-label="InkRain home">墨雨</a>
-    <nav class="rail-nav">
+  <div class="header-inner">
+    <a class="unset brand" href="/" aria-label="下雨就像弹钢琴">
+      <span class="brand-seal" aria-hidden="true">雨</span>
+      <span class="brand-text">
+        <span class="brand-cn">下雨就像弹钢琴</span>
+        <span class="brand-en">Rain on Piano</span>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Primary navigation">
       {Object.entries(NAV).map(([name, href]) => (
         typeof href === "string" && (
-          <HeaderLink href={href} class="rail-link" title={name} aria-label={name}>
-            <span aria-hidden="true">{railMarks[name] || name.slice(0, 1)}</span>
-          </HeaderLink>
+          <HeaderLink href={href}>{name}</HeaderLink>
         )
       ))}
     </nav>
-    <div class="rail-bottom">
-      <DarkModeToggle />
-      <span class="rail-version">InkRain</span>
-    </div>
-  </aside>
 
-  <div class="mobile-bar">
-    <a class="unset mobile-brand" href="/">
-      <span class="brand-cn">墨雨</span>
-      <span class="brand-en">InkRain</span>
-    </a>
-    <button class="mobile-menu-open" id="mobile-menu-open" type="button" aria-controls="mobile-menu" aria-expanded="false">
-      <i class="fa-solid fa-bars" aria-hidden="true"></i>
-      <span class="fa-sr-only">Open mobile menu</span>
-    </button>
+    <div class="header-actions">
+      <DarkModeToggle />
+      <button class="menu-button" id="mobile-menu-open" type="button" aria-controls="mobile-menu" aria-expanded="false">
+        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        <span class="fa-sr-only">Open mobile menu</span>
+      </button>
+    </div>
   </div>
 
   <section id="mobile-menu" class="mobile-menu-panel hide-menu" aria-hidden="true">
     <div class="mobile-menu-drawer">
       <div class="mobile-menu-head">
         <span class="kai-title">墨雨</span>
-        <button id="mobile-menu-close" type="button">
+        <button id="mobile-menu-close" type="button" aria-label="Close mobile menu">
           <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-          <span class="fa-sr-only">Close mobile menu</span>
         </button>
       </div>
-      <nav>
+      <nav aria-label="Mobile navigation">
         <ul class="unset">
           {Object.entries(NAV).map(([name, href]) => (
             typeof href === "string" && (
               <li>
                 <HeaderLink href={href}>
-                  <span class="mobile-nav-mark">{railMarks[name] || name.slice(0, 1)}</span>
+                  <span class="mobile-nav-mark" aria-hidden="true">{navMarks[name] || name.slice(0, 1)}</span>
                   <span>{name}</span>
                 </HeaderLink>
               </li>
@@ -73,9 +65,6 @@ const railMarks: Record<string, string> = {
           ))}
         </ul>
       </nav>
-      <div class="mobile-menu-foot">
-        <DarkModeToggle />
-      </div>
     </div>
   </section>
 </header>
@@ -103,9 +92,24 @@ const railMarks: Record<string, string> = {
 </script>
 
 <style>
-  .inkrain-header {
-    position: relative;
-    z-index: 20;
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    border-bottom: 1px solid var(--border-soft);
+    backdrop-filter: blur(8px);
+  }
+
+  .header-inner {
+    width: min(100%, 1080px);
+    height: 72px;
+    margin: 0 auto;
+    padding: 0 28px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 24px;
   }
 
   .skip-link {
@@ -117,230 +121,198 @@ const railMarks: Record<string, string> = {
     color: var(--ink);
     padding: 0.5rem 1.5rem;
     z-index: 50;
-    border-radius: 0;
     border: 1px solid var(--border);
-    transition: top 0.15s ease;
   }
+
   .skip-link:focus {
     top: 0;
   }
 
-  .inkrain-rail {
-    position: fixed;
-    inset: 0 auto 0 0;
-    width: var(--rail-w);
-    background: var(--panel-alt);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
+  .brand {
+    display: inline-flex;
     align-items: center;
-    padding: 18px 0;
-    z-index: 30;
-  }
-
-  .rail-brand {
-    font-family: var(--font-kai);
-    font-size: 26px;
-    color: var(--ink);
-    writing-mode: vertical-rl;
-    letter-spacing: 0.15em;
-    line-height: 1;
+    gap: 12px;
+    min-width: 0;
     background-image: none !important;
   }
 
-  .rail-brand::after {
-    display: none;
-  }
-
-  .rail-nav {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  .brand-seal {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
+    font-family: var(--font-kai);
+    font-size: 18px;
+    color: var(--panel);
+    background: var(--stamp);
+    border: 1px solid var(--stamp);
+    box-shadow: inset 0 0 0 2px var(--panel);
   }
 
-  :global(.rail-link) {
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.15;
+  }
+
+  .brand-cn {
+    font-family: var(--font-kai);
+    font-size: 1.45rem;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .brand-en {
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .menu-button,
+  #mobile-menu-close {
     width: 34px;
     height: 34px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0 !important;
-    border: 1px solid transparent;
-    color: var(--ink-muted);
-    font-family: var(--font-kai) !important;
-    font-size: 15px !important;
-    letter-spacing: 0 !important;
-    text-transform: none !important;
-    background-image: none !important;
+    border: 1px solid var(--border-soft);
+    background: transparent;
+    color: var(--ink);
+    border-radius: 0;
+    cursor: pointer;
   }
 
-  :global(.rail-link.show),
-  :global(.rail-link:hover) {
-    border-color: var(--stamp);
-    color: var(--stamp);
-  }
-
-  :global(.rail-link::after) {
-    display: none !important;
-  }
-
-  .rail-bottom {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-  }
-
-  .rail-version {
-    writing-mode: vertical-rl;
-    font-size: 9.5px;
-    color: var(--ink-muted);
-    font-family: var(--font-mono);
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    line-height: 1;
-  }
-
-  .mobile-bar {
+  .menu-button {
     display: none;
   }
 
-  .brand-cn,
-  .mobile-brand .brand-cn {
-    font-family: var(--font-kai);
-    font-size: 1.75rem;
-    line-height: 1;
-    color: var(--ink);
-    letter-spacing: 0.05em;
-  }
-  .brand-en,
-  .mobile-brand .brand-en {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
+  .mobile-menu-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    background: color-mix(in srgb, var(--ink) 18%, transparent);
   }
 
-  @media (max-width: 768px) {
-    .inkrain-rail {
+  .mobile-menu-drawer {
+    width: min(84vw, 340px);
+    height: 100%;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 18px;
+    transform: translateX(0);
+    transition: transform 0.22s ease;
+  }
+
+  .hide-menu {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .hide-menu .mobile-menu-drawer {
+    transform: translateX(-100%);
+  }
+
+  .show-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobile-menu-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 18px;
+  }
+
+  .mobile-menu-head .kai-title {
+    font-size: 32px;
+  }
+
+  .mobile-menu-drawer ul {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .mobile-menu-drawer li {
+    padding: 0 !important;
+  }
+
+  .mobile-menu-drawer li::before {
+    display: none !important;
+  }
+
+  .mobile-menu-drawer :global(.inkrain-link) {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    background-image: none !important;
+  }
+
+  .mobile-nav-mark {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-kai);
+    color: var(--stamp);
+    border: 1px solid var(--stamp);
+    letter-spacing: 0;
+  }
+
+  @media (max-width: 860px) {
+    .header-inner {
+      height: 64px;
+      padding: 0 16px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+    }
+
+    .desktop-nav {
       display: none;
     }
 
-    .mobile-bar {
-      position: fixed;
-      inset: 0 0 auto 0;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 18px;
-      background: color-mix(in srgb, var(--panel) 92%, transparent);
-      border-bottom: 1px solid var(--border);
-      z-index: 30;
-    }
-
-    .mobile-brand {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      background-image: none !important;
-    }
-
-    .mobile-menu-open,
-    #mobile-menu-close {
-      width: 34px;
-      height: 34px;
+    .menu-button {
       display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--border-soft);
-      background: transparent;
-      color: var(--ink);
-      border-radius: 0;
     }
 
-    .mobile-menu-panel {
-      position: fixed;
-      inset: 0;
-      z-index: 40;
-      transition: transform 0.25s ease;
-      background: color-mix(in srgb, var(--ink) 18%, transparent);
+    .brand-cn {
+      font-size: 1.25rem;
+      max-width: 62vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .mobile-menu-drawer {
-      width: min(82vw, 340px);
-      height: 100%;
-      background: var(--panel);
-      border-right: 1px solid var(--border);
-      padding: 18px;
-    }
-
-    .mobile-menu-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: 22px;
-      border-bottom: 1px solid var(--border-soft);
-      margin-bottom: 18px;
-    }
-
-    .mobile-menu-head .kai-title {
-      font-size: 34px;
-    }
-
-    .mobile-menu-drawer ul {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 0;
-      margin: 0;
-    }
-
-    .mobile-menu-drawer li {
-      padding: 0 !important;
-    }
-
-    .mobile-menu-drawer li::before {
-      display: none !important;
-    }
-
-    .mobile-menu-drawer :global(.inkrain-link) {
-      min-height: 46px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.85rem;
-      background-image: none !important;
-    }
-
-    .mobile-nav-mark {
-      width: 30px;
-      height: 30px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-kai);
-      color: var(--stamp);
-      border: 1px solid var(--stamp);
-      letter-spacing: 0;
-    }
-
-    .mobile-menu-foot {
-      margin-top: 28px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border-soft);
-    }
-
-    .hide-menu {
-      transform: translateX(-100%);
-    }
-
-    .show-menu {
-      transform: translateX(0);
+    .brand-en {
+      display: none;
     }
   }
 </style>
