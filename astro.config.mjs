@@ -32,7 +32,9 @@ if (isBuild) {
 }
 
 const providers = {
-  cloudflare_pages: cloudflare(),
+  cloudflare_pages: cloudflare({
+    imageService: 'compile',
+  }),
   node: node({
     mode: 'standalone',
   }),
@@ -44,6 +46,9 @@ export default defineConfig({
     port: SERVER_PORT
   },
   adapter: providers[provider] || providers.node,
+  session: {
+    driver: 'memory',
+  },
   site: BASE_URL,
   integrations: [
     sitemap(),
