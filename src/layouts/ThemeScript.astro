@@ -15,13 +15,13 @@
       const storageTheme = localStorage.getItem("theme");
       if (!storageTheme && isSystemColorSchemeDark) {
         document.documentElement.classList.add("dark");
-        if (themeColorMetaTag) themeColorMetaTag.content = "#0f1114";
+        if (themeColorMetaTag) themeColorMetaTag.content = "#111519";
       } else if (storageTheme === "dark") {
         document.documentElement.classList.add("dark");
-        if (themeColorMetaTag) themeColorMetaTag.content = "#0f1114";
+        if (themeColorMetaTag) themeColorMetaTag.content = "#111519";
       } else {
         // we already server render light theme
-        if (themeColorMetaTag) themeColorMetaTag.content = "#eae2ce";
+        if (themeColorMetaTag) themeColorMetaTag.content = "#f4eedf";
       }
 
       if ('serviceWorker' in navigator) {

@@ -21,20 +21,22 @@
     gap: 0.75rem;
     font-size: 0.85rem;
     color: var(--ink-muted);
-    border-top: 1px solid var(--border-soft);
-    padding: 18px 24px;
-    background: color-mix(in srgb, var(--panel) 52%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border-soft));
+    padding: 22px 24px;
+    background:
+      linear-gradient(90deg, transparent, rgb(var(--color-accent) / 0.04), transparent),
+      color-mix(in srgb, var(--panel) 46%, transparent);
   }
   .footer-brand a {
     font-family: var(--font-kai);
     font-size: 1.1rem;
-    color: var(--stamp);
+    color: color-mix(in srgb, var(--stamp) 86%, var(--accent));
     background-image: none !important;
   }
   .footer-copy {
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.12em;
-    color: var(--ink-muted);
+    color: color-mix(in srgb, var(--ink-muted) 86%, var(--accent));
   }
 </style>
