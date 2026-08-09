@@ -14,13 +14,13 @@
       const storageTheme = localStorage.getItem("theme");
       if (!storageTheme && isSystemColorSchemeDark) {
         document.documentElement.classList.add("dark");
-        document.head.children.namedItem("theme-color").content = "#0f172a";
+        document.head.children.namedItem("theme-color").content = "#121416";
       } else if (storageTheme === "dark") {
         document.documentElement.classList.add("dark");
-        document.head.children.namedItem("theme-color").content = "#0f172a";
+        document.head.children.namedItem("theme-color").content = "#121416";
       } else {
         // we already server render light theme
-        document.head.children.namedItem("theme-color").content = "#ffffff";
+        document.head.children.namedItem("theme-color").content = "#faf8f2";
       }
 
       if ('serviceWorker' in navigator) {

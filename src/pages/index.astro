@@ -22,11 +22,11 @@ export const prerender = false
   <PageMeta title={`${SITE_TITLE} | Home`} slot="meta" />
   <Fragment slot="main">
     <Intro />
-    <div class="w-full text-center unset gradient-link tracking-wider font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500">Never Give Up!</div>
+    <div class="w-full text-center tracking-wider font-bold text-text-muted">Never Give Up!</div>
     <!-- <GithubRecord /> -->
     <PersonalDesc />
-    <div class="w-full text-center unset gradient-link tracking-wider font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 mt-20">
-      <a href="https://channel.rainonpiano.com">碎碎念</a></div>
-    <TelegramList channel={channel} />
+    <div class="w-full text-center tracking-wider font-bold text-text-heading mt-20">
+      <a href="/moments">碎碎念</a></div>
+    <TelegramList channel={channel} compact={true} />
   </Fragment>
 </PageLayout>

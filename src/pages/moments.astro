@@ -1,0 +1,20 @@
+---
+import PageLayout from '../layouts/PageLayout.astro'
+import PageMeta from '../components/PageMeta.astro'
+import MomentsHero from '../components/MomentsHero.astro'
+import TelegramList from '../components/TelegramList.astro'
+import { SITE_TITLE } from '../config'
+import { getChannelInfo } from '../lib/telegram'
+
+const channel = await getChannelInfo(Astro)
+
+export const prerender = false
+---
+
+<PageLayout>
+  <PageMeta title={`碎碎念 | ${SITE_TITLE}`} description="从 BroadcastChannel 合并进博客的碎碎念。" slot="meta" />
+  <Fragment slot="main">
+    <MomentsHero />
+    <TelegramList channel={channel} before={true} />
+  </Fragment>
+</PageLayout>

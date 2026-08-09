@@ -1,0 +1,27 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro'
+import PageMeta from '../../components/PageMeta.astro'
+import MomentsHero from '../../components/MomentsHero.astro'
+import LegacyMomentItem from '../../components/LegacyMomentItem.astro'
+import { SITE_TITLE } from '../../config'
+import { legacyData } from '../../data/legacyMoments'
+
+const pageSize = 20
+---
+
+<PageLayout>
+  <PageMeta title={`旧碎片 | ${SITE_TITLE}`} description="BroadcastChannel 合并进博客的历史碎片。" slot="meta" />
+  <Fragment slot="main">
+    <MomentsHero title="旧碎片" eyebrow="Archive" description="从旧数据迁过来的碎碎念，先安放在这里。" />
+    <div class="moments-feed">
+      {legacyData.slice(0, pageSize).map((post) => <LegacyMomentItem post={post} />)}
+    </div>
+    {
+      pageSize < legacyData.length ? (
+        <nav class="moments-pagination" aria-label="旧碎片分页">
+          <a class="unset moment-page-link" href={`/moments/archive/${pageSize}`}>更早</a>
+        </nav>
+      ) : null
+    }
+  </Fragment>
+</PageLayout>

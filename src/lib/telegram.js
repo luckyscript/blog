@@ -93,7 +93,7 @@ function getReply($, item, { channel }) {
   const href = reply?.attr('href')
   if (href) {
     const url = new URL(href)
-    reply?.attr('href', `${url.pathname}`.replace(new RegExp(`/${channel}/`, 'i'), '/posts/'))
+    reply?.attr('href', `${url.pathname}`.replace(new RegExp(`/${channel}/`, 'i'), '/moments/posts/'))
   }
 
   return $.html(reply)
@@ -135,7 +135,7 @@ function getPost($, item, { channel, staticProxy, index = 0 }) {
   const id = $(item).attr('data-post')?.replace(new RegExp(`${channel}/`, 'i'), '')
 
   const tags = $(content).find('a[href^="?q="]')?.each((_index, a) => {
-    $(a)?.attr('href', `https://channel.rainonpiano.com/search/${encodeURIComponent($(a)?.text())}`)
+    $(a)?.attr('href', `/moments/search/${encodeURIComponent($(a)?.text()?.replace('#', ''))}`)
   })?.map((_index, a) => $(a)?.text()?.replace('#', ''))?.get()
 
   return {
