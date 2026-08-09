@@ -47,7 +47,10 @@ function getImages($, item, { staticProxy, id, index, title }) {
       </button>
     `
   })?.get()
-  return images.length ? `<div class="image-list-container ${images.length % 2 === 0 ? 'image-list-even' : 'image-list-odd'}">${images?.join('')}</div>` : ''
+  const countClass = images.length === 1
+    ? 'image-list-single'
+    : images.length % 2 === 0 ? 'image-list-even' : 'image-list-odd'
+  return images.length ? `<div class="image-list-container ${countClass}">${images?.join('')}</div>` : ''
 }
 
 function getVideo($, item, { staticProxy, index }) {

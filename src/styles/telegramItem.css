@@ -330,11 +330,28 @@
   grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
 }
 
+.telegram-item-compact .telegram-content .image-list-single {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.telegram-item-compact .telegram-content .image-list-single .image-preview-wrap {
+  width: min(100%, 28rem);
+  max-width: 28rem;
+}
+
 .telegram-item-compact .telegram-content .image-preview-wrap img {
   width: 100%;
-  max-height: 24rem;
+  max-height: 28rem;
   object-fit: contain;
   background: rgb(var(--color-bg-panel) / 0.55);
+}
+
+.telegram-item-compact .telegram-content .image-list-single .image-preview-wrap img {
+  max-height: 32rem;
+  background: color-mix(in srgb, var(--panel-alt) 36%, transparent);
 }
 
 .telegram-content .image-preview-wrap img {

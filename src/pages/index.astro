@@ -72,6 +72,8 @@ export const prerender = false
   .home-section {
     border: 1px solid var(--border);
     background: var(--panel);
+    border-radius: 10px;
+    box-shadow: var(--surface-shadow);
   }
 
   .home-sheet {
@@ -80,7 +82,7 @@ export const prerender = false
 
   .home-wash {
     position: relative;
-    padding: 54px 42px 42px;
+    padding: 58px 44px 44px;
     background: var(--wash);
   }
 
@@ -88,18 +90,20 @@ export const prerender = false
     content: "";
     position: absolute;
     inset: -20%;
-    opacity: 0.18;
+    opacity: 0.12;
     background:
       radial-gradient(ellipse at 18% 0%, var(--ink), transparent 40%),
       radial-gradient(ellipse at 90% 100%, var(--stamp), transparent 42%);
     pointer-events: none;
     mix-blend-mode: multiply;
+    z-index: 0;
   }
 
   .home-wash :global(.intro-section),
   .home-wash .hero-banner,
   .home-wash .ink-divider {
     position: relative;
+    z-index: 1;
   }
 
   .hero-banner {
@@ -121,6 +125,12 @@ export const prerender = false
   .home-section {
     margin-top: 28px;
     padding: 28px 32px 34px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .home-section:hover {
+    box-shadow: var(--surface-shadow-hover);
+    transform: translateY(-1px);
   }
 
   .home-section-head {
@@ -128,22 +138,23 @@ export const prerender = false
     grid-template-columns: 56px minmax(0, 1fr) auto;
     gap: 22px;
     align-items: baseline;
-    padding-bottom: 26px;
+    padding-bottom: 24px;
     border-bottom: 1px solid var(--border-soft);
-    margin-bottom: 26px;
+    margin-bottom: 28px;
   }
 
   .home-section-num {
     font-family: var(--font-kai);
-    font-size: 52px;
+    font-size: 48px;
     line-height: 0.82;
     color: var(--stamp);
+    opacity: 0.9;
   }
 
   .home-section h2 {
     margin: 8px 0 0;
     font-family: var(--font-kai);
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 400;
     letter-spacing: 0.08em;
     color: var(--ink);
@@ -170,6 +181,7 @@ export const prerender = false
 
     .home-section {
       padding: 22px 16px 26px;
+      border-radius: 8px;
     }
 
     .home-section-head {

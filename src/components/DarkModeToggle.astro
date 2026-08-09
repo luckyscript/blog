@@ -10,9 +10,11 @@
     data-headlessui-state=""
   >
     <span class="sr-only">Toggle dark mode</span>
-    <span
-      class="toggle-dot invisible"
-    ></span>
+    <span class="toggle-track" aria-hidden="true">
+      <i class="fa-solid fa-sun toggle-icon toggle-sun"></i>
+      <i class="fa-solid fa-moon toggle-icon toggle-moon"></i>
+      <span class="toggle-dot invisible"></span>
+    </span>
   </button>
 </mode-toggle>
 
@@ -72,6 +74,9 @@
   function setThemeWithTransition(mode: "light" | "dark", iconElem: Element) {
     const root = document.documentElement;
     const transitionClass = mode === "dark" ? "theme-turning-dark" : "theme-turning-light";
+    const cleanupTransitionClass = () => {
+      root.classList.remove("theme-turning-dark", "theme-turning-light");
+    };
     const applyTheme = () => {
       updateHTMLTheme(mode);
       updateStorageTheme(mode);
@@ -86,10 +91,12 @@
       return;
     }
 
+    cleanupTransitionClass();
     root.classList.add(transitionClass);
     const transition = document.startViewTransition(applyTheme);
+    window.setTimeout(cleanupTransitionClass, 260);
     transition.finished.finally(() => {
-      root.classList.remove(transitionClass);
+      cleanupTransitionClass();
     });
   }
 
@@ -142,38 +149,77 @@
   }
   .toggle-btn {
     position: relative;
-    background: transparent;
-    border: 1px solid rgb(var(--color-border));
-    width: 34px;
-    height: 34px;
-    border-radius: 0;
+    background: color-mix(in srgb, var(--panel) 72%, transparent);
+    border: 1px solid rgb(var(--color-border-soft));
+    width: 58px;
+    height: 32px;
+    border-radius: 999px;
     cursor: pointer;
-    padding: 0;
-    transition: border-color 0.2s ease;
+    padding: 3px;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: inset 0 1px 2px rgb(var(--color-ink) / 0.08);
   }
   .toggle-btn:hover {
-    border-color: rgb(var(--color-stamp) / 0.4);
+    border-color: rgb(var(--color-stamp) / 0.5);
+    box-shadow: var(--focus-ring);
+  }
+  .toggle-track {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
   }
   .toggle-dot {
     position: absolute;
-    inset: 8px;
-    width: auto;
-    height: auto;
-    border-radius: 0;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--panel);
+    border: 1px solid rgb(var(--color-border));
+    box-shadow: 0 4px 12px rgb(var(--color-ink) / 0.14);
+    transition: transform 0.22s ease, background-color 0.22s ease, border-color 0.22s ease;
   }
   .toggle-dot::before {
-    content: "";
+    display: none;
+  }
+  .toggle-icon {
     position: absolute;
-    inset: 0;
-    border: 1px solid rgb(var(--color-stamp));
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+    font-size: 10px;
+    line-height: 1;
+    color: rgb(var(--color-ink-muted));
+    pointer-events: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+  }
+  .toggle-sun {
+    left: 7px;
+  }
+  .toggle-moon {
+    right: 7px;
   }
   .toggle-dot.light {
-    transform: rotate(0deg);
-    background: rgb(var(--color-stamp) / 0.15);
+    transform: translateX(0);
+    background: color-mix(in srgb, var(--stamp) 16%, var(--panel));
   }
   .toggle-dot.dark {
-    transform: rotate(45deg);
-    background: rgb(var(--color-stamp) / 0.75);
+    transform: translateX(26px);
+    background: color-mix(in srgb, var(--accent) 22%, var(--panel));
+    border-color: rgb(var(--color-stamp) / 0.58);
+  }
+  html.dark .toggle-sun {
+    opacity: 0.45;
+  }
+  html.dark .toggle-moon {
+    color: rgb(var(--color-accent));
+  }
+  html:not(.dark) .toggle-sun {
+    color: rgb(var(--color-stamp));
+  }
+  html:not(.dark) .toggle-moon {
+    opacity: 0.45;
   }
 </style>

@@ -31,12 +31,9 @@ const items = [
   .desc-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
-    gap: 0;
+    gap: 10px;
     max-width: none;
     margin: 0 auto;
-    border: 1px solid var(--border-soft);
-    border-right: 0;
-    border-bottom: 0;
   }
 
   .desc-item {
@@ -47,25 +44,28 @@ const items = [
     text-align: center;
     padding: 1.15rem 0.7rem;
     position: relative;
-    border-right: 1px solid var(--border-soft);
-    border-bottom: 1px solid var(--border-soft);
-    border-radius: 0;
-    transition: all 0.3s ease;
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--panel) 74%, transparent);
+    overflow: hidden;
+    transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
   }
 
   .desc-item::before {
     content: '';
     position: absolute;
     inset: 0;
+    opacity: 0.65;
     background:
-      radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--stamp) 8%, transparent), transparent 60%),
-      radial-gradient(ellipse at 70% 80%, color-mix(in srgb, var(--ink) 7%, transparent), transparent 60%);
+      radial-gradient(ellipse at 28% 18%, color-mix(in srgb, var(--stamp) 7%, transparent), transparent 62%),
+      radial-gradient(ellipse at 72% 82%, color-mix(in srgb, var(--ink) 5%, transparent), transparent 62%);
     pointer-events: none;
   }
 
   .desc-item:hover {
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
-    box-shadow: none;
+    background: color-mix(in srgb, var(--panel-alt) 56%, var(--panel));
+    border-color: color-mix(in srgb, var(--stamp) 32%, var(--border-soft));
+    transform: translateY(-2px);
   }
 
   .seal-wrap {
@@ -83,7 +83,7 @@ const items = [
     position: absolute;
     inset: 0;
     border: 1.5px solid var(--stamp);
-    border-radius: 0;
+    border-radius: 7px;
     transform: rotate(-2deg);
   }
 
@@ -93,7 +93,7 @@ const items = [
     position: absolute;
     inset: 3px;
     border: 1px solid color-mix(in srgb, var(--stamp) 55%, transparent);
-    border-radius: 0;
+    border-radius: 5px;
     transform: rotate(-2deg);
   }
 

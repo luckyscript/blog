@@ -25,28 +25,24 @@ const isActive = isHome || isOtherPages
 <style>
   .inkrain-link {
     font-family: var(--font-sans);
-    font-size: 0.86rem;
-    letter-spacing: 0.03em;
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
     color: rgb(var(--color-ink-soft));
     position: relative;
-    padding: 0.25rem 0;
+    padding: 0.38rem 0.72rem;
     text-decoration: none;
+    border-radius: 999px;
+    transition: color 0.18s ease, background-color 0.18s ease;
   }
   .inkrain-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: rgb(var(--color-stamp));
-    transition: width 0.2s ease;
-  }
-  .inkrain-link.show::after,
-  .inkrain-link:hover::after {
-    width: 100%;
+    display: none;
   }
   .inkrain-link.show {
     color: rgb(var(--color-ink));
+    background: color-mix(in srgb, var(--stamp) 10%, transparent);
+  }
+  .inkrain-link:hover {
+    color: rgb(var(--color-stamp));
+    background: color-mix(in srgb, var(--stamp) 8%, transparent);
   }
 </style>

@@ -96,14 +96,15 @@ const navMarks: Record<string, string> = {
     position: sticky;
     top: 0;
     z-index: 30;
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
     border-bottom: 1px solid var(--border-soft);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(16px) saturate(1.06);
+    box-shadow: 0 10px 28px rgb(var(--color-ink) / 0.045);
   }
 
   .header-inner {
     width: min(100%, 1080px);
-    height: 72px;
+    height: 70px;
     margin: 0 auto;
     padding: 0 28px;
     display: grid;
@@ -134,6 +135,11 @@ const navMarks: Record<string, string> = {
     gap: 12px;
     min-width: 0;
     background-image: none !important;
+    transition: transform 0.2s ease;
+  }
+
+  .brand:hover {
+    transform: translateY(-1px);
   }
 
   .brand-seal {
@@ -149,6 +155,8 @@ const navMarks: Record<string, string> = {
     background: var(--stamp);
     border: 1px solid var(--stamp);
     box-shadow: inset 0 0 0 2px var(--panel);
+    border-radius: 6px;
+    transform: rotate(-3deg);
   }
 
   .brand-text {
@@ -160,9 +168,9 @@ const navMarks: Record<string, string> = {
 
   .brand-cn {
     font-family: var(--font-kai);
-    font-size: 1.45rem;
+    font-size: 1.34rem;
     color: var(--ink);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     white-space: nowrap;
   }
 
@@ -178,7 +186,11 @@ const navMarks: Record<string, string> = {
   .desktop-nav {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 6px;
+    padding: 5px;
+    border: 1px solid color-mix(in srgb, var(--border-soft) 74%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--panel) 58%, transparent);
   }
 
   .header-actions {
@@ -195,10 +207,17 @@ const navMarks: Record<string, string> = {
     align-items: center;
     justify-content: center;
     border: 1px solid var(--border-soft);
-    background: transparent;
+    background: color-mix(in srgb, var(--panel) 70%, transparent);
     color: var(--ink);
-    border-radius: 0;
+    border-radius: 999px;
     cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .menu-button:hover,
+  #mobile-menu-close:hover {
+    border-color: color-mix(in srgb, var(--stamp) 42%, var(--border-soft));
+    box-shadow: var(--focus-ring);
   }
 
   .menu-button {
@@ -211,6 +230,7 @@ const navMarks: Record<string, string> = {
     z-index: 40;
     transition: opacity 0.2s ease, visibility 0.2s ease;
     background: color-mix(in srgb, var(--ink) 18%, transparent);
+    backdrop-filter: blur(10px);
   }
 
   .mobile-menu-drawer {
@@ -219,6 +239,7 @@ const navMarks: Record<string, string> = {
     background: var(--panel);
     border-right: 1px solid var(--border);
     padding: 18px;
+    box-shadow: 18px 0 60px rgb(var(--color-ink) / 0.18);
     transform: translateX(0);
     transition: transform 0.22s ease;
   }
@@ -285,6 +306,7 @@ const navMarks: Record<string, string> = {
     font-family: var(--font-kai);
     color: var(--stamp);
     border: 1px solid var(--stamp);
+    border-radius: 6px;
     letter-spacing: 0;
   }
 
