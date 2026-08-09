@@ -1,40 +1,32 @@
----
-/*
-  This is not a layout but just a component that's used in layouts.
-*/
----
-
 <script is:inline>
-  // figure out user's preferred theme and set it as html class for tailwind before paint
   (function () {
-    if (typeof window !== "undefined") {
-      const themeColorMetaTag = document.querySelector('meta[name="theme-color"]');
-      const isSystemColorSchemeDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      const storageTheme = localStorage.getItem("theme");
-      if (!storageTheme && isSystemColorSchemeDark) {
-        document.documentElement.classList.add("dark");
-        if (themeColorMetaTag) themeColorMetaTag.content = "#111519";
-      } else if (storageTheme === "dark") {
-        document.documentElement.classList.add("dark");
-        if (themeColorMetaTag) themeColorMetaTag.content = "#111519";
-      } else {
-        // we already server render light theme
-        if (themeColorMetaTag) themeColorMetaTag.content = "#f4eedf";
-      }
+    if (typeof window === "undefined") return;
 
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-              console.log('Service Worker 注册成功:', registration);
-            })
-            .catch(function(error) {
-              console.log('Service Worker 注册失败:', error);
-            });
-        });
-      }
+    var validThemes = ["paper", "moon", "ink"];
+    var savedTheme = localStorage.getItem("inkrain-theme");
+    var legacyTheme = localStorage.getItem("theme");
+    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var theme = validThemes.indexOf(savedTheme) >= 0
+      ? savedTheme
+      : legacyTheme === "dark" || (!legacyTheme && prefersDark)
+        ? "ink"
+        : "paper";
+
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.classList.toggle("dark", theme === "ink");
+
+    var themeColor = document.querySelector('meta[name="theme-color"]');
+    var themeColors = {
+      paper: "#f4f0e6",
+      moon: "#edf4f3",
+      ink: "#20272b"
+    };
+    if (themeColor) themeColor.content = themeColors[theme];
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function() {});
+      });
     }
   })();
 </script>
@@ -44,7 +36,7 @@
     "prefetch": [
       {
         "source": "list",
-        "urls": ["/blog", "/link"]
+        "urls": ["/blog", "/link", "/moments"]
       }
     ]
   }

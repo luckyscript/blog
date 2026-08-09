@@ -1,18 +1,87 @@
 ---
 const {
-  title = '碎碎念',
-  eyebrow = 'BroadcastChannel',
-  description = '从 Telegram 频道同步来的日常片段、链接、现场感和没来得及写成长文的想法。',
-} = Astro.props
+  title = "碎碎念",
+  eyebrow = "BroadcastChannel · Moments",
+  description = "日常片段、链接、现场感，以及那些还没有长成文章的想法。",
+} = Astro.props;
 ---
 
 <section class="moments-hero">
-  <p class="moments-eyebrow">{eyebrow}</p>
-  <h1>{title}</h1>
-  <p>{description}</p>
-  <div class="moments-actions">
-    <a class="unset moment-page-link" href="/moments">最新</a>
-    <a class="unset moment-page-link" href="/moments/archive">旧碎片</a>
-    <a class="unset moment-page-link" href="/card">本地卡片</a>
+  <div class="moments-title">
+    <p class="moments-eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+  </div>
+  <div class="moments-intro">
+    <p>{description}</p>
+    <nav class="moments-actions" aria-label="碎碎念导航">
+      <a class="unset" href="/moments">最新</a>
+      <a class="unset" href="/moments/archive">旧碎片</a>
+      <a class="unset" href="/card">本地卡片</a>
+    </nav>
   </div>
 </section>
+
+<style>
+  .moments-hero {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1fr);
+    gap: 64px;
+    align-items: end;
+    padding: 18px 0 46px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .moments-eyebrow {
+    margin: 0 0 14px;
+    color: var(--stamp);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--font-kai);
+    font-size: clamp(3.4rem, 8vw, 6.2rem);
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .moments-intro > p {
+    max-width: 480px;
+    margin: 0;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+
+  .moments-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-top: 24px;
+  }
+
+  .moments-actions a {
+    color: var(--ink-muted);
+    border-bottom: 1px solid transparent;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    background-image: none !important;
+  }
+
+  .moments-actions a:hover {
+    color: var(--stamp);
+    border-color: currentColor;
+  }
+
+  @media (max-width: 680px) {
+    .moments-hero {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+      padding-top: 4px;
+      padding-bottom: 34px;
+    }
+  }
+</style>

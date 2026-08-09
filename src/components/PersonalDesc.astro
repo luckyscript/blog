@@ -1,148 +1,58 @@
 ---
 const items = [
-  { char: '游', text: '御三家全制霸·次元壁穿梭者' },
-  { char: '骑', text: '跨上铁骑追逐地平线的冒险家' },
-  { char: '码', text: '用键盘编织代码的二进制诗人' },
-  { char: '球', text: '二十年美凌格·银河战舰永不沉没' },
-  { char: '墨', text: '执钢笔写春秋的器物美学家' },
+  { char: "游", text: "御三家全制霸 · 次元壁穿梭者" },
+  { char: "骑", text: "跨上铁骑追逐地平线的冒险家" },
+  { char: "码", text: "用键盘编织代码的二进制诗人" },
+  { char: "球", text: "二十年美凌格 · 银河战舰永不沉没" },
+  { char: "墨", text: "执钢笔写春秋的器物美学家" },
 ];
 ---
 
-<div class="desc-section">
-  <div class="desc-grid">
-    {items.map((item) => (
-      <div class="desc-item">
-        <div class="seal-wrap">
-          <span class="seal-char">{item.char}</span>
-        </div>
-        <p class="seal-desc">{item.text}</p>
-      </div>
-    ))}
-  </div>
+<div class="desc-grid">
+  {items.map((item) => (
+    <div class="desc-item">
+      <span class="desc-mark" aria-hidden="true">{item.char}</span>
+      <p>{item.text}</p>
+    </div>
+  ))}
 </div>
 
 <style>
-  .desc-section {
-    margin: 0;
-    opacity: 0;
-    animation: fadeUp 0.8s ease-out 0.4s forwards;
-  }
-
   .desc-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
-    gap: 12px;
-    max-width: none;
-    margin: 0 auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 36px;
   }
 
   .desc-item {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
     align-items: center;
-    gap: 0.85rem;
-    text-align: center;
-    padding: 1.15rem 0.7rem;
-    position: relative;
-    border: 1px solid color-mix(in srgb, var(--border-soft) 82%, transparent);
-    border-radius: 12px;
-    background:
-      linear-gradient(145deg, rgb(var(--color-bg-panel) / 0.62), rgb(var(--color-accent) / 0.035)),
-      color-mix(in srgb, var(--panel) 74%, transparent);
-    overflow: hidden;
-    transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    gap: 13px;
+    min-height: 68px;
+    border-bottom: 1px solid var(--border-soft);
   }
 
-  .desc-item::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.48;
-    background:
-      radial-gradient(ellipse at 28% 18%, color-mix(in srgb, var(--stamp) 7%, transparent), transparent 62%),
-      radial-gradient(ellipse at 72% 82%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 62%);
-    pointer-events: none;
-  }
-
-  .desc-item:hover {
-    background:
-      linear-gradient(145deg, rgb(var(--color-stamp) / 0.045), rgb(var(--color-accent) / 0.055)),
-      color-mix(in srgb, var(--panel-alt) 48%, var(--panel));
-    border-color: color-mix(in srgb, var(--stamp) 30%, var(--border-soft));
-    transform: translateY(-2px);
-  }
-
-  .seal-wrap {
-    position: relative;
-    width: 3rem;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Outer seal border — slightly rotated for authenticity */
-  .seal-wrap::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1.5px solid color-mix(in srgb, var(--stamp) 88%, var(--accent));
-    border-radius: 7px;
-    transform: rotate(-2deg);
-  }
-
-  /* Inner seal border */
-  .seal-wrap::after {
-    content: '';
-    position: absolute;
-    inset: 3px;
-    border: 1px solid color-mix(in srgb, var(--stamp) 50%, var(--accent));
-    border-radius: 5px;
-    transform: rotate(-2deg);
-  }
-
-  .seal-char {
+  .desc-mark {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    aspect-ratio: 1;
+    color: var(--stamp);
+    border: 1px solid color-mix(in srgb, var(--stamp) 56%, transparent);
     font-family: var(--font-kai);
-    font-size: 1.4rem;
-    line-height: 1;
-    color: color-mix(in srgb, var(--stamp) 86%, var(--accent));
-    position: relative;
-    z-index: 1;
-    text-shadow: none;
   }
 
-  .seal-desc {
-    font-size: 0.8rem;
-    line-height: 1.6;
-    color: color-mix(in srgb, var(--ink-soft) 90%, var(--accent));
+  p {
     margin: 0;
-    max-width: 8rem;
-    letter-spacing: 0.03em;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.65;
   }
 
-  @media (max-width: 768px) {
-    .desc-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-    .seal-desc {
-      font-size: 0.75rem;
-      max-width: 7rem;
-    }
-  }
-
-  @media (max-width: 480px) {
+  @media (max-width: 680px) {
     .desc-grid {
       grid-template-columns: minmax(0, 1fr);
-      gap: 0.75rem;
     }
-    .desc-item {
-      padding: 1rem 0.5rem;
-    }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 </style>

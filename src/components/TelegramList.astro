@@ -1,72 +1,59 @@
 ---
 import Item from "src/components/TelegramItem.astro";
 
-const {
-  channel,
-  after = false,
-  before = false,
-  compact = false,
-} = Astro.props;
-
+const { channel, after = false, before = false, compact = false } = Astro.props;
 const posts = channel?.posts ?? [];
-
 const beforeCursor = posts[posts.length - 1]?.id;
 const afterCursor = posts[0]?.id;
 const hasOlder = before && beforeCursor && Number(beforeCursor) > 1;
 const hasNewer = after && afterCursor;
-
 ---
 
-<div class="telegram-section">
-  <div class="telegram-header">
-    <span class="telegram-dot"></span>
-    <span>最近更新</span>
-  </div>
+<div class:list={["telegram-section", compact && "telegram-section-compact"]}>
+  {!compact && (
+    <div class="telegram-header">
+      <span aria-hidden="true">更新</span>
+      <span>Recent notes</span>
+    </div>
+  )}
   <div class:list={["items", "moments-feed", compact && "moments-feed-compact"]}>
-    {posts.map(post => <Item post={post} compact={compact} />)}
+    {posts.map((post) => <Item post={post} compact={compact} />)}
   </div>
 </div>
 
-{
-  hasOlder || hasNewer ? (
-    <nav class="moments-pagination" aria-label="碎碎念分页">
-      {hasOlder ? <a class="unset btn-ghost moment-page-link" href={`/moments/before/${beforeCursor}`}>更早</a> : null}
-      {hasNewer ? <a class="unset btn-ghost moment-page-link" href={`/moments/after/${afterCursor}`}>更新</a> : null}
-    </nav>
-  ) : null
-}
+{hasOlder || hasNewer ? (
+  <nav class="moments-pagination" aria-label="碎碎念分页">
+    {hasOlder ? <a class="unset btn-ghost moment-page-link" href={`/moments/before/${beforeCursor}`}>更早</a> : null}
+    {hasNewer ? <a class="unset btn-ghost moment-page-link" href={`/moments/after/${afterCursor}`}>更新</a> : null}
+  </nav>
+) : null}
 
 <style>
   .telegram-section {
-    margin-top: 1rem;
-    opacity: 0;
-    animation: fadeUp 0.8s ease-out 1s forwards;
+    margin-top: 34px;
   }
+
+  .telegram-section-compact {
+    margin-top: 0;
+  }
+
   .telegram-header {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    color: rgb(var(--color-ink-muted) / 0.7);
+    gap: 10px;
+    margin-bottom: 12px;
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    font-family: "JetBrains Mono", monospace;
-    margin-bottom: 1.5rem;
-  }
-  .telegram-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: rgb(var(--color-stamp));
-    animation: pulse 2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+  .telegram-header span:first-child {
+    padding: 2px 5px;
+    color: var(--stamp);
+    border: 1px solid color-mix(in srgb, var(--stamp) 48%, transparent);
+    font-family: var(--font-kai);
+    letter-spacing: 0;
   }
 </style>

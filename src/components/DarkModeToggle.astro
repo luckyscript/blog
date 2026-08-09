@@ -1,225 +1,239 @@
----
----
-<mode-toggle class="inkrain-mode-toggle">
+<theme-cycle class="theme-cycle">
   <button
-    class="toggle-btn"
-    role="switch"
+    class="theme-cycle-button"
     type="button"
-    tabindex="0"
-    aria-checked="false"
-    data-headlessui-state=""
+    data-current-theme="paper"
+    data-label="宣纸 · 点击切换月白"
+    aria-label="当前宣纸主题，点击切换到月白主题"
   >
-    <span class="sr-only">Toggle dark mode</span>
-    <span class="toggle-track" aria-hidden="true">
-      <i class="fa-solid fa-sun toggle-icon toggle-sun"></i>
-      <i class="fa-solid fa-moon toggle-icon toggle-moon"></i>
-      <span class="toggle-dot invisible"></span>
+    <span class="theme-icon is-active" data-icon-theme="paper" aria-hidden="true">
+      <span class="theme-glyph theme-glyph-paper"></span>
     </span>
+    <span class="theme-icon" data-icon-theme="moon" aria-hidden="true">
+      <span class="theme-glyph theme-glyph-moon"></span>
+    </span>
+    <span class="theme-icon" data-icon-theme="ink" aria-hidden="true">
+      <span class="theme-glyph theme-glyph-ink"></span>
+    </span>
+    <span class="sr-only theme-status">当前宣纸主题</span>
   </button>
-</mode-toggle>
+</theme-cycle>
 
 <script>
-  function updateHTMLTheme(mode: "light" | "dark") {
-    const themeColorMetaTag = document.head.querySelector(
-      'meta[name="theme-color"]'
+  type InkRainTheme = "paper" | "moon" | "ink";
+
+  const themeOrder: InkRainTheme[] = ["paper", "moon", "ink"];
+  const themeNames: Record<InkRainTheme, string> = {
+    paper: "宣纸",
+    moon: "月白",
+    ink: "玄墨",
+  };
+  const themeColors: Record<InkRainTheme, string> = {
+    paper: "#f4f0e6",
+    moon: "#edf4f3",
+    ink: "#20272b",
+  };
+
+  function sendGiscusTheme(theme: InkRainTheme) {
+    const iframe = document.querySelector("iframe.giscus-frame") as HTMLIFrameElement | null;
+    iframe?.contentWindow?.postMessage(
+      { giscus: { setConfig: { theme: theme === "ink" ? "dark" : "light" } } },
+      "https://giscus.app"
     );
-
-    if (mode === "dark") {
-      document.documentElement.classList.remove("light");
-      document.documentElement.classList.add("dark");
-      if (themeColorMetaTag) {
-        // @ts-ignore
-        themeColorMetaTag.content = "#111519";
-      }
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.classList.add("light");
-      if (themeColorMetaTag) {
-        // @ts-ignore
-        themeColorMetaTag.content = "#f4eedf";
-      }
-    }
-  }
-  function sendMessage(message: any) {
-    const iframe = document.querySelector('iframe.giscus-frame') as any;
-    if (!iframe) {
-      return;
-    }
-    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
   }
 
-  function updateStorageTheme(mode: "light" | "dark") {
-    sendMessage({
-      setConfig: {
-        theme: mode
-      }
-    });
-    if (mode === "dark") {
-      localStorage.setItem("theme", "dark");
-    } else {
-      localStorage.setItem("theme", "light");
-    }
-  }
-
-  function updateToggleVisual(iconElem: Element, mode: "light" | "dark") {
-    if (mode === "dark") {
-      iconElem.classList.remove("light");
-      iconElem.classList.add("dark");
-    } else {
-      iconElem.classList.remove("dark");
-      iconElem.classList.add("light");
-    }
-  }
-
-  function setThemeWithTransition(mode: "light" | "dark", iconElem: Element) {
+  function applyTheme(theme: InkRainTheme) {
     const root = document.documentElement;
-    const transitionClass = mode === "dark" ? "theme-turning-dark" : "theme-turning-light";
-    const cleanupTransitionClass = () => {
-      root.classList.remove("theme-turning-dark", "theme-turning-light");
-    };
-    const applyTheme = () => {
-      updateHTMLTheme(mode);
-      updateStorageTheme(mode);
-      updateToggleVisual(iconElem, mode);
-    };
+    root.dataset.theme = theme;
+    root.classList.toggle("dark", theme === "ink");
 
-    if (
-      typeof document.startViewTransition !== "function" ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      applyTheme();
-      return;
-    }
+    document.head
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", themeColors[theme]);
 
-    cleanupTransitionClass();
-    root.classList.add(transitionClass);
-    const transition = document.startViewTransition(applyTheme);
-    window.setTimeout(cleanupTransitionClass, 260);
-    transition.finished.finally(() => {
-      cleanupTransitionClass();
-    });
+    localStorage.setItem("inkrain-theme", theme);
+    localStorage.removeItem("theme");
+    sendGiscusTheme(theme);
   }
 
-  class ModeToggle extends HTMLElement {
-    constructor() {
-      super();
-      let currentMode: "light" | "dark" =
-        document.documentElement.classList.contains("dark") ? "dark" : "light";
+  class ThemeCycle extends HTMLElement {
+    connectedCallback() {
+      const button = this.querySelector<HTMLButtonElement>("button");
+      const status = this.querySelector<HTMLElement>(".theme-status");
+      const icons = Array.from(this.querySelectorAll<HTMLElement>("[data-icon-theme]"));
+      if (!button) return;
 
-      const toggle = this.querySelector("button");
-      const iconElem = toggle?.querySelector(".toggle-dot");
+      const sync = () => {
+        const current = (document.documentElement.dataset.theme || "paper") as InkRainTheme;
+        const currentIndex = themeOrder.indexOf(current);
+        const next = themeOrder[(currentIndex + 1) % themeOrder.length];
 
-      if (iconElem) {
-        if (currentMode === "dark") {
-          iconElem.classList.remove("light");
-          iconElem.classList.add("dark");
-        } else {
-          iconElem.classList.add("light");
-        }
+        button.dataset.currentTheme = current;
+        button.dataset.label = `${themeNames[current]} · 点击切换${themeNames[next]}`;
+        button.setAttribute(
+          "aria-label",
+          `当前${themeNames[current]}主题，点击切换到${themeNames[next]}主题`
+        );
+        if (status) status.textContent = `当前${themeNames[current]}主题`;
 
-        iconElem.classList.remove("invisible");
-
-        toggle?.addEventListener("click", () => {
-          if (currentMode === "dark") {
-            const modeToSwitch = "light";
-            setThemeWithTransition(modeToSwitch, iconElem);
-            currentMode = modeToSwitch;
-          } else {
-            const modeToSwitch = "dark";
-            setThemeWithTransition(modeToSwitch, iconElem);
-            currentMode = modeToSwitch;
-          }
-
-          if (!iconElem.classList.contains("duration-300")) {
-            iconElem.classList.add("duration-300");
-          }
+        icons.forEach((icon) => {
+          icon.classList.toggle("is-active", icon.dataset.iconTheme === current);
         });
-      }
+      };
+
+      button.addEventListener("click", () => {
+        const current = (document.documentElement.dataset.theme || "paper") as InkRainTheme;
+        const currentIndex = themeOrder.indexOf(current);
+        const next = themeOrder[(currentIndex + 1) % themeOrder.length];
+        applyTheme(next);
+        sync();
+      });
+
+      sync();
     }
   }
 
-  if (!customElements.get("mode-toggle")) {
-    customElements.define("mode-toggle", ModeToggle);
+  if (!customElements.get("theme-cycle")) {
+    customElements.define("theme-cycle", ThemeCycle);
   }
 </script>
 
 <style>
-  .inkrain-mode-toggle {
+  .theme-cycle {
     display: inline-flex;
   }
-  .toggle-btn {
+
+  .theme-cycle-button {
     position: relative;
-    background: color-mix(in srgb, var(--panel) 72%, transparent);
-    border: 1px solid rgb(var(--color-border-soft));
-    width: 58px;
-    height: 32px;
-    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    color: var(--ink);
+    background: transparent;
     cursor: pointer;
-    padding: 3px;
-    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: inset 0 1px 2px rgb(var(--color-ink) / 0.08);
   }
-  .toggle-btn:hover {
-    border-color: rgb(var(--color-stamp) / 0.5);
-    box-shadow: var(--focus-ring);
-  }
-  .toggle-track {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-  .toggle-dot {
+
+  .theme-cycle-button::before {
+    content: "";
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 4px;
+    border: 1px solid color-mix(in srgb, var(--stamp) 66%, var(--border));
+    transform: rotate(-3deg);
+    opacity: 0.72;
+    transition: transform 160ms ease, opacity 160ms ease, border-color 160ms ease;
+  }
+
+  .theme-cycle-button::after {
+    content: attr(data-label);
+    position: absolute;
+    top: calc(100% + 7px);
+    left: 50%;
+    z-index: 60;
+    width: max-content;
+    padding: 3px 7px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--border);
+    font-family: var(--font-serif);
+    font-size: 11px;
+    line-height: 1.4;
+    transform: translate(-50%, -3px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 140ms ease, opacity 140ms ease, visibility 140ms ease;
+  }
+
+  .theme-cycle-button:hover::before,
+  .theme-cycle-button:focus-visible::before {
+    border-color: var(--stamp);
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+
+  .theme-cycle-button:hover::after,
+  .theme-cycle-button:focus-visible::after {
+    transform: translate(-50%, 0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .theme-icon {
+    position: relative;
+    z-index: 1;
+    display: none;
+    place-items: center;
     width: 24px;
     height: 24px;
-    border-radius: 999px;
-    background: var(--panel);
-    border: 1px solid rgb(var(--color-border));
-    box-shadow: 0 4px 12px rgb(var(--color-ink) / 0.14);
-    transition: transform 0.22s ease, background-color 0.22s ease, border-color 0.22s ease;
-  }
-  .toggle-dot::before {
-    display: none;
-  }
-  .toggle-icon {
-    position: absolute;
-    top: 50%;
-    z-index: 1;
-    transform: translateY(-50%);
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1;
-    color: rgb(var(--color-ink-muted));
-    pointer-events: none;
-    transition: color 0.2s ease, opacity 0.2s ease;
   }
-  .toggle-sun {
-    left: 7px;
+
+  .theme-icon.is-active {
+    display: grid;
   }
-  .toggle-moon {
-    right: 7px;
+
+  .theme-glyph {
+    position: relative;
+    display: block;
+    color: currentColor;
   }
-  .toggle-dot.light {
-    transform: translateX(0);
-    background: color-mix(in srgb, var(--stamp) 16%, var(--panel));
+
+  .theme-glyph-paper {
+    width: 13px;
+    height: 16px;
+    border: 1.5px solid currentColor;
+    box-sizing: border-box;
+    transform: rotate(-2deg);
   }
-  .toggle-dot.dark {
-    transform: translateX(26px);
-    background: color-mix(in srgb, var(--accent) 22%, var(--panel));
-    border-color: rgb(var(--color-stamp) / 0.58);
+
+  .theme-glyph-paper::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    left: 3px;
+    height: 1px;
+    background: currentColor;
+    box-shadow: 0 4px 0 currentColor;
+    opacity: 0.72;
   }
-  html.dark .toggle-sun {
-    opacity: 0.45;
+
+  .theme-glyph-moon {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    box-shadow: 4px 1px 0 0 currentColor;
+    transform: translate(-2px, -1px) rotate(-12deg);
   }
-  html.dark .toggle-moon {
-    color: rgb(var(--color-accent));
+
+  .theme-glyph-ink {
+    width: 11px;
+    height: 14px;
+    border-radius: 9px 9px 9px 2px;
+    background: currentColor;
+    transform: rotate(45deg) translate(-1px, 1px);
   }
-  html:not(.dark) .toggle-sun {
-    color: rgb(var(--color-stamp));
+
+  .theme-cycle-button[data-current-theme="paper"] .theme-icon {
+    color: var(--stamp);
   }
-  html:not(.dark) .toggle-moon {
-    opacity: 0.45;
+
+  .theme-cycle-button[data-current-theme="moon"] .theme-icon {
+    color: var(--accent);
+  }
+
+  .theme-cycle-button[data-current-theme="ink"] .theme-icon {
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-cycle-button::before,
+    .theme-cycle-button::after {
+      transition: none;
+    }
   }
 </style>

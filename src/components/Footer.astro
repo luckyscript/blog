@@ -1,42 +1,42 @@
----
----
-
 <footer class="inkrain-footer">
-  <span class="footer-brand">
-    <a
-      class="unset"
-      href="https://rainonpiano.com"
-    >墨雨</a>
-  </span>
-  <span class="footer-copy">
-    &copy; 2008~{new Date().getFullYear()}
-  </span>
+  <div class="footer-inner">
+    <span>&copy; 2008–{new Date().getFullYear()} Rain on Piano</span>
+    <a class="unset" href="https://rainonpiano.com">纸上有墨，窗外有雨</a>
+  </div>
 </footer>
 
 <style>
   .inkrain-footer {
+    color: var(--ink-muted);
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-inner {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    font-size: 0.85rem;
-    color: var(--ink-muted);
-    border-top: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border-soft));
-    padding: 22px 24px;
-    background:
-      linear-gradient(90deg, transparent, rgb(var(--color-accent) / 0.04), transparent),
-      color-mix(in srgb, var(--panel) 46%, transparent);
+    justify-content: space-between;
+    gap: 24px;
+    width: min(100% - 40px, 1120px);
+    min-height: 78px;
+    margin: 0 auto;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
   }
-  .footer-brand a {
-    font-family: var(--font-kai);
-    font-size: 1.1rem;
-    color: color-mix(in srgb, var(--stamp) 86%, var(--accent));
+
+  a {
+    color: var(--stamp);
     background-image: none !important;
   }
-  .footer-copy {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    color: color-mix(in srgb, var(--ink-muted) 86%, var(--accent));
+
+  @media (max-width: 560px) {
+    .footer-inner {
+      align-items: flex-start;
+      flex-direction: column;
+      justify-content: center;
+      width: min(100% - 28px, 1120px);
+      gap: 6px;
+      min-height: 92px;
+    }
   }
 </style>

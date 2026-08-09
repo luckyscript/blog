@@ -2,198 +2,196 @@
 import PageMeta from "../components/PageMeta.astro";
 import PageLayout from "../layouts/PageLayout.astro";
 import Intro from "../components/Intro.astro";
+import PersonalDesc from "../components/PersonalDesc.astro";
+import TelegramList from "../components/TelegramList.astro";
 import { SITE_TITLE } from "../config";
-import ArmStrong from "src/components/ArmStrong.astro";
-import Hyperdrive from "src/components/Hyperdrive.astro";
-import Starfield from "src/components/Starfield.astro";
-import PersonalDesc from "src/components/PersonalDesc.astro";
-import GithubRecord from "src/components/GithubRecord.astro";
-import TelegramList from 'src/components/TelegramList.astro'
-
-
-import { getChannelInfo } from '../lib/telegram'
+import { getChannelInfo } from "../lib/telegram";
+import { readBlog } from "../lib/markdoc/read";
+import { blog } from "../lib/markdoc/frontmatter.schema";
 
 const fallbackChannel = {
   posts: [],
-  title: '碎碎念',
-  description: '',
-}
+  title: "碎碎念",
+  description: "",
+};
 
-const channel = await Promise.race([
-  getChannelInfo(Astro),
-  new Promise((resolve) => setTimeout(() => resolve(fallbackChannel), 3000)),
-]).catch(() => fallbackChannel)
+const [channel, blogGroups] = await Promise.all([
+  Promise.race([
+    getChannelInfo(Astro),
+    new Promise((resolve) => setTimeout(() => resolve(fallbackChannel), 3000)),
+  ]).catch(() => fallbackChannel),
+  readBlog({ frontmatterSchema: blog }),
+]);
 
-export const prerender = false
+const recentPosts = blogGroups
+  .flatMap((group) => group.posts.map((post) => ({ ...post, year: group.year })))
+  .filter((post) => post.frontmatter.draft !== true)
+  .sort(
+    (a, b) =>
+      new Date(b.frontmatter.date).valueOf() - new Date(a.frontmatter.date).valueOf()
+  )
+  .slice(0, 3);
+
+const compactChannel = {
+  ...channel,
+  posts: (channel?.posts ?? []).slice(0, 3),
+};
+
+export const prerender = false;
 ---
 
 <PageLayout>
   <PageMeta title={`${SITE_TITLE} | Home`} slot="meta" />
   <Fragment slot="main">
-    <section class="home-sheet">
-      <div class="home-wash">
-        <Intro />
-        <div class="hero-banner">
-          <span class="hero-text">Volume 01 · Rain on piano</span>
-        </div>
-        <div class="ink-divider"><span class="center">墨　雨</span></div>
-      </div>
-    </section>
-    <!-- <GithubRecord /> -->
+    <Intro />
+
     <section class="home-section">
       <header class="home-section-head">
-        <span class="home-section-num">壹</span>
-        <div>
-          <div class="mono-over">Personal marks</div>
-          <h2>印 · About</h2>
-        </div>
+        <span class="home-section-index">壹 · Essays</span>
+        <h2>近日文章</h2>
       </header>
-      <PersonalDesc />
+      <div class="home-section-content recent-posts">
+        {recentPosts.map((post) => {
+          const date = new Date(post.frontmatter.date).toLocaleDateString("zh-CN", {
+            month: "short",
+            day: "numeric",
+          });
+          const href = post.frontmatter.external
+            ? post.frontmatter.url
+            : `/blog/${post.year}/${post.slug}`;
+          return (
+            <a class="unset recent-post" href={href} target={post.frontmatter.external ? "_blank" : undefined}>
+              <time datetime={post.frontmatter.date.toISOString()}>{date}</time>
+              <strong>{post.frontmatter.title}</strong>
+              <span aria-hidden="true">读</span>
+            </a>
+          );
+        })}
+        <a class="unset section-more" href="/blog">查看全部文章</a>
+      </div>
     </section>
 
     <section class="home-section">
       <header class="home-section-head">
-        <span class="home-section-num">貳</span>
-        <div>
-          <div class="mono-over">Micro notes</div>
-          <h2>言 · Channel</h2>
-        </div>
-        <a class="btn-ghost unset channel-link" href="/moments">
-          <i class="fa-solid fa-comments" aria-hidden="true"></i> 碎碎念
-        </a>
+        <span class="home-section-index">贰 · Moments</span>
+        <h2>碎碎念</h2>
       </header>
-      <TelegramList channel={channel} compact={true} />
+      <div class="home-section-content">
+        <TelegramList channel={compactChannel} compact={true} />
+        <a class="unset section-more" href="/moments">去碎碎念</a>
+      </div>
+    </section>
+
+    <section class="home-section">
+      <header class="home-section-head">
+        <span class="home-section-index">叁 · About</span>
+        <h2>关于我</h2>
+      </header>
+      <div class="home-section-content">
+        <PersonalDesc />
+      </div>
     </section>
   </Fragment>
 </PageLayout>
 
 <style>
-  .home-sheet,
   .home-section {
-    border: 1px solid var(--border);
-    background: var(--panel);
-    border-radius: 14px;
-    box-shadow: var(--surface-shadow);
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 44px;
+    padding: 56px 0;
+    border-bottom: 1px solid var(--border);
   }
 
-  .home-sheet {
-    overflow: hidden;
+  .home-section-head h2 {
+    margin: 7px 0 0;
+    color: var(--ink);
+    font-family: var(--font-kai);
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.2;
   }
 
-  .home-wash {
-    position: relative;
-    padding: 64px 46px 46px;
-    background:
-      linear-gradient(180deg, rgb(var(--color-bg-panel) / 0.32), transparent 54%),
-      var(--wash);
-  }
-
-  .home-wash::before {
-    content: "";
-    position: absolute;
-    inset: -20%;
-    opacity: 0.10;
-    background:
-      radial-gradient(ellipse at 18% 0%, var(--ink), transparent 42%),
-      radial-gradient(ellipse at 92% 100%, var(--stamp), transparent 46%),
-      radial-gradient(ellipse at 78% 12%, var(--accent), transparent 52%);
-    pointer-events: none;
-    mix-blend-mode: multiply;
-    z-index: 0;
-  }
-
-  .home-wash :global(.intro-section),
-  .home-wash .hero-banner,
-  .home-wash .ink-divider {
-    position: relative;
-    z-index: 1;
-  }
-
-  .hero-banner {
-    width: 100%;
-    text-align: center;
-    padding: 1.45rem 0 0;
-    opacity: 0;
-    animation: fadeUp 0.8s ease-out 0.2s forwards;
-  }
-  .hero-text {
-    font-weight: 500;
-    letter-spacing: 0.15em;
+  .home-section-index {
+    color: var(--ink-muted);
     font-family: var(--font-mono);
-    font-size: 10.5px;
-    color: color-mix(in srgb, var(--accent) 54%, var(--ink-muted));
+    font-size: 10px;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
-  .home-section {
-    margin-top: 28px;
-    padding: 31px 34px 36px;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-  }
-
-  .home-section:hover {
-    box-shadow: var(--surface-shadow-hover);
-    transform: translateY(-1px);
-  }
-
-  .home-section-head {
+  .recent-posts {
     display: grid;
-    grid-template-columns: 54px minmax(0, 1fr) auto;
-    gap: 20px;
+  }
+
+  .recent-post {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr) auto;
     align-items: baseline;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border-soft);
-    margin-bottom: 28px;
-  }
-
-  .home-section-num {
-    font-family: var(--font-kai);
-    font-size: 50px;
-    line-height: 0.82;
-    color: var(--stamp);
-    opacity: 0.9;
-  }
-
-  .home-section h2 {
-    margin: 8px 0 0;
-    font-family: var(--font-kai);
-    font-size: 29px;
-    font-weight: 400;
-    letter-spacing: 0.08em;
+    gap: 20px;
+    min-height: 66px;
+    padding: 17px 0;
     color: var(--ink);
-  }
-
-  .channel-link {
-    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-soft);
     background-image: none !important;
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+  .recent-post:first-child {
+    padding-top: 0;
   }
 
-  @media (max-width: 767px) {
-    .home-wash {
-      padding: 42px 18px 30px;
-    }
+  .recent-post time {
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
 
+  .recent-post strong {
+    font-size: 18px;
+    font-weight: 500;
+    transition: color 150ms ease;
+  }
+
+  .recent-post > span {
+    color: var(--stamp);
+    font-family: var(--font-kai);
+  }
+
+  .recent-post:hover strong {
+    color: var(--stamp);
+  }
+
+  .section-more {
+    display: inline-flex;
+    width: max-content;
+    margin-top: 22px;
+    padding-bottom: 2px;
+    color: var(--stamp);
+    border-bottom: 1px solid currentColor;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    background-image: none !important;
+  }
+
+  @media (max-width: 760px) {
     .home-section {
-      padding: 22px 16px 26px;
-      border-radius: 12px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+      padding: 42px 0;
     }
 
-    .home-section-head {
-      grid-template-columns: 44px minmax(0, 1fr);
+    .recent-post {
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 14px;
     }
 
-    .home-section-head .channel-link {
-      grid-column: 1 / -1;
-      justify-self: start;
+    .recent-post > span {
+      display: none;
+    }
+
+    .recent-post strong {
+      font-size: 16px;
     }
   }
 </style>

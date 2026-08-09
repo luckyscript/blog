@@ -3,46 +3,70 @@ export interface Props extends astroHTML.JSX.AnchorHTMLAttributes {}
 
 const { href, class: className, ...props } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, "");
-
-const isHome = href === '/' && path === '';
-const isOtherPages = typeof href === "string" && href.length > 1
-    ? path.substring(1).startsWith(href.substring(1))
-    : false;
-const isActive = isHome || isOtherPages
-
+const isHome = href === "/" && path === "";
+const isOtherPage = typeof href === "string" && href.startsWith("/") && href.length > 1
+  ? path.substring(1).startsWith(href.substring(1))
+  : false;
+const isActive = isHome || isOtherPage;
 ---
-<!-- DO NOT FORMAT. IT ADDS AN EXTRA SPACE ON RENDERED CONTENT. -->
+
 <a
   href={href}
-  class:list={[
-    className,
-    { "show": isActive },
-    "unset inkrain-link",
-  ]}
+  class:list={[className, { active: isActive }, "unset inkrain-link"]}
+  aria-current={isActive ? "page" : undefined}
   {...props}
 ><slot /></a>
 
 <style>
   .inkrain-link {
-    font-family: var(--font-sans);
-    font-size: 0.82rem;
-    letter-spacing: 0.02em;
-    color: rgb(var(--color-ink-soft));
     position: relative;
-    padding: 0.38rem 0.72rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 8px;
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0;
     text-decoration: none;
-    border-radius: 999px;
-    transition: color 0.18s ease, background-color 0.18s ease;
+    background-image: none !important;
   }
+
   .inkrain-link::after {
-    display: none;
+    content: "";
+    position: absolute;
+    right: 8px;
+    bottom: 3px;
+    left: 8px;
+    height: 1px;
+    background: var(--stamp);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 160ms ease;
   }
-  .inkrain-link.show {
-    color: rgb(var(--color-ink));
-    background: color-mix(in srgb, var(--stamp) 10%, transparent);
+
+  .inkrain-link:hover,
+  .inkrain-link.active {
+    color: var(--ink);
   }
-  .inkrain-link:hover {
-    color: rgb(var(--color-stamp));
-    background: color-mix(in srgb, var(--stamp) 8%, transparent);
+
+  .inkrain-link:hover::after,
+  .inkrain-link.active::after {
+    transform: scaleX(1);
+  }
+
+  @media (max-width: 980px) {
+    .inkrain-link {
+      display: flex;
+      width: 100%;
+      padding: 14px 0;
+      color: var(--ink);
+      font-family: var(--font-serif);
+      font-size: 17px;
+    }
+
+    .inkrain-link::after {
+      display: none;
+    }
   }
 </style>
