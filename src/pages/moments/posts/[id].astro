@@ -1,0 +1,23 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro'
+import PageMeta from '../../../components/PageMeta.astro'
+import TelegramItem from '../../../components/TelegramItem.astro'
+import { SITE_TITLE } from '../../../config'
+import { getChannelInfo } from '../../../lib/telegram'
+
+const post = await getChannelInfo(Astro, {
+  id: Astro.params.id,
+})
+
+export const prerender = false
+---
+
+<PageLayout>
+  <PageMeta title={`${post?.title || '碎碎念'} | ${SITE_TITLE}`} description={post?.text} slot="meta" />
+  <Fragment slot="main">
+    <section class="moments-detail">
+      <a class="unset moment-page-link" href="/moments">返回碎碎念</a>
+      {post ? <TelegramItem post={post} /> : <p>这条碎碎念没有找到。</p>}
+    </section>
+  </Fragment>
+</PageLayout>

@@ -268,3 +268,99 @@
     max-height: calc(100% - 80px) !important;
   }
 }
+
+.moments-hero {
+  position: relative;
+  margin: 0 0 2rem;
+  padding: 0 0 1.35rem;
+  border-bottom: 1px solid rgb(var(--color-border-soft));
+}
+
+.moments-eyebrow {
+  margin: 0 0 0.45rem;
+  color: rgb(var(--color-stamp));
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.moments-hero h1 {
+  margin: 0;
+  color: rgb(var(--color-ink));
+  font-family: var(--font-kai);
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+.moments-hero p:not(.moments-eyebrow) {
+  max-width: 38rem;
+  margin: 0.85rem 0 0;
+  color: rgb(var(--color-ink-soft));
+}
+
+.moments-actions,
+.moments-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.moments-pagination {
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.moment-page-link {
+  gap: 0.4rem;
+  background-image: none !important;
+}
+
+.telegram-item-compact .telegram-content img {
+  max-height: 28rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.telegram-item-compact .telegram-content .image-list-container {
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.telegram-item-compact .telegram-content .image-preview-wrap img {
+  width: 100%;
+  max-height: 24rem;
+  object-fit: contain;
+  background: rgb(var(--color-bg-panel) / 0.55);
+}
+
+.telegram-content .image-preview-wrap img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.telegram-content .modal[popover]:popover-open {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 20px;
+  border: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(20px);
+}
+
+.telegram-content .modal-img {
+  width: auto;
+  max-width: calc(100vw - 40px) !important;
+  max-height: calc(100vh - 40px) !important;
+  object-fit: contain;
+}

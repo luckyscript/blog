@@ -1,0 +1,18 @@
+---
+const {
+  title = '碎碎念',
+  eyebrow = 'BroadcastChannel',
+  description = '从 Telegram 频道同步来的日常片段、链接、现场感和没来得及写成长文的想法。',
+} = Astro.props
+---
+
+<section class="moments-hero">
+  <p class="moments-eyebrow">{eyebrow}</p>
+  <h1>{title}</h1>
+  <p>{description}</p>
+  <div class="moments-actions">
+    <a class="unset moment-page-link" href="/moments">最新</a>
+    <a class="unset moment-page-link" href="/moments/archive">旧碎片</a>
+    <a class="unset moment-page-link" href="/card">本地卡片</a>
+  </div>
+</section>

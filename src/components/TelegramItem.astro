@@ -9,19 +9,20 @@ const timezone = getEnv(import.meta.env, Astro, 'TIMEZONE')
 
 locale && dayjs.locale(locale)
 
-const { SITE_URL } = Astro.locals
-const { post } = Astro.props
+const { post, compact = false } = Astro.props
 
 const datetime = dayjs(post.datetime).tz(timezone)
 const timeago = datetime.isBefore(dayjs().subtract(1, 'w')) ? datetime.format('HH:mm · ll · ddd') : datetime.fromNow()
 ---
 
-<div class="telegram-item" style={{ 'view-transition-name': `post-${post.id}` }}>
+<article class:list={["telegram-item", compact && "telegram-item-compact"]} style={{ 'view-transition-name': `post-${post.id}` }}>
   <div class="time-wrapper">
-    <time datetime={post.datetime} title={timeago}>{timeago}</time>
+    <a class="unset telegram-permalink" href={`/moments/posts/${post.id}`} aria-label={`打开碎碎念 ${post.id}`}>
+      <time datetime={post.datetime} title={timeago}>{timeago}</time>
+    </a>
   </div>
   {post.content.length > 0 && <div class={`text-box telegram-content`} set:html={post.content} />}
-</div>
+</article>
 
 <style>
   .telegram-item {
@@ -38,5 +39,11 @@ const timeago = datetime.isBefore(dayjs().subtract(1, 'w')) ? datetime.format('H
     color: rgb(var(--color-ink-muted) / 0.6);
     margin-bottom: 0.5rem;
     letter-spacing: 0.04em;
+  }
+  .telegram-permalink {
+    color: inherit;
+  }
+  .telegram-permalink:hover {
+    color: rgb(var(--color-stamp));
   }
 </style>

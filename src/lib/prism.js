@@ -1,15 +1,19 @@
 import prism from 'prismjs'
+import { createRequire } from 'node:module'
 
 // 使用 Prism 自带的加载器来加载语言组件
 if (typeof window === 'undefined') {
+  const require = createRequire(import.meta.url)
+
   // 在服务端环境加载语言组件
   try {
     // 加载核心语言
     require('prismjs/components/prism-markup')
+    require('prismjs/components/prism-markup-templating')
     require('prismjs/components/prism-css')
     require('prismjs/components/prism-javascript')
     require('prismjs/components/prism-java')
-    
+
     // 加载其他语言
     require('prismjs/components/prism-c')
     require('prismjs/components/prism-clojure')

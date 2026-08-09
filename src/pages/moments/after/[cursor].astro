@@ -1,0 +1,22 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro'
+import PageMeta from '../../../components/PageMeta.astro'
+import MomentsHero from '../../../components/MomentsHero.astro'
+import TelegramList from '../../../components/TelegramList.astro'
+import { SITE_TITLE } from '../../../config'
+import { getChannelInfo } from '../../../lib/telegram'
+
+const channel = await getChannelInfo(Astro, {
+  after: Astro.params.cursor,
+})
+
+export const prerender = false
+---
+
+<PageLayout>
+  <PageMeta title={`更新的碎碎念 | ${SITE_TITLE}`} slot="meta" />
+  <Fragment slot="main">
+    <MomentsHero title="更新的碎碎念" description="回到更近的现场。" />
+    <TelegramList channel={channel} before={true} after={true} />
+  </Fragment>
+</PageLayout>

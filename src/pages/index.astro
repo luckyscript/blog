@@ -58,11 +58,11 @@ export const prerender = false
           <div class="mono-over">Micro notes</div>
           <h2>言 · Channel</h2>
         </div>
-        <a class="btn-ghost unset channel-link" href="https://channel.rainonpiano.com">
+        <a class="btn-ghost unset channel-link" href="/moments">
           <i class="fa-solid fa-comments" aria-hidden="true"></i> 碎碎念
         </a>
       </header>
-      <TelegramList channel={channel} />
+      <TelegramList channel={channel} compact={true} />
     </section>
   </Fragment>
 </PageLayout>

@@ -3,11 +3,17 @@ import Item from "src/components/TelegramItem.astro";
 
 const {
   channel,
+  after = false,
+  before = false,
+  compact = false,
 } = Astro.props;
 
 const posts = channel?.posts ?? [];
 
 const beforeCursor = posts[posts.length - 1]?.id;
+const afterCursor = posts[0]?.id;
+const hasOlder = before && beforeCursor && Number(beforeCursor) > 1;
+const hasNewer = after && afterCursor;
 
 ---
 
@@ -16,10 +22,19 @@ const beforeCursor = posts[posts.length - 1]?.id;
     <span class="telegram-dot"></span>
     <span>最近更新</span>
   </div>
-  <div class="items">
-    {posts.map(post => <Item post={post} />)}
+  <div class:list={["items", "moments-feed", compact && "moments-feed-compact"]}>
+    {posts.map(post => <Item post={post} compact={compact} />)}
   </div>
 </div>
+
+{
+  hasOlder || hasNewer ? (
+    <nav class="moments-pagination" aria-label="碎碎念分页">
+      {hasOlder ? <a class="unset btn-ghost moment-page-link" href={`/moments/before/${beforeCursor}`}>更早</a> : null}
+      {hasNewer ? <a class="unset btn-ghost moment-page-link" href={`/moments/after/${afterCursor}`}>更新</a> : null}
+    </nav>
+  ) : null
+}
 
 <style>
   .telegram-section {
