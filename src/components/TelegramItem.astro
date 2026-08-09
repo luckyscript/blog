@@ -16,10 +16,34 @@ const timeago = datetime.isBefore(dayjs().subtract(1, 'w')) ? datetime.format('H
 ---
 
 <article class:list={["telegram-item", compact && "telegram-item-compact"]} style={{ 'view-transition-name': `post-${post.id}` }}>
-  <header class="telegram-meta">
+  <div class="time-wrapper">
     <a class="unset telegram-permalink" href={`/moments/posts/${post.id}`} aria-label={`打开碎碎念 ${post.id}`}>
       <time datetime={post.datetime} title={timeago}>{timeago}</time>
     </a>
-  </header>
+  </div>
   {post.content.length > 0 && <div class={`text-box telegram-content`} set:html={post.content} />}
 </article>
+
+<style>
+  .telegram-item {
+    position: relative;
+    padding: 1.5rem 0 2rem;
+    border-bottom: 1px solid rgb(var(--color-border-soft));
+  }
+  .telegram-item:last-child {
+    border-bottom: none;
+  }
+  .time-wrapper {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.7rem;
+    color: rgb(var(--color-ink-muted) / 0.6);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+  .telegram-permalink {
+    color: inherit;
+  }
+  .telegram-permalink:hover {
+    color: rgb(var(--color-stamp));
+  }
+</style>

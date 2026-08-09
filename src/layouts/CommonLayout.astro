@@ -10,12 +10,11 @@ import Footer from "../components/Footer.astro";
 ---
 
 <!DOCTYPE html>
-<html class="theme-rainpaper" lang="zh-CN">
+<html class="theme-inkrain" lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="generator" content="Blogster" />
-    <meta name="theme-color" content="#faf8f2" />
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <Favicon />
     <GoogleFont />
@@ -23,29 +22,15 @@ import Footer from "../components/Footer.astro";
     <FontAwesome />
   </head>
 
-  <body
-    class="mx-auto min-h-screen px-5 sm:px-8"
-  >
+  <body class="inkrain-body">
     <Header />
-    <main id="main">
-      <section class="blog-post prose max-w-none prose-bubblegum">
-        <slot />
-      </section>
-    </main>
-    <Footer />
-    <style>
-      body {
-        display: grid;
-        grid-template-areas:
-          "header"
-          "main"
-          "footer";
-        grid-template-rows: 5rem minmax(0, 1fr) 5rem;
-        grid-template-columns: minmax(0, 1fr);
-      }
-      main {
-        grid-area: main;
-      }
-    </style>
+    <div class="inkrain-workspace">
+      <main id="main" class="inkrain-main">
+        <section class="blog-post prose prose-inkrain max-w-none">
+          <slot />
+        </section>
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>

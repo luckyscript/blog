@@ -1,18 +1,144 @@
 ---
-import Renderer from "../components/Renderer.astro";
-import { read } from "src/lib/markdoc/read";
-import path from "path";
-import matter from "gray-matter";
-import fs from "fs/promises";
-import { globby } from "globby";
-import { parseAndTransform } from 'src/lib/markdoc/read'
-
+const items = [
+  { char: '游', text: '御三家全制霸·次元壁穿梭者' },
+  { char: '骑', text: '跨上铁骑追逐地平线的冒险家' },
+  { char: '码', text: '用键盘编织代码的二进制诗人' },
+  { char: '球', text: '二十年美凌格·银河战舰永不沉没' },
+  { char: '墨', text: '执钢笔写春秋的器物美学家' },
+];
 ---
 
-<div class="mt-10 flex flex-col items-center">
-  <p>🎮 御三家全制霸·次元壁穿梭者 </p>
-  <p>🏍️ 跨上铁骑追逐地平线的冒险家</p>
-  <p>💻 用键盘编织代码的二进制诗人</p>
-  <p>⚽️ 二十年美凌格·银河战舰永不沉没</p>
-  <p>✒️ 执钢笔写春秋的器物美学家</p>
+<div class="desc-section">
+  <div class="desc-grid">
+    {items.map((item) => (
+      <div class="desc-item">
+        <div class="seal-wrap">
+          <span class="seal-char">{item.char}</span>
+        </div>
+        <p class="seal-desc">{item.text}</p>
+      </div>
+    ))}
+  </div>
 </div>
+
+<style>
+  .desc-section {
+    margin: 0;
+    opacity: 0;
+    animation: fadeUp 0.8s ease-out 0.4s forwards;
+  }
+
+  .desc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    gap: 0;
+    max-width: none;
+    margin: 0 auto;
+    border: 1px solid var(--border-soft);
+    border-right: 0;
+    border-bottom: 0;
+  }
+
+  .desc-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    text-align: center;
+    padding: 1.15rem 0.7rem;
+    position: relative;
+    border-right: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+    border-radius: 0;
+    transition: all 0.3s ease;
+  }
+
+  .desc-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 20%, color-mix(in srgb, var(--stamp) 8%, transparent), transparent 60%),
+      radial-gradient(ellipse at 70% 80%, color-mix(in srgb, var(--ink) 7%, transparent), transparent 60%);
+    pointer-events: none;
+  }
+
+  .desc-item:hover {
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+    box-shadow: none;
+  }
+
+  .seal-wrap {
+    position: relative;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Outer seal border — slightly rotated for authenticity */
+  .seal-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid var(--stamp);
+    border-radius: 0;
+    transform: rotate(-2deg);
+  }
+
+  /* Inner seal border */
+  .seal-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border: 1px solid color-mix(in srgb, var(--stamp) 55%, transparent);
+    border-radius: 0;
+    transform: rotate(-2deg);
+  }
+
+  .seal-char {
+    font-family: var(--font-kai);
+    font-size: 1.4rem;
+    line-height: 1;
+    color: var(--stamp);
+    position: relative;
+    z-index: 1;
+    text-shadow: none;
+  }
+
+  .seal-desc {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: 8rem;
+    letter-spacing: 0.03em;
+  }
+
+  @media (max-width: 768px) {
+    .desc-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .seal-desc {
+      font-size: 0.75rem;
+      max-width: 7rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .desc-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+    }
+    .desc-item {
+      padding: 1rem 0.5rem;
+    }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>

@@ -5,16 +5,14 @@ import TreeNavItem from "./TreeNavItem.astro";
 ---
 
 <Fragment>
-  <nav class="hidden md:inline">
-    <section class="text-text-bold">
-      <ul class="unset flex gap-4 [&>li]:p-0">
-        {Object.entries(NAV).map((item) => (
-          <TreeNavItem item={item}></TreeNavItem>
-        ))}
-      </ul>
-    </section>
+  <nav class="inkrain-nav desktop">
+    <ul>
+      {Object.entries(NAV).map((item) => (
+        <TreeNavItem item={item}></TreeNavItem>
+      ))}
+    </ul>
   </nav>
-  <nav class="md:hidden">
+  <nav class="inkrain-nav mobile">
     <button id="mobile-menu-open">
       <i class="fa-solid fa-bars" aria-hidden="true" title="Open mobile menu"
       ></i>
@@ -22,17 +20,17 @@ import TreeNavItem from "./TreeNavItem.astro";
     </button>
     <section
       id="mobile-menu"
-      class="hide-menu fixed top-0 left-0 z-10 w-full h-full transition-transform bg-black/75 border-primary-blue"
+      class="mobile-menu-panel"
     >
-      <div class="bg-bg-body w-[75%] h-full drop-shadow-2xl">
-        <button id="mobile-menu-close" class="px-6 h-[5rem] text-lg xml-[1px]">
+      <div class="mobile-menu-drawer">
+        <button id="mobile-menu-close">
           <i
             class="fa-solid fa-xmark"
             aria-hidden="true"
             title="Close mobile menu"></i>
           <span class="fa-sr-only">Close mobile menu</span>
         </button>
-        <ul class="unset flex flex-col text-text-bold gap-4 [&>li]:p-0 px-6">
+        <ul>
           {Object.entries(NAV).map(([key, value]) => (
             typeof value === 'string' ? (
               <li><HeaderLink href={value}>{key}</HeaderLink></li>
@@ -68,6 +66,89 @@ import TreeNavItem from "./TreeNavItem.astro";
 </script>
 
 <style>
+  .inkrain-nav.desktop {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .inkrain-nav.desktop {
+      display: block;
+    }
+  }
+  .inkrain-nav.desktop ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 1.25rem;
+  }
+  .inkrain-nav.desktop ul li {
+    padding: 0 !important;
+  }
+  .inkrain-nav.desktop ul li::before {
+    display: none;
+  }
+
+  .inkrain-nav.mobile {
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .inkrain-nav.mobile {
+      display: none;
+    }
+  }
+  .inkrain-nav.mobile button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgb(var(--color-ink));
+    font-size: 1.2rem;
+    padding: 0.25rem;
+  }
+
+  .mobile-menu-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease;
+  }
+  .mobile-menu-drawer {
+    background: rgb(var(--color-bg-body));
+    width: 75%;
+    height: 100%;
+    box-shadow: 0 4px 24px rgb(var(--color-ink) / 0.12);
+    padding-top: 1rem;
+  }
+  .mobile-menu-drawer button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgb(var(--color-ink));
+    font-size: 1.1rem;
+    padding: 1rem 1.5rem;
+  }
+  .mobile-menu-drawer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0 1.5rem;
+  }
+  .mobile-menu-drawer ul li {
+    padding: 0 !important;
+  }
+  .mobile-menu-drawer ul li::before {
+    display: none;
+  }
+  .mobile-menu-drawer ul li a {
+    font-size: 1.05rem;
+    color: rgb(var(--color-ink));
+  }
+
   .hide-menu {
     transform: translateX(-100%);
   }

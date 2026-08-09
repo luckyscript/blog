@@ -1,5 +1,5 @@
 ---
-/* 
+/*
   This layout is used in pages that render markdoc content
   - pages/blog/[slug].astro
 */
@@ -16,13 +16,15 @@ import Footer from "../components/Footer.astro";
 import GiscusComment from "src/components/GiscusComment.astro";
 
 export interface Props {
-  title: string;
+  title?: string;
   date: Date;
   update?: Date;
+  category?: string;
 }
 
-const { title, date, update = new Date() } = Astro.props;
-const formattedDate = new Date(date).toLocaleDateString("en-us", {
+const { title, date, update = new Date(), category } = Astro.props;
+const displayTitle = title || "札记";
+const formattedDate = new Date(date).toLocaleDateString("zh-CN", {
   year: "numeric",
   month: "short",
   day: "numeric",
@@ -30,16 +32,16 @@ const formattedDate = new Date(date).toLocaleDateString("en-us", {
 
 const outdays = Math.ceil(((new Date() as any) - (new Date(update) as any))/1000/60/60/24);
 const isShowoutDays = outdays > 365;
+const sealChar = category?.slice(0, 1) || "文";
 ---
 
 <!DOCTYPE html>
-<html class="theme-rainpaper" lang="zh-CN">
+<html class="theme-inkrain" lang="zh-CN">
   <head>
     <!-- Global Metadata -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="generator" content="Blogster" />
-    <meta name="theme-color" content="#faf8f2" />
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <Favicon />
     <slot name="meta" />
@@ -48,45 +50,39 @@ const isShowoutDays = outdays > 365;
     <FontAwesome />
   </head>
 
-  <body
-    class="mx-auto min-h-screen px-5 sm:px-8"
-  >
+  <body class="inkrain-body">
     <Header />
-    <main id="main">
-      <section class="blog-post prose max-w-none prose-bubblegum">
-        <h1 class="m-0 mb-[0.25em]">
-          <span class="
-              pl-6 relative block leading-[150%]
-              after:absolute after:content-[''] after:w-2 after:h-full after:top-0 after:left-0 after:bg-primary-green
-            ">
-            {title}
-          </span>
-        </h1>
-        <div class="d-flex align-middle justify-between flex-row">
-          <time class="block mb-[2em] text-text-muted">{formattedDate}</time>
-        </div>
-        {isShowoutDays && (
-          <p class="pl-6 relative block leading-[150%] before:absolute before:content-[''] before:w-2 before:h-full before:top-0 before:left-0 before:bg-primary-yellow"> 提醒：本文最后更新于 {outdays}天前，文中所描述的信息可能已发生改变，请谨慎阅读。</p>
-        )}
-        <slot name="content" />
-        <slot name="frontmatter" />
-      <GiscusComment />
-      </section>
-    </main>
-    <Footer />
-    <style>
-      body {
-        display: grid;
-        grid-template-areas:
-          "header"
-          "main"
-          "footer";
-        grid-template-rows: 5rem minmax(0, 1fr) 5rem;
-        grid-template-columns: minmax(0, 1fr);
-      }
-      main {
-        grid-area: main;
-      }
-    </style>
+    <div class="inkrain-workspace">
+      <main id="main" class="inkrain-main">
+        <article class="inkrain-article">
+          <header class="article-header">
+            <div class="article-kicker">
+              <span class="seal article-seal">{sealChar}</span>
+              <div>
+                {category ? (
+                  <a href={`/category/${category}`} class="article-category">{category}</a>
+                ) : (
+                  <span class="article-category">InkRain · Article</span>
+                )}
+                <time class="article-date">{formattedDate}</time>
+              </div>
+            </div>
+            <h1 class="article-title">{displayTitle}</h1>
+            <div class="ink-divider"><span class="center">墨　雨</span></div>
+          </header>
+          {isShowoutDays && (
+            <p class="stale-notice">
+              提醒：本文最后更新于 {outdays} 天前，文中所描述的信息可能已发生改变，请谨慎阅读。
+            </p>
+          )}
+          <div class="article-body prose prose-inkrain max-w-none">
+            <slot name="content" />
+          </div>
+          <slot name="frontmatter" />
+          <GiscusComment />
+        </article>
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>
