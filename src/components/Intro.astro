@@ -9,7 +9,7 @@
   />
   <div class="intro-copy">
     <p class="intro-kicker">癸巳年以来 · 写作与生活</p>
-    <h1>听雨，写字，<br />把日子慢慢收好。</h1>
+    <h1>听雨、写字、<br />悠哉悠哉</h1>
     <p class="intro-lead">
       这里收藏长文章、技术笔记，也收留那些尚未长成文章的片刻。纸面留白，墨色落字，朱砂只为重要之处。
     </p>
@@ -28,7 +28,7 @@
     align-items: end;
     min-height: 490px;
     overflow: hidden;
-    padding: 38px 0 56px;
+    padding: 38px clamp(20px, 3.2vw, 36px) 56px;
     border-bottom: 1px solid var(--border);
   }
 
@@ -126,7 +126,7 @@
     .intro-section {
       grid-template-columns: minmax(0, 1fr);
       min-height: 520px;
-      padding: 22px 0 38px;
+      padding: 22px 10px 38px;
     }
 
     .intro-art {
@@ -145,7 +145,7 @@
 
     .intro-inscription {
       position: absolute;
-      right: 0;
+      right: 10px;
       bottom: 30px;
       width: 36px;
       height: 118px;

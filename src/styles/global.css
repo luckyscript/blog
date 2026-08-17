@@ -568,15 +568,29 @@
 
   .article-category {
     display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
     margin: 0 !important;
     padding: 0 !important;
-    color: var(--stamp) !important;
+    color: var(--ink-soft) !important;
     border: 0 !important;
     font-family: var(--font-mono) !important;
     font-size: 10px !important;
-    letter-spacing: 0.12em !important;
+    letter-spacing: 0.08em !important;
     text-transform: uppercase;
     background: none !important;
+  }
+
+  .article-category:hover {
+    color: var(--stamp) !important;
+  }
+
+  .article-category-label {
+    padding-right: 8px;
+    color: var(--stamp);
+    border-right: 1px solid var(--border);
+    font-family: var(--font-kai);
+    letter-spacing: 0;
   }
 
   .article-date {

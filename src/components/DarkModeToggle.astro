@@ -34,14 +34,6 @@
     ink: "#20272b",
   };
 
-  function sendGiscusTheme(theme: InkRainTheme) {
-    const iframe = document.querySelector("iframe.giscus-frame") as HTMLIFrameElement | null;
-    iframe?.contentWindow?.postMessage(
-      { giscus: { setConfig: { theme: theme === "ink" ? "dark" : "light" } } },
-      "https://giscus.app"
-    );
-  }
-
   function applyTheme(theme: InkRainTheme) {
     const root = document.documentElement;
     root.dataset.theme = theme;
@@ -53,7 +45,6 @@
 
     localStorage.setItem("inkrain-theme", theme);
     localStorage.removeItem("theme");
-    sendGiscusTheme(theme);
   }
 
   class ThemeCycle extends HTMLElement {
