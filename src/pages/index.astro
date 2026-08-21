@@ -37,7 +37,7 @@ const compactChannel = {
   posts: (channel?.posts ?? []).slice(0, 3),
 };
 
-export const prerender = false;
+export const prerender = true;
 ---
 
 <PageLayout>
@@ -76,7 +76,7 @@ export const prerender = false;
         <span class="home-section-index">贰 · Moments</span>
         <h2>碎碎念</h2>
       </header>
-      <div class="home-section-content">
+      <div class="home-section-content" data-dynamic-moments>
         <TelegramList channel={compactChannel} compact={true} />
         <a class="unset section-more" href="/moments">去碎碎念</a>
       </div>
@@ -195,3 +195,84 @@ export const prerender = false;
     }
   }
 </style>
+
+<script>
+  const root = document.querySelector("[data-dynamic-moments]");
+  const feed = root?.querySelector(".moments-feed-compact");
+
+  function formatMomentTime(datetime) {
+    const date = new Date(datetime);
+    const diff = date.valueOf() - Date.now();
+    const absDiff = Math.abs(diff);
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    const week = 7 * day;
+
+    if (absDiff < week) {
+      const formatter = new Intl.RelativeTimeFormat("zh-CN", { numeric: "auto" });
+      if (absDiff < hour) {
+        return formatter.format(Math.round(diff / minute), "minute");
+      }
+      if (absDiff < day) {
+        return formatter.format(Math.round(diff / hour), "hour");
+      }
+      return formatter.format(Math.round(diff / day), "day");
+    }
+
+    return new Intl.DateTimeFormat("zh-CN", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  }
+
+  function renderMoment(post) {
+    const article = document.createElement("article");
+    article.className = "telegram-item telegram-item-compact";
+    article.style.viewTransitionName = `post-${post.id}`;
+
+    const timeWrapper = document.createElement("div");
+    timeWrapper.className = "time-wrapper";
+
+    const link = document.createElement("a");
+    link.className = "unset telegram-permalink";
+    link.href = `/moments/posts/${post.id}`;
+    link.setAttribute("aria-label", `打开碎碎念 ${post.id}`);
+
+    const time = document.createElement("time");
+    time.dateTime = post.datetime;
+    time.title = formatMomentTime(post.datetime);
+    time.textContent = formatMomentTime(post.datetime);
+
+    const content = document.createElement("div");
+    content.className = "text-box telegram-content";
+    content.innerHTML = post.content;
+
+    link.append(time);
+    timeWrapper.append(link);
+    article.append(timeWrapper, content);
+    return article;
+  }
+
+  async function refreshMoments() {
+    if (!feed) {
+      return;
+    }
+
+    const response = await fetch("/api/moments.json", { cache: "no-store" });
+    if (!response.ok) {
+      return;
+    }
+
+    const { posts } = await response.json();
+    if (!Array.isArray(posts) || posts.length === 0) {
+      return;
+    }
+
+    feed.replaceChildren(...posts.map(renderMoment));
+  }
+
+  refreshMoments().catch(() => {});
+</script>
