@@ -3,24 +3,14 @@ import path from "path";
 import matter from "gray-matter";
 import fs from "fs/promises";
 import { globby } from "globby";
-import Markdoc from "@markdoc/markdoc";
-import { config } from "./markdoc.config";
+import { usesDatabase } from '../server/env';
+import { databaseReadOne, databaseReadAll, databaseReadGroups } from '../server/public-content';
+import { parseAndTransform, renderHtml } from './render';
+import { AppError } from '../server/errors';
+export { parseAndTransform } from './render';
 
 // path is relative to where you run the `yarn build` command
 const contentDirectory = path.normalize("./content");
-
-export async function parseAndTransform({ content }: { content: string }) {
-  const ast = Markdoc.parse(content);
-
-  const errors = Markdoc.validate(ast, config);
-  if (errors.length) {
-    console.error(errors);
-    throw new Error("Markdoc validation error");
-  }
-  const transformedContent = Markdoc.transform(ast, config);
-
-  return transformedContent;
-}
 
 function validateFrontmatter<T extends z.ZodTypeAny>({
   frontmatter,
@@ -53,7 +43,7 @@ export async function read<T extends z.ZodTypeAny>({
   const rawString = await fs.readFile(filepath, "utf8");
   const { content, data: frontmatter } = matter(rawString);
   const transformedContent = await parseAndTransform({ content });
-  const html = Markdoc.renderers.html(transformedContent);
+  const html = renderHtml(transformedContent);
   const brief = await parseAndTransform({ content: content.split('<!--more-->')[0] })
   const validatedFrontmatter = validateFrontmatter({
     frontmatter,
@@ -86,11 +76,15 @@ export async function readOne<T extends z.ZodTypeAny>({
   slug: string;
   frontmatterSchema: T;
 }) {
+  if (usesDatabase()) return databaseReadOne(directory, slug);
   const filepath = path.join(contentDirectory, directory, `${slug}.md`);
-  return read({
+  if (!path.resolve(filepath).startsWith(path.resolve(contentDirectory) + path.sep)) throw new AppError(404, '文章不存在');
+  const post = await read({
     filepath,
     schema,
-  });
+  }).catch((error: any) => { if (error.code === 'ENOENT') throw new AppError(404, '文章不存在'); throw error; });
+  if ((post.frontmatter as any).draft) throw new AppError(404, '文章尚未发布');
+  return post;
 }
 
 export async function readAll<T extends z.ZodTypeAny>({
@@ -100,6 +94,7 @@ export async function readAll<T extends z.ZodTypeAny>({
   directory: string;
   frontmatterSchema: T;
 }) {
+  if (usesDatabase()) return databaseReadAll(directory);
   const pathToDir = path.posix.join(contentDirectory, directory);
   const paths = await globby(`${pathToDir}/*.md`);
 
@@ -111,6 +106,7 @@ export async function readBlog<T extends z.ZodTypeAny>({
 }: {
   frontmatterSchema: T;
 }) {
+  if (usesDatabase()) return databaseReadGroups('blog');
   const pathToDir = path.posix.join(contentDirectory, 'blog');
   const years = await fs.readdir(pathToDir, { withFileTypes: true});
   return Promise.all(years.filter(item => item.isDirectory()).map(async item => ({
@@ -124,6 +120,7 @@ export async function readSight<T extends z.ZodTypeAny>({
 }: {
   frontmatterSchema: T;
 }) {
+  if (usesDatabase()) return databaseReadGroups('sight');
   const pathToDir = path.posix.join(contentDirectory, 'sight');
   const years = await fs.readdir(pathToDir, { withFileTypes: true});
   return Promise.all(years.filter(item => item.isDirectory()).map(async item => ({
@@ -137,6 +134,7 @@ export async function readTech<T extends z.ZodTypeAny>({
 }: {
   frontmatterSchema: T;
 }) {
+  if (usesDatabase()) return databaseReadGroups('tech');
   const pathToDir = path.posix.join(contentDirectory, 'tech');
   const years = await fs.readdir(pathToDir, { withFileTypes: true});
   return Promise.all(years.filter(item => item.isDirectory()).map(async item => ({

@@ -186,9 +186,9 @@ export async function getChannelInfo(Astro, { before = '', after = '', q = '', t
   }
 
   // Where t.me can also be telegram.me, telegram.dog
-  const host = getEnv(import.meta.env, Astro, 'TELEGRAM_HOST') ?? 't.me'
-  const channel = getEnv(import.meta.env, Astro, 'CHANNEL') || 'jsjhlkblog'
-  const staticProxy = getEnv(import.meta.env, Astro, 'STATIC_PROXY') ?? '/telegramProxy/'
+  const host = getEnv('TELEGRAM_HOST', Astro) ?? 't.me'
+  const channel = getEnv('CHANNEL', Astro) || 'jsjhlkblog'
+  const staticProxy = getEnv('STATIC_PROXY', Astro) ?? '/telegramProxy/'
 
   const url = id ? `https://${host}/${channel}/${id}?embed=1&mode=tme` : `https://${host}/s/${channel}`
   const headers = Object.fromEntries(Astro.request.headers)

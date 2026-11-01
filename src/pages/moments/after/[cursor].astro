@@ -4,10 +4,11 @@ import PageMeta from '../../../components/PageMeta.astro'
 import MomentsHero from '../../../components/MomentsHero.astro'
 import TelegramList from '../../../components/TelegramList.astro'
 import { SITE_TITLE } from '../../../config'
-import { getChannelInfo } from '../../../lib/telegram'
+import { momentChannel } from '../../../lib/moments/store'
 
-const channel = await getChannelInfo(Astro, {
+const channel = await momentChannel({
   after: Astro.params.cursor,
+  q: Astro.url.searchParams.get("q") || "",
 })
 
 export const prerender = false

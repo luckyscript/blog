@@ -1,0 +1,27 @@
+---
+import AdminApp from "../../components/admin/AdminApp";
+import "../../styles/admin.css";
+import { databaseConfigured } from "../../lib/server/env";
+import { publicTurnstileSettings } from "../../lib/server/turnstile";
+export const prerender = false;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head
+    ><meta charset="utf-8" /><meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    /><meta name="robots" content="noindex,nofollow" /><title>
+      登录 · 雨间书房
+    </title></head
+  >
+  <body
+    ><AdminApp
+      client:load
+      route="login"
+      configured={databaseConfigured()}
+      turnstile={publicTurnstileSettings(Astro.url.hostname)}
+    /></body
+  >
+</html>

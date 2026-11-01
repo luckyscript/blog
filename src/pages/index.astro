@@ -3,23 +3,13 @@ import PageMeta from "../components/PageMeta.astro";
 import PageLayout from "../layouts/PageLayout.astro";
 import Intro from "../components/Intro.astro";
 import PersonalDesc from "../components/PersonalDesc.astro";
-import TelegramList from "../components/TelegramList.astro";
 import { SITE_TITLE } from "../config";
-import { getChannelInfo } from "../lib/telegram";
+import { momentChannel } from "../lib/moments/store";
 import { readBlog } from "../lib/markdoc/read";
 import { blog } from "../lib/markdoc/frontmatter.schema";
 
-const fallbackChannel = {
-  posts: [],
-  title: "碎碎念",
-  description: "",
-};
-
 const [channel, blogGroups] = await Promise.all([
-  Promise.race([
-    getChannelInfo(Astro),
-    new Promise((resolve) => setTimeout(() => resolve(fallbackChannel), 3000)),
-  ]).catch(() => fallbackChannel),
+  momentChannel({ limit: 3 }),
   readBlog({ frontmatterSchema: blog }),
 ]);
 
@@ -37,7 +27,19 @@ const compactChannel = {
   posts: (channel?.posts ?? []).slice(0, 3),
 };
 
-export const prerender = true;
+function formatMomentDate(datetime) {
+  return new Date(datetime).toLocaleDateString("zh-CN", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function getMomentExcerpt(post) {
+  const text = post.text || post.title || "";
+  return text.trim() || "打开这条碎碎念";
+}
+
+export const prerender = false;
 ---
 
 <PageLayout>
@@ -76,8 +78,16 @@ export const prerender = true;
         <span class="home-section-index">贰 · Moments</span>
         <h2>碎碎念</h2>
       </header>
-      <div class="home-section-content" data-dynamic-moments>
-        <TelegramList channel={compactChannel} compact={true} />
+      <div class="home-section-content home-moments" data-dynamic-moments>
+        <div class="home-moments-list" data-dynamic-moments-list>
+          {compactChannel.posts.length === 0 && <p>暂时没有碎碎念。</p>}
+          {compactChannel.posts.map((post) => (
+            <a class="unset home-moment" href={`/moments/posts/${post.id}`}>
+              <time datetime={post.datetime}>{formatMomentDate(post.datetime)}</time>
+              <span>{getMomentExcerpt(post)}</span>
+            </a>
+          ))}
+        </div>
         <a class="unset section-more" href="/moments">去碎碎念</a>
       </div>
     </section>
@@ -174,6 +184,60 @@ export const prerender = true;
     background-image: none !important;
   }
 
+  :global([data-dynamic-moments]) {
+    display: grid;
+    align-content: start;
+  }
+
+  :global([data-dynamic-moments-list]) {
+    display: grid;
+    gap: 10px;
+  }
+
+  :global([data-dynamic-moments] .home-moment) {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    align-items: start;
+    gap: 18px;
+    min-height: 58px;
+    padding: 15px 0;
+    color: var(--ink);
+    border-bottom: 1px solid var(--border-soft);
+    background-image: none !important;
+    transition: border-color 150ms ease, color 150ms ease;
+  }
+
+  :global([data-dynamic-moments] .home-moment:first-child) {
+    padding-top: 0;
+  }
+
+  :global([data-dynamic-moments] .home-moment time) {
+    padding-top: 3px;
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+
+  :global([data-dynamic-moments] .home-moment span) {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--ink-soft);
+    font-size: 16px;
+    line-height: 1.72;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  :global([data-dynamic-moments] .home-moment:hover) {
+    border-color: color-mix(in srgb, var(--stamp) 38%, var(--border-soft));
+  }
+
+  :global([data-dynamic-moments] .home-moment:hover span) {
+    color: var(--ink);
+  }
+
   @media (max-width: 760px) {
     .home-section {
       grid-template-columns: minmax(0, 1fr);
@@ -193,12 +257,28 @@ export const prerender = true;
     .recent-post strong {
       font-size: 16px;
     }
+
+    :global([data-dynamic-moments] .home-moment) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
+      min-height: 0;
+      padding: 16px 0;
+    }
+
+    :global([data-dynamic-moments] .home-moment time) {
+      padding-top: 0;
+    }
+
+    :global([data-dynamic-moments] .home-moment span) {
+      font-size: 15px;
+      -webkit-line-clamp: 3;
+    }
   }
 </style>
 
 <script>
   const root = document.querySelector("[data-dynamic-moments]");
-  const feed = root?.querySelector(".moments-feed-compact");
+  const feed = root?.querySelector("[data-dynamic-moments-list]");
 
   function formatMomentTime(datetime) {
     const date = new Date(datetime);
@@ -229,31 +309,20 @@ export const prerender = true;
   }
 
   function renderMoment(post) {
-    const article = document.createElement("article");
-    article.className = "telegram-item telegram-item-compact";
-    article.style.viewTransitionName = `post-${post.id}`;
-
-    const timeWrapper = document.createElement("div");
-    timeWrapper.className = "time-wrapper";
-
     const link = document.createElement("a");
-    link.className = "unset telegram-permalink";
+    link.className = "unset home-moment";
     link.href = `/moments/posts/${post.id}`;
-    link.setAttribute("aria-label", `打开碎碎念 ${post.id}`);
 
     const time = document.createElement("time");
     time.dateTime = post.datetime;
     time.title = formatMomentTime(post.datetime);
     time.textContent = formatMomentTime(post.datetime);
 
-    const content = document.createElement("div");
-    content.className = "text-box telegram-content";
-    content.innerHTML = post.content;
+    const excerpt = document.createElement("span");
+    excerpt.textContent = post.text?.trim() || post.title?.trim() || "打开这条碎碎念";
 
-    link.append(time);
-    timeWrapper.append(link);
-    article.append(timeWrapper, content);
-    return article;
+    link.append(time, excerpt);
+    return link;
   }
 
   async function refreshMoments() {

@@ -6,25 +6,7 @@ import BlogPostMeta from "../../../components/BlogPostMeta.astro";
 import ContentLayout from "../../../layouts/ContentLayout.astro";
 import { SITE_URL } from "../../../config";
 
-export async function getStaticPaths() {
-  const blogs = await readSight({
-    frontmatterSchema: blog,
-  });
 
-  const result: Array<any> = [];
-
-  blogs.forEach(blog => {
-    blog.posts.forEach(post => {
-      result.push({
-        params: {
-          slug: post.slug,
-          year: blog.year,
-        },
-      });
-    });
-  })
-  return result;
-}
 
 const { slug, year } = Astro.params;
 if (typeof slug !== "string") {
@@ -37,6 +19,8 @@ const { content, frontmatter } = await readOne({
   frontmatterSchema: blog,
 });
 
+if (frontmatter.external && frontmatter.url) return Astro.redirect(frontmatter.url, 302);
+
 const ogImageAbsoluteUrl =
   frontmatter.external !== true && frontmatter.ogImagePath
     ? new URL(frontmatter.ogImagePath, SITE_URL).toString()
@@ -45,6 +29,7 @@ const ogImageAbsoluteUrl =
 
 <ContentLayout title={frontmatter.title} date={frontmatter.date}>
   <BlogPostMeta
+    canonicalUrl={frontmatter.canonicalUrl}
     title={frontmatter.title}
     description={frontmatter.external ? undefined : frontmatter.description}
     publishDate={frontmatter.date.toISOString()}

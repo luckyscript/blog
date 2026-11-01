@@ -5,19 +5,7 @@ import Renderer from "../../components/Renderer.astro";
 import BlogPostMeta from "../../components/BlogPostMeta.astro";
 import ContentLayout from "../../layouts/ContentLayout.astro";
 
-export async function getStaticPaths() {
-  const posts = await readAll({
-    directory: "card",
-    frontmatterSchema: card,
-  });
 
-  // we don't want to generate pages for posts that link to external websites
-  const filteredPosts = posts;
-
-  return filteredPosts.map((post) => {
-    return { params: { slug: post.slug } };
-  });
-}
 
 const { slug } = Astro.params;
 if (typeof slug !== "string") {
@@ -33,6 +21,7 @@ const { content, frontmatter } = await readOne({
 
 <ContentLayout date={frontmatter.date}>
   <BlogPostMeta
+    canonicalUrl={frontmatter.canonicalUrl}
     title={frontmatter.title}
     publishDate={frontmatter.date.toISOString()}
     pagePath={`/card/${slug}`}

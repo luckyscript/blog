@@ -2,8 +2,8 @@
 import dayjs from 'src/lib/dayjs'
 import { getEnv } from 'src/lib/env'
 
-const locale = getEnv(import.meta.env, Astro, 'LOCALE')
-const timezone = getEnv(import.meta.env, Astro, 'TIMEZONE')
+const locale = getEnv('LOCALE', Astro)
+const timezone = getEnv('TIMEZONE', Astro)
 
 locale && dayjs.locale(locale)
 

@@ -1,0 +1,35 @@
+[Unit]
+Description=Rain Blog daily MySQL backup
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=rain-blog-backup
+Group=rain-blog-backup
+SupplementaryGroups=rain-blog-code
+WorkingDirectory=/opt/rain-blog/current
+Environment=NODE_ENV=production
+ExecStart=/opt/rain-blog/runtime/bin/node --env-file=/etc/rain-blog/backup.env --max-old-space-size=128 --import tsx scripts/backup-service.ts
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=90
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+CapabilityBoundingSet=
+ReadWritePaths=/var/lib/rain-blog/backups
+MemoryHigh=192M
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target

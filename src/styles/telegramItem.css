@@ -78,6 +78,18 @@
   max-height: 28rem;
 }
 
+/* Weibo emoticons are inline text, rather than full-width attached photographs. */
+.telegram-content img[src*="sinaimg.cn"][src*="/emoticon/"],
+.telegram-content img[src*="sinaimg.cn"][src*="/face/"] {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+  margin: 0 0.1em;
+  vertical-align: text-bottom;
+  border: 0;
+  border-radius: 0;
+}
+
 .telegram-content > pre {
   width: 100%;
   max-width: 100%;

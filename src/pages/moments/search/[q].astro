@@ -4,10 +4,10 @@ import PageMeta from '../../../components/PageMeta.astro'
 import MomentsHero from '../../../components/MomentsHero.astro'
 import TelegramList from '../../../components/TelegramList.astro'
 import { SITE_TITLE } from '../../../config'
-import { getChannelInfo } from '../../../lib/telegram'
+import { momentChannel } from '../../../lib/moments/store'
 
 const q = Astro.params.q || ''
-const channel = await getChannelInfo(Astro, {
+const channel = await momentChannel({
   q,
 })
 
@@ -18,6 +18,6 @@ export const prerender = false
   <PageMeta title={`搜索碎碎念：${q} | ${SITE_TITLE}`} slot="meta" />
   <Fragment slot="main">
     <MomentsHero title={`搜索：${q}`} description="频道里的相关片段。" />
-    <TelegramList channel={channel} />
+    <TelegramList channel={channel} before={true} after={true} />
   </Fragment>
 </PageLayout>

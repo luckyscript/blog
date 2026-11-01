@@ -1,6 +1,6 @@
-const qs = require('querystring');
-const fs = require('node:fs');
-const dayjs = require('dayjs');
+import qs from 'node:querystring';
+import fs from 'node:fs';
+import dayjs from 'dayjs';
 
 const WEIBO_CONFIG = {
   value: 5351049607,
@@ -70,4 +70,3 @@ while (i < 50) {
     main(i++);
 
 }
-

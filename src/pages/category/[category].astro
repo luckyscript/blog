@@ -5,24 +5,7 @@ import PageLayout from "src/layouts/PageLayout.astro";
 import PageMeta from "src/components/PageMeta.astro";
 import { SITE_TITLE } from "src/config";
 
-export async function getStaticPaths() {
-  const blogs = await readBlog({
-    frontmatterSchema: blog,
-  });
 
-  const result: Array<any> = [];
-
-  blogs.forEach(blog => {
-    blog.posts.forEach(post => {
-      result.push({
-        params: {
-          category: post.frontmatter.category,
-        },
-      });
-    });
-  })
-  return result;
-}
 
 const { category } = Astro.params;
 

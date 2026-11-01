@@ -7,7 +7,7 @@ export const TWITTER_HANDLE = "@_luckyscript";
 export const MY_NAME = "luckyscript";
 
 // setup in astro.config.mjs
-const BASE_URL = new URL(import.meta.env.SITE);
+const BASE_URL = new URL(process.env.SITE_URL || import.meta.env.SITE_URL || import.meta.env.SITE);
 
 export const SITE_URL = BASE_URL.origin;
 

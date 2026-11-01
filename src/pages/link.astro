@@ -5,6 +5,7 @@ import PageLayout from "../layouts/PageLayout.astro";
 import PageMeta from "../components/PageMeta.astro";
 import Renderer from "../components/Renderer.astro";
 import { SITE_TITLE } from "../config";
+import { AppError } from '../lib/server/errors';
 
 const posts = await readAll({
   directory: "link",
@@ -19,11 +20,12 @@ const sortedPosts = posts
       new Date(a.frontmatter.date).valueOf()
   );
 
-const { content } = await readOne({
-  directory: "link",
-  slug: "link",
-  frontmatterSchema: blog,
-});
+let content;
+try {
+  ({ content } = await readOne({ directory: 'link', slug: 'link', frontmatterSchema: blog }));
+} catch (error) {
+  if (!(error instanceof AppError && error.status === 404)) throw error;
+}
 ---
 
 <PageLayout>
@@ -74,7 +76,7 @@ const { content } = await readOne({
       })}
     </ul>
     <div class="link-content">
-      <Renderer content={content} />
+      {content && <Renderer content={content} />}
     </div>
   </section>
 </PageLayout>

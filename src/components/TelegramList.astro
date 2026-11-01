@@ -5,8 +5,9 @@ const { channel, after = false, before = false, compact = false } = Astro.props;
 const posts = channel?.posts ?? [];
 const beforeCursor = posts[posts.length - 1]?.id;
 const afterCursor = posts[0]?.id;
-const hasOlder = before && beforeCursor && Number(beforeCursor) > 1;
-const hasNewer = after && afterCursor;
+const hasOlder = before && beforeCursor && channel.hasOlder;
+const hasNewer = after && afterCursor && channel.hasNewer;
+const query = channel.query ? `?q=${encodeURIComponent(channel.query)}` : '';
 ---
 
 <div class:list={["telegram-section", compact && "telegram-section-compact"]}>
@@ -18,13 +19,14 @@ const hasNewer = after && afterCursor;
   )}
   <div class:list={["items", "moments-feed", compact && "moments-feed-compact"]}>
     {posts.map((post) => <Item post={post} compact={compact} />)}
+    {posts.length === 0 && <p>暂时没有相关的碎碎念。</p>}
   </div>
 </div>
 
 {hasOlder || hasNewer ? (
   <nav class="moments-pagination" aria-label="碎碎念分页">
-    {hasOlder ? <a class="unset btn-ghost moment-page-link" href={`/moments/before/${beforeCursor}`}>更早</a> : null}
-    {hasNewer ? <a class="unset btn-ghost moment-page-link" href={`/moments/after/${afterCursor}`}>更新</a> : null}
+    {hasOlder ? <a class="unset btn-ghost moment-page-link" href={`/moments/before/${beforeCursor}${query}`}>更早</a> : null}
+    {hasNewer ? <a class="unset btn-ghost moment-page-link" href={`/moments/after/${afterCursor}${query}`}>更新</a> : null}
   </nav>
 ) : null}
 

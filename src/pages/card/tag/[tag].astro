@@ -6,19 +6,7 @@ import PageMeta from "../../../components/PageMeta.astro";
 import { SITE_TITLE } from "../../../config";
 import Renderer from "../../../components/Renderer.astro";
 
-export async function getStaticPaths() {
-  const posts = await readAll({
-    directory: "card",
-    frontmatterSchema: card,
-  });
 
-  // we don't want to generate pages for posts that link to external websites
-  const filteredPosts = posts;
-
-  return filteredPosts.map((post) => post.frontmatter.tags).flat().filter((tag) => tag).map((tag) => {
-    return { params: { tag: tag } };
-  });
-}
 
 const { tag } = Astro.params;
 if (typeof tag !== "string") {

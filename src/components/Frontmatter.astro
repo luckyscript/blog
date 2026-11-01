@@ -14,7 +14,7 @@ const { frontmatter } = Astro.props;
       <div class="meta-row">
         <dt>分类</dt>
         <dd>
-          <a href={`/category/${frontmatter.category}`} class="meta-category unset">
+          <a href={`/category/${encodeURIComponent(frontmatter.category)}`} class="meta-category unset">
             <span class="meta-category-seal" aria-hidden="true">类</span>
             <span class="meta-category-name">{frontmatter.category}</span>
           </a>

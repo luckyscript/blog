@@ -13,6 +13,7 @@ export interface Props {
   description?: string;
   publishDate: string;
   pagePath?: string;
+  canonicalUrl?: string;
   ogImageAbsoluteUrl?: string;
   ogImageAltText?: string;
   ogImageWidth?: number;
@@ -24,6 +25,7 @@ const {
   description,
   publishDate,
   pagePath,
+  canonicalUrl,
   ogImageAbsoluteUrl,
   ogImageAltText,
   ogImageWidth,
@@ -49,7 +51,7 @@ const { meta, og, twitter } = getBlogPostMeta({
 <title>{meta.title}</title>
 <meta name="title" content={meta.title} />
 {meta.description && <meta name="description" content={meta.description} />}
-{meta.canonicalUrl && <link rel="canonical" href={meta.canonicalUrl} />}
+{(canonicalUrl || meta.canonicalUrl) && <link rel="canonical" href={canonicalUrl || meta.canonicalUrl} />}
 
 <!-- Open Graph / Facebook -->
 {og.title && <meta property="og:title" content={og.title} />}

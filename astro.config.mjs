@@ -1,11 +1,14 @@
 /* eslint-disable turbo/no-undeclared-env-vars */
 import { defineConfig } from "astro/config";
-import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import markdoc from '@astrojs/markdoc';
-import cloudflare from '@astrojs/cloudflare'
-import { provider } from 'std-env'
 import node from '@astrojs/node'
+import { existsSync } from 'node:fs';
+import { loadEnvFile } from 'node:process';
+
+// Node's loader preserves externally supplied values. Dev and production both
+// read server settings through process.env instead of bundling the env object.
+if (existsSync('.env')) loadEnvFile('.env');
 
 /*
   We are doing some URL mumbo jumbo here to tell Astro what the URL of your website will be.
@@ -31,27 +34,18 @@ if (isBuild) {
   BASE_URL = LIVE_URL;
 }
 
-const providers = {
-  cloudflare_pages: cloudflare({
-    imageService: 'compile',
-  }),
-  node: node({
-    mode: 'standalone',
-  }),
-}
-
 // https://astro.build/config
 export default defineConfig({
   server: {
     port: SERVER_PORT
   },
-  adapter: providers[provider] || providers.node,
+  output: 'server',
+  adapter: node({ mode: 'standalone' }),
   session: {
     driver: 'memory',
   },
-  site: BASE_URL,
+  site: process.env.SITE_URL || BASE_URL,
   integrations: [
-    sitemap(),
     tailwind({
       config: {
         applyBaseStyles: false

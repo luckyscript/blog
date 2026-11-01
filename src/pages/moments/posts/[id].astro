@@ -3,11 +3,9 @@ import PageLayout from '../../../layouts/PageLayout.astro'
 import PageMeta from '../../../components/PageMeta.astro'
 import TelegramItem from '../../../components/TelegramItem.astro'
 import { SITE_TITLE } from '../../../config'
-import { getChannelInfo } from '../../../lib/telegram'
+import { momentById } from '../../../lib/moments/store'
 
-const post = await getChannelInfo(Astro, {
-  id: Astro.params.id,
-})
+const post = await momentById(Astro.params.id || '')
 
 export const prerender = false
 ---

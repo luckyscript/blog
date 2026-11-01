@@ -9,7 +9,7 @@ const lang = prism.languages[language] ? language : 'text';
 // 执行代码高亮
 const highlightedCode = lang !== 'text' 
   ? prism.highlight(content, prism.languages[lang], lang)
-  : content;
+  : prism.util.encode(content);
 ---
 
 <pre class="language-{lang}">

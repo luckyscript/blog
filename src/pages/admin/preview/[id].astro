@@ -1,0 +1,16 @@
+---
+import { getPost } from '../../../lib/server/posts';
+import { adaptInput } from '../../../lib/server/public-content';
+import ContentLayout from '../../../layouts/ContentLayout.astro';
+import Renderer from '../../../components/Renderer.astro';
+export const prerender = false;
+const row = await getPost(Astro.params.id!);
+const { content, frontmatter } = await adaptInput(row.input, true);
+---
+<ContentLayout title={frontmatter.title} date={frontmatter.date} category={frontmatter.category}>
+  <meta slot="meta" name="robots" content="noindex,nofollow" />
+  <div slot="content">
+    <p style="padding:12px 16px;border:1px solid #c5b494;background:#faf5e9;color:#735b34">草稿预览 · 仅管理员可见，公开页面以最后一次发布为准。</p>
+    <Renderer content={content} />
+  </div>
+</ContentLayout>

@@ -1,0 +1,13 @@
+---
+import AdminApp from '../../components/admin/AdminApp';
+import '../../styles/admin.css';
+const route = Astro.params.path ?? '';
+const known = ['', 'media', 'taxonomy', 'settings', 'posts/new'].includes(route) || /^posts\/[a-f0-9-]{36}$/.test(route);
+if (!known) return new Response('页面不存在', { status: 404 });
+export const prerender = false;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex,nofollow" /><title>内容管理 · 雨间书房</title></head>
+  <body><AdminApp client:load route={route} user={Astro.locals.admin!} /></body>
+</html>

@@ -4,15 +4,15 @@ import PageMeta from '../components/PageMeta.astro'
 import MomentsHero from '../components/MomentsHero.astro'
 import TelegramList from '../components/TelegramList.astro'
 import { SITE_TITLE } from '../config'
-import { getChannelInfo } from '../lib/telegram'
+import { momentChannel } from '../lib/moments/store'
 
-const channel = await getChannelInfo(Astro)
+const channel = await momentChannel()
 
 export const prerender = false
 ---
 
 <PageLayout>
-  <PageMeta title={`碎碎念 | ${SITE_TITLE}`} description="从 BroadcastChannel 合并进博客的碎碎念。" slot="meta" />
+  <PageMeta title={`碎碎念 | ${SITE_TITLE}`} description="从各个平台收集并保存的生活片段。" slot="meta" />
   <Fragment slot="main">
     <MomentsHero />
     <TelegramList channel={channel} before={true} />
