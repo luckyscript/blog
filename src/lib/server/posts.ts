@@ -76,6 +76,12 @@ export async function publicPosts(section?: string, year?: string) {
   );
 }
 
+export async function recentPublicPosts(section: string, limit = 3) {
+  return db().select({ year: posts.year, slug: posts.slug, title: posts.title, publishedAt: posts.publishedAt, externalUrl: posts.externalUrl })
+    .from(posts).where(and(eq(posts.status, 'published'), eq(posts.section, section), lte(posts.publishedAt, new Date())))
+    .orderBy(desc(posts.publishedAt)).limit(Math.min(20, Math.max(1, limit)));
+}
+
 export async function publicPost(path: string) {
   const [row] = await db()
     .select()

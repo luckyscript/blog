@@ -40,6 +40,18 @@ chmod -R g+rX,o-rwx .
 
 将两个 `.service` 文件安装到 `/etc/systemd/system/`。`nginx.conf` 使用正式域名 `rainonpiano.com`，80 端口保留 ACME 验证目录，其余请求跳转到 HTTPS，443 端口反向代理应用；启用前须完成证书签发。首次安装前检查其他站点和端口占用。Nginx 覆盖转发协议与来源头，防止客户端伪造；Node 端口保持回环监听。
 
+安装性能与代理配置片段，然后在实际反向代理应用的 `server` 中引入性能片段。正式 `nginx.conf` 已包含该引入；仅 HTTP 的临时配置也需要添加。不要给域名跳转或 ACME 专用 server 添加它。
+
+```sh
+install -m 644 deploy/nginx-proxy.conf /etc/nginx/snippets/rain-blog-proxy.conf
+install -m 644 deploy/nginx-performance.conf /etc/nginx/snippets/rain-blog-performance.conf
+# 在代理 server 内添加：include /etc/nginx/snippets/rain-blog-performance.conf;
+nginx -t
+systemctl reload nginx
+```
+
+CSS、JavaScript、JSON、SVG 和 XML 启用 gzip，并返回 `Vary: Accept-Encoding`。带 Vite 指纹的 `/_astro/` 文件缓存一年；无指纹的字体和图片保留 ETag 验证，避免更新后命中旧字集。网页仍实时读取发布状态，后台仍为 `private, no-store`，不启用整页代理缓存。
+
 证书首次签发前，使用仅含 80 端口和 ACME 验证目录的临时配置，让 `/.well-known/acme-challenge/` 从 `/var/lib/letsencrypt` 提供文件。域名须解析到 ECS，安全组开放 80/443。Cloudflare 代理可先设为仅 DNS，避免旧站路由影响验证。安装 Ubuntu 官方 certbot 包后执行：
 
 ```sh

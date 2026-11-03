@@ -1,17 +1,13 @@
-import { publicPosts, publicPost } from "./posts";
-import { parseAndTransform, renderHtml } from "../markdoc/render";
+import { publicPosts, publicPost, recentPublicPosts } from "./posts";
+import { renderedBody } from "../markdoc/render-cache";
 import type { PostInput } from "./content-input";
 
 export async function adaptInput(input: PostInput, draft = false) {
-  const content = await parseAndTransform({ content: input.markdown });
+  const body = await renderedBody(input.markdown);
   return {
     slug: input.slug,
-    content,
-    brief: await parseAndTransform({
-      content: input.markdown.split("<!--more-->")[0],
-    }),
+    ...body,
     rawContent: input.markdown,
-    html: renderHtml(content),
     frontmatter: {
       ...input.metadata,
       title: input.title,
@@ -30,6 +26,12 @@ export async function adaptInput(input: PostInput, draft = false) {
       canonicalUrl: input.canonicalUrl || undefined,
     },
   };
+}
+export async function databaseReadRecentBlog(limit: number) {
+  return (await recentPublicPosts('blog', limit)).map(row => ({
+    year: row.year, slug: row.slug,
+    frontmatter: { title: row.title, date: row.publishedAt, draft: false, external: !!row.externalUrl, url: row.externalUrl },
+  }));
 }
 export async function databaseReadOne(directory: string, slug: string) {
   const row = await publicPost(`/${directory}/${slug}`);

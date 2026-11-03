@@ -4,8 +4,8 @@ import matter from "gray-matter";
 import fs from "fs/promises";
 import { globby } from "globby";
 import { usesDatabase } from '../server/env';
-import { databaseReadOne, databaseReadAll, databaseReadGroups } from '../server/public-content';
-import { parseAndTransform, renderHtml } from './render';
+import { databaseReadOne, databaseReadAll, databaseReadGroups, databaseReadRecentBlog } from '../server/public-content';
+import { renderedBody } from './render-cache';
 import { AppError } from '../server/errors';
 export { parseAndTransform } from './render';
 
@@ -42,9 +42,7 @@ export async function read<T extends z.ZodTypeAny>({
 }) {
   const rawString = await fs.readFile(filepath, "utf8");
   const { content, data: frontmatter } = matter(rawString);
-  const transformedContent = await parseAndTransform({ content });
-  const html = renderHtml(transformedContent);
-  const brief = await parseAndTransform({ content: content.split('<!--more-->')[0] })
+  const body = await renderedBody(content);
   const validatedFrontmatter = validateFrontmatter({
     frontmatter,
     schema,
@@ -59,12 +57,17 @@ export async function read<T extends z.ZodTypeAny>({
 
   return {
     slug: fileNameWithoutExtension,
-    content: transformedContent,
-    brief,
+    ...body,
     rawContent: content,
     frontmatter: validatedFrontmatter,
-    html,
   };
+}
+
+export async function readRecentBlog<T extends z.ZodTypeAny>({ frontmatterSchema, limit = 3 }: { frontmatterSchema: T; limit?: number }) {
+  if (usesDatabase()) return databaseReadRecentBlog(limit);
+  return (await readBlog({ frontmatterSchema })).flatMap(group => group.posts.map(post => ({ ...post, year: group.year })))
+    .filter(post => !(post.frontmatter as any).draft)
+    .sort((a, b) => new Date((b.frontmatter as any).date).getTime() - new Date((a.frontmatter as any).date).getTime()).slice(0, limit);
 }
 
 export async function readOne<T extends z.ZodTypeAny>({

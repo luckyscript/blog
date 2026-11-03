@@ -24,6 +24,10 @@ function safeTree(node: any): any {
               : normalized;
         }
       }
+      if (node.name === 'img') {
+        node.attributes.loading ??= 'lazy';
+        node.attributes.decoding ??= 'async';
+      }
     }
     if (node.children) node.children = node.children.map(safeTree);
   }
@@ -107,7 +111,7 @@ export function renderHtml(tree: any) {
     allowedAttributes: {
       ...sanitizeHtml.defaults.allowedAttributes,
       "*": ["class", "id"],
-      img: ["src", "alt", "width", "height", "loading"],
+      img: ["src", "alt", "width", "height", "loading", "decoding"],
     },
     allowedSchemes: ["http", "https", "mailto", "tel"],
     allowProtocolRelative: false,

@@ -52,6 +52,8 @@ sudo -u rain-blog-moments /opt/rain-blog/runtime/bin/node --env-file=/etc/rain-b
 
 ## 本地启动
 
+首页只查询最新 3 篇文章的列表字段，不编译整个栏目的 Markdown，也不在首屏额外刷新一次碎碎念。文章正文按内容指纹复用编译结果（最多 128 条、估算内存上限 16MiB）；每次请求仍查询 MySQL 发布状态与元信息，编辑正文、撤回或软删除均即时生效。返回给页面的 Markdoc 树各自独立，后台预览和管理接口不使用这份正文缓存。正文图片默认延迟加载并异步解码。
+
 需要 Node.js 22。本机 MySQL 方案另外需要可运行的 Docker（例如 OrbStack）；连接阿里云 RDS 等已有 MySQL 时，应用和备份均可直接运行。
 
 ```sh

@@ -111,9 +111,10 @@ export async function momentSources() {
     backfillComplete: !!jsonValue(row.sync_state)?.backfillComplete }));
 }
 
-const selectMoment = `SELECT m.*,s.platform,s.account FROM blog_moments m JOIN blog_moment_sources s ON s.id=m.source_id`;
-async function findRow(id: string) {
-  const [rows] = await getPool().query<any[]>(selectMoment + ` WHERE m.status='published' AND s.enabled=TRUE AND m.published_at<=UTC_TIMESTAMP(3) AND ` +
+const momentFrom = ' FROM blog_moments m JOIN blog_moment_sources s ON s.id=m.source_id';
+const selectMoment = 'SELECT m.*,s.platform,s.account' + momentFrom;
+async function findRow(id: string, cursorOnly = false) {
+  const [rows] = await getPool().query<any[]>((cursorOnly ? 'SELECT m.id,m.published_at' + momentFrom : selectMoment) + ` WHERE m.status='published' AND s.enabled=TRUE AND m.published_at<=UTC_TIMESTAMP(3) AND ` +
     (/^[0-9]+$/.test(id) ? 'm.source_id=? AND m.external_id=?' : 'm.id=?') + ' LIMIT 1',
     /^[0-9]+$/.test(id) ? [`telegram:${telegramAccount()}`, id] : [id]);
   return rows[0];
@@ -130,7 +131,7 @@ export async function momentChannel(options: { before?: string; after?: string; 
   const conditions = ["m.status='published'", 's.enabled=TRUE', 'm.published_at<=UTC_TIMESTAMP(3)']; const values: any[] = [];
   const cursorId = options.before || options.after;
   if (cursorId) {
-    const cursor = await findRow(cursorId); if (!cursor) throw new AppError(404, '分页位置不存在');
+    const cursor = await findRow(cursorId, true); if (!cursor) throw new AppError(404, '分页位置不存在');
     const op = options.before ? '<' : '>';
     conditions.push(`(m.published_at ${op} ? OR (m.published_at=? AND m.id ${op} ?))`); values.push(cursor.published_at, cursor.published_at, cursor.id);
   }
@@ -139,11 +140,12 @@ export async function momentChannel(options: { before?: string; after?: string; 
   if (options.after) rows.reverse();
   let hasOlder = false, hasNewer = false;
   if (rows.length && limit > 3) {
-    for (const direction of ['older','newer']) {
+    const exists = await Promise.all(['older','newer'].map(async direction => {
       const row = direction === 'older' ? rows[rows.length-1] : rows[0]; const op = direction === 'older' ? '<' : '>';
-      const [exists] = await getPool().query<any[]>(selectMoment + ` WHERE m.status='published' AND s.enabled=TRUE AND m.published_at<=UTC_TIMESTAMP(3) AND (m.published_at ${op} ? OR (m.published_at=? AND m.id ${op} ?))` + (options.q ? ' AND LOCATE(?,m.body_text)>0' : '') + ' LIMIT 1', [row.published_at,row.published_at,row.id,...(options.q ? [options.q.slice(0,200)] : [])]);
-      if (direction === 'older') hasOlder = !!exists.length; else hasNewer = !!exists.length;
-    }
+      const [found] = await getPool().query<any[]>('SELECT 1' + momentFrom + ` WHERE m.status='published' AND s.enabled=TRUE AND m.published_at<=UTC_TIMESTAMP(3) AND (m.published_at ${op} ? OR (m.published_at=? AND m.id ${op} ?))` + (options.q ? ' AND LOCATE(?,m.body_text)>0' : '') + ' LIMIT 1', [row.published_at,row.published_at,row.id,...(options.q ? [options.q.slice(0,200)] : [])]);
+      return !!found.length;
+    }));
+    [hasOlder,hasNewer] = exists;
   }
   return { title: '碎碎念', posts: rows.map(publicMoment), hasOlder, hasNewer, query: options.q || '' };
 }
