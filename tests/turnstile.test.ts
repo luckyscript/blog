@@ -53,6 +53,56 @@ test("Turnstile 配置必须完整且绑定当前域名，浏览器配置不包�
     true
   );
 });
+test("IP 入口区分域名不匹配与缺少密钥，只提供已绑定的 HTTPS 后台链接", () => {
+  const mismatch = publicTurnstileSettings("47.97.9.7", environment);
+  assert.equal(mismatch.configured, false);
+  assert.equal(mismatch.siteKey, "");
+  assert.equal(mismatch.hostnameMismatch, true);
+  assert.equal(mismatch.loginUrl, `https://${hostname}/admin/login`);
+  assert.doesNotMatch(JSON.stringify(mismatch), /secret-only-on-server/);
+  const missing = publicTurnstileSettings("47.97.9.7", {});
+  assert.equal(missing.hostnameMismatch, false);
+  assert.equal(missing.loginUrl, null);
+  const configured = publicTurnstileSettings(hostname, environment);
+  assert.equal(configured.hostnameMismatch, false);
+  assert.equal(configured.loginUrl, null);
+  for (const siteUrl of [
+    "not-a-url",
+    `http://${hostname}`,
+    "https://elsewhere.test",
+    `https://user:password@${hostname}`,
+    "javascript:alert(1)",
+  ]) {
+    const config = publicTurnstileSettings("47.97.9.7", {
+      ...environment,
+      TURNSTILE_HOSTNAMES: hostname,
+      SITE_URL: siteUrl,
+    });
+    assert.equal(config.hostnameMismatch, true);
+    assert.equal(config.loginUrl, null);
+  }
+  assert.equal(
+    publicTurnstileSettings("47.97.9.7", {
+      ...environment,
+      SITE_URL: `https://${hostname}/path?next=https://elsewhere.test#fragment`,
+    }).loginUrl,
+    `https://${hostname}/admin/login`
+  );
+});
+test("域名不匹配的登录请求依然拒绝，不调用验证服务或创建会话", async () => {
+  let calls = 0;
+  await assert.rejects(
+    verifyTurnstile("token", "47.97.9.7", {
+      environment,
+      fetch: async () => {
+        calls++;
+        return new Response(JSON.stringify(success));
+      },
+    }),
+    (error: any) => error.status === 503 && /当前访问地址未绑定/.test(error.message)
+  );
+  assert.equal(calls, 0);
+});
 test("缺失、过长或未配置的验证令牌直接拒绝，不请求 Cloudflare", async () => {
   let calls = 0;
   const fetch: typeof globalThis.fetch = async () => {

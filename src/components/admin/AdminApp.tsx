@@ -302,7 +302,16 @@ function Login({
           )}
           {!turnstile.configured && (
             <div className="notice error" role="alert">
-              登录验证尚未配置，请联系管理员。
+              {turnstile.hostnameMismatch ? (
+                <>
+                  当前访问地址未绑定登录验证，请通过博客域名登录。
+                  {turnstile.loginUrl && (
+                    <a href={turnstile.loginUrl}>前往域名后台</a>
+                  )}
+                </>
+              ) : (
+                "登录验证尚未配置，请联系管理员。"
+              )}
             </div>
           )}
           <label>

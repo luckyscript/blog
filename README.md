@@ -81,7 +81,7 @@ TURNSTILE_SECRET_KEY=仅服务端使用的SecretKey
 TURNSTILE_HOSTNAMES=rainonpiano.com,www.rainonpiano.com
 ```
 
-`TURNSTILE_HOSTNAMES` 是精确域名白名单，不含协议、路径或端口；留空时使用 `SITE_URL` 的主机名。修改后重启 Node 服务。密钥未配置、配置不完整或当前域名不匹配时，页面禁用登录，接口返回 503。
+`TURNSTILE_HOSTNAMES` 是精确域名白名单，不含协议、路径或端口；留空时使用 `SITE_URL` 的主机名。修改后重启 Node 服务。密钥未配置、配置不完整或当前域名不匹配时，页面禁用登录，接口返回 503。通过 ECS IP 访问时，即使密钥已配置，也会提示当前地址未绑定验证；请先将域名接入 ECS 并配置 HTTPS，再通过域名后台登录。`SITE_URL` 为白名单内的 HTTPS 地址时，页面会提供该域名的后台入口。
 
 页面完成验证后，将令牌与邮箱密码一起提交；服务端先请求 Cloudflare Siteverify，确认成功、当前域名与 `admin-login` 用途匹配，再校验密码、限流并创建登录会话。Secret Key 只在服务端读取。绕过页面直接请求登录接口仍须通过验证；网络异常、验证失败、令牌过期或重复使用均会拒绝登录。每次登录失败后页面重新获取令牌。
 

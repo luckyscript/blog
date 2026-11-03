@@ -4,6 +4,8 @@ export type TurnstileSettings = {
   siteKey: string;
   configured: boolean;
   testing: boolean;
+  hostnameMismatch?: boolean;
+  loginUrl?: string | null;
 };
 type TurnstileApi = {
   render(container: HTMLElement, options: Record<string, unknown>): string;

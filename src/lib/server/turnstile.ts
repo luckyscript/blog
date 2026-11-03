@@ -23,6 +23,8 @@ type Settings = {
   hostnames: string[];
   testing: boolean;
   configured: boolean;
+  hostnameMismatch: boolean;
+  loginUrl: string | null;
 };
 function settings(
   requestHostname: string,
@@ -52,15 +54,31 @@ function settings(
   }
   const usesTestKey =
     testSiteKeys.has(siteKey) || testSecretKeys.has(secretKey);
-  const configured = Boolean(
+  const keysConfigured = Boolean(
     siteKey &&
       secretKey &&
       /^[\w-]{1,200}$/.test(siteKey) &&
-      (usesTestKey
-        ? testing
-        : hostnames.includes(normalizeHost(requestHostname)))
+      (!usesTestKey || testing)
   );
-  return { siteKey, secretKey, hostnames, testing, configured };
+  const hostnameMismatch =
+    keysConfigured && !testing && !hostnames.includes(normalizeHost(requestHostname));
+  const configured = keysConfigured && !hostnameMismatch;
+  let loginUrl: string | null = null;
+  if (hostnameMismatch) {
+    try {
+      const site = new URL(value("SITE_URL"));
+      if (
+        site.protocol === "https:" &&
+        !site.username &&
+        !site.password &&
+        hostnames.includes(normalizeHost(site.hostname))
+      )
+        loginUrl = new URL("/admin/login", site.origin).href;
+    } catch {
+      /* A missing or invalid canonical URL must not produce a login link. */
+    }
+  }
+  return { siteKey, secretKey, hostnames, testing, configured, hostnameMismatch, loginUrl };
 }
 
 /** Only this projection may be passed to the browser. */
@@ -73,6 +91,8 @@ export function publicTurnstileSettings(
     siteKey: config.configured ? config.siteKey : "",
     configured: config.configured,
     testing: config.testing,
+    hostnameMismatch: config.hostnameMismatch,
+    loginUrl: config.loginUrl,
   };
 }
 
@@ -96,7 +116,12 @@ export async function verifyTurnstile(
 ) {
   const config = settings(hostname, options.environment);
   if (!config.configured)
-    throw new AppError(503, "登录验证尚未配置，请联系管理员");
+    throw new AppError(
+      503,
+      config.hostnameMismatch
+        ? "当前访问地址未绑定登录验证，请通过博客域名登录"
+        : "登录验证尚未配置，请联系管理员"
+    );
   if (typeof token !== "string" || !token.trim() || token.length > 2048)
     throw new AppError(403, "请先完成 Cloudflare 安全验证");
   let result: z.infer<typeof verificationResult>;
