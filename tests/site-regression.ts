@@ -3,6 +3,38 @@ import assert from "node:assert/strict";
 import { publicPosts } from "../src/lib/server/posts";
 import { closeDatabase } from "../src/db";
 import { momentChannel } from "../src/lib/moments/store";
+import { load } from "cheerio";
+
+test("字体与图标从当前站点加载，所有字体文件有效且没有整包 TTF 请求", async () => {
+  const origin = process.env.TEST_BASE_URL || "http://127.0.0.1:3000";
+  assert.ok(["localhost", "127.0.0.1"].includes(new URL(origin).hostname));
+  const home = await (await fetch(origin)).text();
+  const $ = load(home);
+  const assets = $('link[rel="stylesheet"],link[as="font"]').toArray().map(el => $(el).attr('href')!);
+  for (const asset of assets) {
+    assert.equal(new URL(asset,origin).origin,new URL(origin).origin,asset);
+    assert.doesNotMatch(asset,/\.ttf(?:$|\?)/);
+    assert.equal((await fetch(new URL(asset,origin),{method:'HEAD'})).status,200,asset);
+  }
+  const css = await (await fetch(new URL('/fonts/inkrain.css',origin))).text();
+  const fonts = [...new Set([...css.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map(match=>match[1]))];
+  assert.ok(fonts.length>0);
+  const queue=[...fonts];
+  await Promise.all(Array.from({length:6},async()=>{
+    for(let asset=queue.shift();asset;asset=queue.shift()) {
+      assert.equal(new URL(asset,origin).origin,new URL(origin).origin,asset);
+      assert.match(asset,/\.woff2$/);
+      const response=await fetch(new URL(asset,origin),{method:'HEAD',signal:AbortSignal.timeout(10_000)});
+      assert.equal(response.status,200,asset);
+      assert.match(response.headers.get('content-type')||'',/font\/woff2/);
+      assert.ok(Number(response.headers.get('content-length'))<300_000,asset);
+    }
+  }));
+  const font=Buffer.from(await (await fetch(new URL('/fonts/cang-er-jin-kai-ui.woff2',origin))).arrayBuffer());
+  assert.equal(font.subarray(0,4).toString(),'wOF2');
+  assert.ok(font.length<100_000,'界面字体应小于 100KB');
+  console.log(`已验证 ${fonts.length} 个本站字体资源与 ${assets.length} 个首屏样式/预加载资源`);
+});
 
 test("所有已发布文章和本地栏目均可访问，草稿与后台不进入 Sitemap", async () => {
   const origin = process.env.TEST_BASE_URL || "http://127.0.0.1:3000";

@@ -11,7 +11,8 @@ const BASE_URL = new URL(process.env.SITE_URL || import.meta.env.SITE_URL || imp
 
 export const SITE_URL = BASE_URL.origin;
 
-export const CDN_URL = SITE_URL;
+// Static assets follow the current origin, including direct ECS IP access.
+export const CDN_URL = '';
 
 export const WEIBO_CONFIG = {
   value: 5351049607,
