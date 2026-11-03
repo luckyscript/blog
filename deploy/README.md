@@ -52,7 +52,11 @@ systemctl reload nginx
 
 CSS、JavaScript、JSON、SVG 和 XML 启用 gzip，并返回 `Vary: Accept-Encoding`。带 Vite 指纹的 `/_astro/` 文件缓存一年；无指纹的字体和图片保留 ETag 验证，避免更新后命中旧字集。网页仍实时读取发布状态，后台仍为 `private, no-store`，不启用整页代理缓存。
 
-证书首次签发前，使用仅含 80 端口和 ACME 验证目录的临时配置，让 `/.well-known/acme-challenge/` 从 `/var/lib/letsencrypt` 提供文件。域名须解析到 ECS，安全组开放 80/443。Cloudflare 代理可先设为仅 DNS，避免旧站路由影响验证。安装 Ubuntu 官方 certbot 包后执行：
+保留 Cloudflare 橙云代理时，可使用 `nginx-cloudflare.conf` 与 Cloudflare Origin CA 源站证书。先在 ECS 的 `/etc/rain-blog/tls/` 生成私钥 `rainonpiano.com.key` 和 CSR `rainonpiano.com.csr`，目录权限 700、文件权限 600，由 root 持有。将 CSR 提交到 Cloudflare 的 **SSL/TLS → 源服务器 → 创建证书 → 使用我的私钥和 CSR**，主机名填写 `rainonpiano.com`。将返回的 PEM 格式 Origin Certificate 保存为 `/etc/rain-blog/tls/rainonpiano.com.pem`（root:root，600）。私钥留在 ECS，不放入 Git、发布包或聊天。
+
+确认签发证书与私钥的公钥相同、有效期和 SAN 正确后，再安装 `nginx-cloudflare.conf`，执行 `nginx -t` 并 reload。之后将 Cloudflare SSL/TLS 模式设为 **Full (strict)**，验证公网 HTTPS、后台验证组件和登录接口。Origin CA 供 Cloudflare 回源使用，需保持橙云；它不受普通浏览器直接信任，也不由 certbot 自动续期，需记录到期时间并在到期前重新签发。Cloudflare 的 **Flexible** 模式配合源站 HTTP 跳转 HTTPS 会造成重定向循环。
+
+也可使用 Let's Encrypt。证书首次签发前，使用仅含 80 端口和 ACME 验证目录的临时配置，让 `/.well-known/acme-challenge/` 从 `/var/lib/letsencrypt` 提供文件。域名须解析到 ECS，安全组开放 80/443。Cloudflare 橙云可保留，前提是验证路径能回到 ECS 且未被重定向或安全规则拦截；必要时临时设为仅 DNS 排查。安装 Ubuntu 官方 certbot 包后执行：
 
 ```sh
 certbot certonly --non-interactive --agree-tos --register-unsafely-without-email --webroot -w /var/lib/letsencrypt --preferred-challenges http --key-type ecdsa --cert-name rainonpiano.com -d rainonpiano.com
