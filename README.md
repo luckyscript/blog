@@ -85,6 +85,8 @@ TURNSTILE_HOSTNAMES=rainonpiano.com,www.rainonpiano.com
 
 页面完成验证后，将令牌与邮箱密码一起提交；服务端先请求 Cloudflare Siteverify，确认成功、当前域名与 `admin-login` 用途匹配，再校验密码、限流并创建登录会话。Secret Key 只在服务端读取。绕过页面直接请求登录接口仍须通过验证；网络异常、验证失败、令牌过期或重复使用均会拒绝登录。每次登录失败后页面重新获取令牌。
 
+Siteverify 使用独立连接池，将地址切换等待时间设为 1.5 秒，以适应 ECS 的跨境连接延迟。临时连接错误、HTTP 429/5xx 和 `internal-error` 最多尝试三次，共用一个十秒总时限和 Cloudflare 幂等键；密钥错误、无效或过期令牌直接拒绝。重试耗尽时仍禁止登录，并在服务端输出 `turnstile_siteverify_unavailable` 诊断事件，日志只含错误代码和尝试次数。
+
 本地开发可显式使用 Cloudflare 官方公开测试密钥：
 
 ```dotenv

@@ -1,8 +1,42 @@
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
+import { setTimeout as delay } from "node:timers/promises";
+import { Agent } from "undici";
 import { env } from "./env";
 import { AppError } from "./errors";
 
 const SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+// Some ECS-to-Cloudflare connections exceed Node's default 250 ms family
+// selection window. Allow a longer attempt without changing other requests.
+const siteverifyAgent = new Agent({
+  autoSelectFamily: true,
+  autoSelectFamilyAttemptTimeout: 1500,
+  connectTimeout: 4000,
+  connections: 2,
+});
+const transientNetworkCodes = new Set([
+  "ETIMEDOUT",
+  "ENETUNREACH",
+  "ECONNREFUSED",
+  "ECONNRESET",
+  "ENOTFOUND",
+  "EAI_AGAIN",
+  "UND_ERR_CONNECT_TIMEOUT",
+  "UND_ERR_HEADERS_TIMEOUT",
+  "UND_ERR_BODY_TIMEOUT",
+  "UND_ERR_SOCKET",
+]);
+function unavailable(reason: string, attempts: number): never {
+  // Log only fixed reason codes, never tokens, secrets, response bodies or errors.
+  console.warn(
+    JSON.stringify({
+      event: "turnstile_siteverify_unavailable",
+      reason,
+      attempts,
+    })
+  );
+  throw new AppError(503, "安全验证暂不可用，请稍后重新验证");
+}
 export const TURNSTILE_ACTION = "admin-login";
 const testSiteKeys = new Set([
   "1x00000000000000000000AA",
@@ -61,7 +95,9 @@ function settings(
       (!usesTestKey || testing)
   );
   const hostnameMismatch =
-    keysConfigured && !testing && !hostnames.includes(normalizeHost(requestHostname));
+    keysConfigured &&
+    !testing &&
+    !hostnames.includes(normalizeHost(requestHostname));
   const configured = keysConfigured && !hostnameMismatch;
   let loginUrl: string | null = null;
   if (hostnameMismatch) {
@@ -78,7 +114,15 @@ function settings(
       /* A missing or invalid canonical URL must not produce a login link. */
     }
   }
-  return { siteKey, secretKey, hostnames, testing, configured, hostnameMismatch, loginUrl };
+  return {
+    siteKey,
+    secretKey,
+    hostnames,
+    testing,
+    configured,
+    hostnameMismatch,
+    loginUrl,
+  };
 }
 
 /** Only this projection may be passed to the browser. */
@@ -124,33 +168,71 @@ export async function verifyTurnstile(
     );
   if (typeof token !== "string" || !token.trim() || token.length > 2048)
     throw new AppError(403, "请先完成 Cloudflare 安全验证");
-  let result: z.infer<typeof verificationResult>;
-  try {
-    const response = await (options.fetch ?? fetch)(SITEVERIFY, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ secret: config.secretKey, response: token }),
-      signal: AbortSignal.timeout(10_000),
-      redirect: "error",
-    });
-    if (!response.ok) throw new Error("Siteverify unavailable");
-    result = verificationResult.parse(await response.json());
-  } catch {
-    throw new AppError(503, "安全验证暂不可用，请稍后重新验证");
+  let result: z.infer<typeof verificationResult> | undefined;
+  const signal = AbortSignal.timeout(10_000);
+  // Reusing this key makes a retry safe even if Cloudflare consumed the token
+  // before the first connection was interrupted.
+  const idempotencyKey = randomUUID();
+  let attempts = 0;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    attempts++;
+    let reason = "TRANSPORT_ERROR";
+    try {
+      const request = {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          secret: config.secretKey,
+          response: token,
+          idempotency_key: idempotencyKey,
+        }),
+        signal,
+        redirect: "error" as const,
+        dispatcher: siteverifyAgent,
+      };
+      const response = await (options.fetch ?? fetch)(SITEVERIFY, request);
+      if (!response.ok) {
+        reason = `HTTP_${response.status}`;
+        await response.body?.cancel();
+        if (response.status !== 429 && response.status < 500)
+          unavailable(reason, attempts);
+        throw new Error("Siteverify unavailable");
+      }
+      reason = "INVALID_RESPONSE";
+      result = verificationResult.parse(await response.json());
+      const codes = result["error-codes"] ?? [];
+      if (
+        result.success ||
+        !codes.length ||
+        codes.some((code) => code !== "internal-error")
+      )
+        break;
+      reason = "INTERNAL_ERROR";
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      result = undefined;
+      const code = (error as { cause?: { code?: unknown } })?.cause?.code;
+      if (typeof code === "string" && transientNetworkCodes.has(code))
+        reason = code;
+    }
+    if (attempt === 2 || signal.aborted)
+      unavailable(signal.aborted ? "TIMEOUT" : reason, attempts);
+    try {
+      await delay(100 * (attempt + 1), undefined, { signal });
+    } catch {
+      unavailable("TIMEOUT", attempts);
+    }
   }
+  if (!result) unavailable("INVALID_RESPONSE", attempts);
   if (!result.success) {
     const codes = result["error-codes"] ?? [];
-    if (
-      codes.some((code) =>
-        [
-          "missing-input-secret",
-          "invalid-input-secret",
-          "internal-error",
-          "bad-request",
-        ].includes(code)
-      )
-    )
-      throw new AppError(503, "安全验证暂不可用，请稍后重新验证");
+    const serviceError = [
+      "missing-input-secret",
+      "invalid-input-secret",
+      "internal-error",
+      "bad-request",
+    ].find((code) => codes.includes(code));
+    if (serviceError) unavailable(serviceError, attempts);
     throw new AppError(
       403,
       codes.includes("timeout-or-duplicate")
