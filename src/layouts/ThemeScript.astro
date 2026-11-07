@@ -2,7 +2,7 @@
   (function () {
     if (typeof window === "undefined") return;
 
-    var validThemes = ["paper", "moon", "ink"];
+    var validThemes = ["paper", "moon", "sand", "ink"];
     var savedTheme = localStorage.getItem("inkrain-theme");
     var legacyTheme = localStorage.getItem("theme");
     var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -19,6 +19,7 @@
     var themeColors = {
       paper: "#f4f0e6",
       moon: "#edf4f3",
+      sand: "#f2e3c5",
       ink: "#20272b"
     };
     if (themeColor) themeColor.content = themeColors[theme];

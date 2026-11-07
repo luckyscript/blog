@@ -12,6 +12,15 @@
     <span class="theme-icon" data-icon-theme="moon" aria-hidden="true">
       <span class="theme-glyph theme-glyph-moon"></span>
     </span>
+    <span class="theme-icon" data-icon-theme="sand" aria-hidden="true">
+      <span class="theme-glyph theme-glyph-sand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="17" cy="6" r="2" fill="currentColor" stroke="none" />
+          <path d="M2 17c4-7 7-8 12-2 3-3 5-3 8 0M2 20h20" />
+          <path d="M8 12c2 4 5 5 9 5" />
+        </svg>
+      </span>
+    </span>
     <span class="theme-icon" data-icon-theme="ink" aria-hidden="true">
       <span class="theme-glyph theme-glyph-ink"></span>
     </span>
@@ -20,17 +29,19 @@
 </theme-cycle>
 
 <script>
-  type InkRainTheme = "paper" | "moon" | "ink";
+  type InkRainTheme = "paper" | "moon" | "sand" | "ink";
 
-  const themeOrder: InkRainTheme[] = ["paper", "moon", "ink"];
+  const themeOrder: InkRainTheme[] = ["paper", "moon", "sand", "ink"];
   const themeNames: Record<InkRainTheme, string> = {
     paper: "宣纸",
     moon: "月白",
+    sand: "鸣沙",
     ink: "玄墨",
   };
   const themeColors: Record<InkRainTheme, string> = {
     paper: "#f4f0e6",
     moon: "#edf4f3",
+    sand: "#f2e3c5",
     ink: "#20272b",
   };
 
@@ -209,12 +220,27 @@
     transform: rotate(45deg) translate(-1px, 1px);
   }
 
+  .theme-glyph-sand {
+    width: 20px;
+    height: 20px;
+  }
+
+  .theme-glyph-sand svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
   .theme-cycle-button[data-current-theme="paper"] .theme-icon {
     color: var(--stamp);
   }
 
   .theme-cycle-button[data-current-theme="moon"] .theme-icon {
     color: var(--accent);
+  }
+
+  .theme-cycle-button[data-current-theme="sand"] .theme-icon {
+    color: var(--stamp);
   }
 
   .theme-cycle-button[data-current-theme="ink"] .theme-icon {
