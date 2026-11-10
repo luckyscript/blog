@@ -16,7 +16,7 @@ tags:
 
 ## 换源
 
-系统装好后，第一件事情是换源，考虑稳定性和速度，最后选择了中科大的源。openSUSE换源的话也只需要在`YAST`里面设置就好。还是比较容易操作的。换好源，一般会检查一下系统必须的一些软件，比如`vim`、`git`等。
+系统装好后，**第一件事情是换源**，考虑稳定性和速度，最后选择了中科大的源。openSUSE换源的话也只需要在`YAST`里面设置就好。还是比较容易操作的。换好源，一般会检查一下系统必须的一些软件，比如`vim`、`git`等。
 
 ## 科学上网
 
@@ -55,7 +55,7 @@ libcrypto.EVP_CIPHER_CTX_cleanup(self._ctx)
 libcrypto.EVP_CIPHER_CTX_reset(self._ctx)
 ```
 
-具体原因应该是openssl的版本所对应的API名称变了。
+具体原因应该是**openssl的版本所对应的API名称变了**。
 
 这时候再次启动，不出意外应该会成功。
 
@@ -171,7 +171,7 @@ sudo service shadowsocks start
 sudo journalctl  -xe
 ```
 
-看下错误日志来排查下原因。修改后，没问题了。
+**看下错误日志来排查下原因**。修改后，没问题了。
 
 然后你输入了:
 

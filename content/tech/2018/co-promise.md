@@ -23,6 +23,8 @@ co是著名程序员[TJ](https://github.com/tj)的一个开源库，这个项目
 
 
 
+## 从调用方式看 co
+
 要阅读源码，我们先来看看它怎么用。
 
 ```
@@ -48,6 +50,8 @@ content = function () {
 ```
 绕来绕去的明显不够直观。相比于co模块的用法，这种传统的代码简直会让人抓狂。
 
+## 阅读 co 源码
+
 co模块的源码只有短短的240行。让我们就直入正题吧。
 
 ```
@@ -60,10 +64,10 @@ function co(gen) {
   ...
   }
 ```
-co函数接收一个Generator，返回一个Promise对象。所以我们在执行完co之后，可以链式调用then的原因也是如此。
+co函数**接收一个Generator，返回一个Promise对象**。所以我们在执行完co之后，可以链式调用then的原因也是如此。
 
 ### 自动执行
-自动执行Generator是co的重要特点。我们看Promise对象的函数中，执行了`onFulfilled()`。
+**自动执行Generator是co的重要特点**。我们看Promise对象的函数中，执行了`onFulfilled()`。
 ```
 function onFulfilled(res) {
       var ret;
@@ -142,7 +146,7 @@ promise.then(console.log(2));
 ```
 这段代码的输出为 2 1
 
-Promise的then方法也可以链式调用，因为then方法本身返回一个新的Promise对象，且之前的onFulfilled或onRejected执行后返回值会作为下一个then方法的onFulfilled对象传入。
+Promise的then方法也可以链式调用，因为**then方法本身返回一个新的Promise对象**，且之前的onFulfilled或onRejected执行后返回值会作为下一个then方法的onFulfilled对象传入。
 ```javascript
 promise.then(setTimeout(v=>console.log('first', v), 100)).then(console.log(2))
 ```

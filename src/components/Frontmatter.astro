@@ -51,9 +51,9 @@ const { frontmatter } = Astro.props;
   .article-meta {
     position: relative;
     max-width: 720px;
-    margin: 0 auto 72px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
+    margin: 0 auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-soft);
   }
 
   .article-meta::before {
@@ -100,19 +100,19 @@ const { frontmatter } = Astro.props;
 
   .meta-row {
     display: grid;
-    grid-template-columns: 72px minmax(0, 1fr);
-    gap: 18px;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 16px;
     align-items: center;
-    min-height: 66px;
-    padding: 13px 0;
+    min-height: 52px;
+    padding: 10px 0;
     border-bottom: 1px solid var(--border-soft);
   }
 
   .meta-row dt {
     margin: 0;
     color: var(--ink-muted);
-    font-family: var(--font-mono);
-    font-size: 10px;
+    font-family: var(--font-sans);
+    font-size: 12px;
     letter-spacing: 0.1em;
   }
 
@@ -145,7 +145,7 @@ const { frontmatter } = Astro.props;
     padding-bottom: 2px;
     border-bottom: 1px solid var(--border);
     font-family: var(--font-serif);
-    font-size: 17px;
+    font-size: 15px;
     transition: color 160ms ease, border-color 160ms ease;
   }
 
@@ -173,7 +173,7 @@ const { frontmatter } = Astro.props;
     color: var(--ink-soft);
     border-bottom: 1px solid var(--border-soft);
     font-family: var(--font-serif);
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
   }
 
@@ -190,7 +190,7 @@ const { frontmatter } = Astro.props;
     margin-top: 16px;
     color: var(--ink-muted);
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 11px;
     letter-spacing: 0.06em;
   }
 
@@ -203,13 +203,13 @@ const { frontmatter } = Astro.props;
 
   @media (max-width: 560px) {
     .article-meta {
-      margin-bottom: 52px;
+      margin-bottom: 0;
     }
 
     .meta-row {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 10px;
-      padding: 16px 0;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      padding: 12px 0;
     }
 
     .meta-tags {

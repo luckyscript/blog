@@ -28,7 +28,10 @@ export async function adaptInput(input: PostInput, draft = false) {
   };
 }
 export async function databaseReadRecentBlog(limit: number) {
-  return (await recentPublicPosts('blog', limit)).map(row => ({
+  return databaseReadRecentPosts('blog', limit);
+}
+export async function databaseReadRecentPosts(section: string, limit: number) {
+  return (await recentPublicPosts(section, limit)).map(row => ({
     year: row.year, slug: row.slug,
     frontmatter: { title: row.title, date: row.publishedAt, draft: false, external: !!row.externalUrl, url: row.externalUrl },
   }));

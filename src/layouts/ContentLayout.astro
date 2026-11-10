@@ -6,6 +6,8 @@
 
 // Import the global.css file here so that it is included on
 import "../styles/global.css";
+import "../styles/reading.css";
+import '../styles/reading-surfaces.css';
 
 import GoogleFont from "./GoogleFont.astro";
 import FontAwesome from "./FontAwesome.astro";
@@ -13,15 +15,17 @@ import ThemeScript from "./ThemeScript.astro";
 import Favicon from "./Favicon.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import ReadingMaterial from '../components/ReadingMaterial.astro';
 
 export interface Props {
   title?: string;
   date: Date;
   update?: Date;
   category?: string;
+  readingMinutes?: number;
 }
 
-const { title, date, update = new Date(), category } = Astro.props;
+const { title, date, update, category, readingMinutes } = Astro.props;
 const displayTitle = title || "札记";
 const formattedDate = new Date(date).toLocaleDateString("zh-CN", {
   year: "numeric",
@@ -29,9 +33,18 @@ const formattedDate = new Date(date).toLocaleDateString("zh-CN", {
   day: "numeric",
 });
 
-const outdays = Math.ceil(((new Date() as any) - (new Date(update) as any))/1000/60/60/24);
+const updatedAt = update ? new Date(update) : undefined;
+const outdays = updatedAt ? Math.floor((Date.now() - updatedAt.getTime()) / 86400000) : 0;
 const isShowoutDays = outdays > 365;
-const sealChar = category?.slice(0, 1) || "文";
+const sections: Record<string, { href: string; name: string }> = {
+  blog: { href: "/blog", name: "生活" },
+  tech: { href: "/tech", name: "技术笔记" },
+  sight: { href: "/sight", name: "摄影札记" },
+  link: { href: "/link", name: "链接" },
+  life: { href: "/life", name: "生活随笔" },
+  card: { href: "/card", name: "札记" },
+};
+const section = sections[Astro.url.pathname.split("/")[1]] || { href: "/blog", name: "所有文章" };
 ---
 
 <!DOCTYPE html>
@@ -46,41 +59,55 @@ const sealChar = category?.slice(0, 1) || "文";
     <slot name="meta" />
     <GoogleFont />
     <ThemeScript />
+    <script is:inline>
+      try { var material=localStorage.getItem('inkrain-reading-material');document.documentElement.dataset.readingMaterial=['paper','bamboo','bronze','bone'].includes(material)?material:'paper'; } catch { document.documentElement.dataset.readingMaterial='paper'; }
+    </script>
     <FontAwesome />
   </head>
 
   <body class="inkrain-body">
     <Header />
-    <div class="inkrain-workspace">
-      <main id="main" class="inkrain-main">
-        <article class="inkrain-article">
-          <header class="article-header">
-            <div class="article-kicker">
-              <span class="seal article-seal">{sealChar}</span>
+    <div class="inkrain-workspace reading-workspace">
+      <main id="main" class="inkrain-main reading-main">
+        <ReadingMaterial />
+        <article class="reading-article" aria-labelledby="reading-title">
+          <header class="reading-header">
+            <nav class="reading-breadcrumbs" aria-label="文章位置">
+              <a class="unset" href={section.href}>← {section.name}</a>
+              {category && category !== section.name && (
+                <>
+                  <span aria-hidden="true">/</span>
+                  <a class="unset reading-category" href={`/category/${encodeURIComponent(category)}`}>{category}</a>
+                </>
+              )}
+            </nav>
+            <h1 id="reading-title" class="reading-title">{displayTitle}</h1>
+            <div class="reading-byline">
+              <span class="reading-author-seal" aria-hidden="true">雨</span>
               <div>
-                {category ? (
-                  <a href={`/category/${category}`} class="article-category">
-                    <span class="article-category-label">归档</span>
-                    <span>{category}</span>
-                  </a>
-                ) : (
-                  <span class="article-category">InkRain · Article</span>
-                )}
-                <time class="article-date">{formattedDate}</time>
+                <span class="reading-author-name">墨雨</span>
+                <div class="reading-details">
+                  <time datetime={new Date(date).toISOString()}>{formattedDate}</time>
+                  {readingMinutes && <><span aria-hidden="true">·</span><span>约 {readingMinutes} 分钟</span></>}
+                </div>
               </div>
             </div>
-            <h1 class="article-title">{displayTitle}</h1>
-            <div class="ink-divider"><span class="center">墨　雨</span></div>
           </header>
           {isShowoutDays && (
-            <p class="stale-notice">
-              提醒：本文最后更新于 {outdays} 天前，文中所描述的信息可能已发生改变，请谨慎阅读。
-            </p>
+            <aside class="reading-notice">
+              <span>旧文重读</span>
+              最后更新于 {updatedAt!.toLocaleDateString("zh-CN")}，部分信息可能已有变化。
+            </aside>
           )}
-          <div class="article-body prose prose-inkrain max-w-none">
+          <div class="reading-content prose max-w-none">
             <slot name="content" />
           </div>
+          <div class="reading-endmark" aria-hidden="true"><span>雨</span></div>
           <slot name="frontmatter" />
+          <nav class="reading-navigation" aria-label="文章导航">
+            <a class="unset" href={section.href}>← 返回{section.name}</a>
+            <a class="unset" href="#main">回到篇首 ↑</a>
+          </nav>
         </article>
       </main>
       <Footer />

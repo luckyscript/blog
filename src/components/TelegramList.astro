@@ -1,5 +1,6 @@
 ---
 import Item from "src/components/TelegramItem.astro";
+import MomentsControls from './MomentsControls.astro';
 
 const { channel, after = false, before = false, compact = false } = Astro.props;
 const posts = channel?.posts ?? [];
@@ -7,32 +8,31 @@ const beforeCursor = posts[posts.length - 1]?.id;
 const afterCursor = posts[0]?.id;
 const hasOlder = before && beforeCursor && channel.hasOlder;
 const hasNewer = after && afterCursor && channel.hasNewer;
-const query = channel.query ? `?q=${encodeURIComponent(channel.query)}` : '';
+const params = new URLSearchParams();
+if (channel.query) params.set('q', channel.query);
+if (channel.platform) params.set('platform', channel.platform);
+const query = params.size ? `?${params}` : '';
 ---
 
 <div class:list={["telegram-section", compact && "telegram-section-compact"]}>
-  {!compact && (
-    <div class="telegram-header">
-      <span aria-hidden="true">更新</span>
-      <span>Recent notes</span>
-    </div>
-  )}
+  {!compact && <MomentsControls channel={channel} />}
   <div class:list={["items", "moments-feed", compact && "moments-feed-compact"]}>
     {posts.map((post) => <Item post={post} compact={compact} />)}
-    {posts.length === 0 && <p>暂时没有相关的碎碎念。</p>}
+    {posts.length === 0 && <div class="moment-empty"><p>这里暂时没有找到相关片段。</p><a class="unset" href="/moments">回到全部碎碎念</a></div>}
   </div>
 </div>
 
 {hasOlder || hasNewer ? (
   <nav class="moments-pagination" aria-label="碎碎念分页">
-    {hasOlder ? <a class="unset btn-ghost moment-page-link" href={`/moments/before/${beforeCursor}${query}`}>更早</a> : null}
-    {hasNewer ? <a class="unset btn-ghost moment-page-link" href={`/moments/after/${afterCursor}${query}`}>更新</a> : null}
+    {hasNewer ? <a class="unset moment-page-link" href={`/moments/after/${afterCursor}${query}`}>← 更近的片段</a> : <span />}
+    {hasOlder ? <a class="unset moment-page-link" href={`/moments/before/${beforeCursor}${query}`}>翻到更早 →</a> : <span />}
   </nav>
 ) : null}
 
 <style>
   .telegram-section {
-    margin-top: 34px;
+    max-width:840px;
+    margin:0 auto;
   }
 
   .telegram-section-compact {

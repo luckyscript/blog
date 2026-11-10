@@ -1,97 +1,249 @@
+---
+import { themeOrder, themes } from "../lib/themes";
+import ThemeGlyph from "./ThemeGlyph.astro";
+---
+
 <theme-cycle class="theme-cycle">
   <button
     class="theme-cycle-button"
     type="button"
     data-current-theme="paper"
-    data-label="宣纸 · 点击切换月白"
-    aria-label="当前宣纸主题，点击切换到月白主题"
+    data-label="选择主题 · 当前宣纸"
+    aria-label="选择主题，当前宣纸"
+    aria-haspopup="dialog"
+    aria-controls="theme-picker-panel"
+    aria-expanded="false"
   >
-    <span class="theme-icon is-active" data-icon-theme="paper" aria-hidden="true">
-      <span class="theme-glyph theme-glyph-paper"></span>
-    </span>
-    <span class="theme-icon" data-icon-theme="moon" aria-hidden="true">
-      <span class="theme-glyph theme-glyph-moon"></span>
-    </span>
-    <span class="theme-icon" data-icon-theme="sand" aria-hidden="true">
-      <span class="theme-glyph theme-glyph-sand">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="17" cy="6" r="2" fill="currentColor" stroke="none" />
-          <path d="M2 17c4-7 7-8 12-2 3-3 5-3 8 0M2 20h20" />
-          <path d="M8 12c2 4 5 5 9 5" />
-        </svg>
+    {themeOrder.map((id) => (
+      <span class:list={["theme-icon", id === "paper" && "is-active"]} data-icon-theme={id} aria-hidden="true">
+        <ThemeGlyph theme={id} />
       </span>
-    </span>
-    <span class="theme-icon" data-icon-theme="ink" aria-hidden="true">
-      <span class="theme-glyph theme-glyph-ink"></span>
-    </span>
-    <span class="sr-only theme-status">当前宣纸主题</span>
+    ))}
+    <span class="sr-only theme-status" role="status">当前宣纸主题</span>
   </button>
+  <section id="theme-picker-panel" class="theme-picker-panel" role="dialog" aria-labelledby="theme-picker-title" hidden>
+    <div class="theme-picker-heading">
+      <div>
+        <h2 id="theme-picker-title">选择主题</h2>
+        <p>八种纸色，一处心境</p>
+      </div>
+      <button class="theme-picker-close" type="button" aria-label="关闭主题选择">×</button>
+    </div>
+    <div class="theme-picker-grid" role="group" aria-label="主题配色">
+      {themeOrder.map((id) => (
+        <button class="theme-choice" type="button" data-theme-option={id} aria-pressed={id === "paper" ? "true" : "false"}>
+          <span class="theme-choice-preview theme-inkrain" data-theme={id} aria-hidden="true">
+            <span class="theme-choice-icon"><ThemeGlyph theme={id} /></span>
+            <span class="theme-choice-sample">听雨写字</span>
+          </span>
+          <span class="theme-choice-label">
+            <span>{themes[id].name}</span>
+            <span class="theme-choice-check" aria-hidden="true">✓</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  </section>
 </theme-cycle>
 
 <script>
-  type InkRainTheme = "paper" | "moon" | "sand" | "ink";
-
-  const themeOrder: InkRainTheme[] = ["paper", "moon", "sand", "ink"];
-  const themeNames: Record<InkRainTheme, string> = {
-    paper: "宣纸",
-    moon: "月白",
-    sand: "鸣沙",
-    ink: "玄墨",
-  };
-  const themeColors: Record<InkRainTheme, string> = {
-    paper: "#f4f0e6",
-    moon: "#edf4f3",
-    sand: "#f2e3c5",
-    ink: "#20272b",
-  };
+  import { revealTheme } from "../lib/theme-transition";
+  import { themeOrder, themes, type InkRainTheme } from "../lib/themes";
 
   function applyTheme(theme: InkRainTheme) {
     const root = document.documentElement;
     root.dataset.theme = theme;
-    root.classList.toggle("dark", theme === "ink");
+    root.classList.toggle("dark", themes[theme].dark);
 
     document.head
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", themeColors[theme]);
+      ?.setAttribute("content", themes[theme].color);
 
-    localStorage.setItem("inkrain-theme", theme);
-    localStorage.removeItem("theme");
+    try {
+      localStorage.setItem("inkrain-theme", theme);
+      localStorage.removeItem("theme");
+    } catch {
+      // The current page can still change theme when storage is unavailable.
+    }
   }
 
   class ThemeCycle extends HTMLElement {
+    private dispose?: () => void;
+
     connectedCallback() {
-      const button = this.querySelector<HTMLButtonElement>("button");
+      this.dispose?.();
+      const button = this.querySelector<HTMLButtonElement>(".theme-cycle-button");
+      const panel = this.querySelector<HTMLElement>(".theme-picker-panel");
+      const closeButton = this.querySelector<HTMLButtonElement>(".theme-picker-close");
       const status = this.querySelector<HTMLElement>(".theme-status");
       const icons = Array.from(this.querySelectorAll<HTMLElement>("[data-icon-theme]"));
-      if (!button) return;
+      const choices = Array.from(this.querySelectorAll<HTMLButtonElement>("[data-theme-option]"));
+      if (!button || !panel || !closeButton) return;
+      const events = new AbortController();
+      const listen = { signal: events.signal };
+      const currentTheme = () => {
+        const value = document.documentElement.dataset.theme as InkRainTheme;
+        return themeOrder.includes(value) ? value : "paper";
+      };
 
       const sync = () => {
-        const current = (document.documentElement.dataset.theme || "paper") as InkRainTheme;
-        const currentIndex = themeOrder.indexOf(current);
-        const next = themeOrder[(currentIndex + 1) % themeOrder.length];
-
+        const current = currentTheme();
         button.dataset.currentTheme = current;
-        button.dataset.label = `${themeNames[current]} · 点击切换${themeNames[next]}`;
-        button.setAttribute(
-          "aria-label",
-          `当前${themeNames[current]}主题，点击切换到${themeNames[next]}主题`
-        );
-        if (status) status.textContent = `当前${themeNames[current]}主题`;
-
+        button.dataset.label = `选择主题 · 当前${themes[current].name}`;
+        button.setAttribute("aria-label", `选择主题，当前${themes[current].name}`);
+        if (status) status.textContent = `当前${themes[current].name}主题`;
         icons.forEach((icon) => {
           icon.classList.toggle("is-active", icon.dataset.iconTheme === current);
         });
+        choices.forEach((choice) => {
+          choice.setAttribute("aria-pressed", String(choice.dataset.themeOption === current));
+        });
       };
 
-      button.addEventListener("click", () => {
-        const current = (document.documentElement.dataset.theme || "paper") as InkRainTheme;
-        const currentIndex = themeOrder.indexOf(current);
-        const next = themeOrder[(currentIndex + 1) % themeOrder.length];
-        applyTheme(next);
-        sync();
+      let desiredTheme = currentTheme();
+      let switching = false;
+      let activeReveal: ReturnType<typeof revealTheme> | undefined;
+      let disconnected = false;
+      let panelRequest = 0;
+
+      const focusChoice = (choice: HTMLButtonElement | undefined) => {
+        if (!choice) return;
+        choice.focus({ preventScroll: true });
+        // Scroll the panel, rather than the article, when the viewport is short.
+        const item = choice.getBoundingClientRect();
+        const bounds = panel.getBoundingClientRect();
+        if (item.top < bounds.top + 8) panel.scrollTop -= bounds.top + 8 - item.top;
+        else if (item.bottom > bounds.bottom - 8) panel.scrollTop += item.bottom - bounds.bottom + 8;
+      };
+
+      const positionPanel = () => {
+        if (panel.hidden) return;
+        panel.style.setProperty("--theme-panel-offset", "0px");
+        const rect = panel.getBoundingClientRect();
+        const leftOverflow = Math.max(0, 16 - rect.left);
+        const rightOverflow = Math.max(0, rect.right - document.documentElement.clientWidth + 16);
+        panel.style.setProperty("--theme-panel-offset", `${leftOverflow - rightOverflow}px`);
+      };
+      const closePanel = (restoreFocus = false) => {
+        panelRequest++;
+        panel.hidden = true;
+        button.setAttribute("aria-expanded", "false");
+        if (restoreFocus) button.focus({ preventScroll: true });
+      };
+      const togglePanel = async () => {
+        const request = ++panelRequest;
+        if (switching) {
+          activeReveal?.skip();
+          await activeReveal?.finished;
+        }
+        if (disconnected || request !== panelRequest) return;
+        if (!panel.hidden) {
+          closePanel(true);
+          return;
+        }
+        panel.hidden = false;
+        button.setAttribute("aria-expanded", "true");
+        positionPanel();
+        focusChoice(choices.find((choice) => choice.dataset.themeOption === currentTheme()));
+      };
+
+      const selectTheme = async (theme: InkRainTheme) => {
+        // Close before the old snapshot so the panel never becomes part of the wash.
+        closePanel(true);
+        desiredTheme = theme;
+        if (switching) {
+          activeReveal?.skip();
+          return;
+        }
+
+        switching = true;
+        try {
+          // A newer choice takes over an unfinished transition.
+          while (!disconnected && currentTheme() !== desiredTheme) {
+            const next = desiredTheme;
+            activeReveal = revealTheme(button, themes[next].name, () => {
+              applyTheme(next);
+              sync();
+            });
+            await activeReveal.finished;
+          }
+        } finally {
+          activeReveal = undefined;
+          switching = false;
+        }
+      };
+
+      // View Transition snapshots suppress hit testing on captured elements.
+      // Keep the button's original hit area responsive while its image animates.
+      const isTransitionButtonHit = (event: MouseEvent) => {
+        if (!switching || button.contains(event.target as Node)) return false;
+        const rect = button.getBoundingClientRect();
+        return event.clientX >= rect.left && event.clientX <= rect.right
+          && event.clientY >= rect.top && event.clientY <= rect.bottom;
+      };
+      const onTransitionMouseDown = (event: MouseEvent) => {
+        if (isTransitionButtonHit(event)) event.preventDefault();
+      };
+      const onTransitionClick = (event: MouseEvent) => {
+        if (!isTransitionButtonHit(event)) return;
+        event.preventDefault();
+        void togglePanel();
+      };
+
+      button.addEventListener("click", () => void togglePanel(), listen);
+      button.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          if (panel.hidden) void togglePanel();
+        }
+      }, listen);
+      closeButton.addEventListener("click", () => closePanel(true), listen);
+      choices.forEach((choice) => {
+        choice.addEventListener("click", () => {
+          const theme = choice.dataset.themeOption as InkRainTheme;
+          if (themeOrder.includes(theme)) void selectTheme(theme);
+        }, listen);
       });
+      panel.addEventListener("keydown", (event) => {
+        const index = choices.indexOf(document.activeElement as HTMLButtonElement);
+        const steps: Record<string, number> = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 2, ArrowUp: -2 };
+        let target: number | undefined;
+        if (index >= 0 && event.key in steps) target = (index + steps[event.key] + choices.length) % choices.length;
+        if (event.key === "Home") target = 0;
+        if (event.key === "End") target = choices.length - 1;
+        if (target !== undefined) {
+          event.preventDefault();
+          focusChoice(choices[target]);
+        }
+      }, listen);
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !panel.hidden) {
+          event.preventDefault();
+          closePanel(true);
+        }
+      }, listen);
+      document.addEventListener("pointerdown", (event) => {
+        if (!this.contains(event.target as Node)) closePanel();
+      }, listen);
+      document.addEventListener("focusin", (event) => {
+        if (!this.contains(event.target as Node)) closePanel();
+      }, listen);
+      window.addEventListener("resize", positionPanel, listen);
+      document.addEventListener("mousedown", onTransitionMouseDown, { ...listen, capture: true });
+      document.addEventListener("click", onTransitionClick, { ...listen, capture: true });
+      this.dispose = () => {
+        disconnected = true;
+        events.abort();
+        closePanel();
+        activeReveal?.skip();
+      };
 
       sync();
+    }
+
+    disconnectedCallback() {
+      this.dispose?.();
+      this.dispose = undefined;
     }
   }
 
@@ -102,6 +254,7 @@
 
 <style>
   .theme-cycle {
+    position: relative;
     display: inline-flex;
   }
 
@@ -109,8 +262,8 @@
     position: relative;
     display: grid;
     place-items: center;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     border: 0;
     color: var(--ink);
@@ -121,7 +274,7 @@
   .theme-cycle-button::before {
     content: "";
     position: absolute;
-    inset: 4px;
+    inset: 8px;
     border: 1px solid color-mix(in srgb, var(--stamp) 66%, var(--border));
     transform: rotate(-3deg);
     opacity: 0.72;
@@ -132,9 +285,10 @@
     content: attr(data-label);
     position: absolute;
     top: calc(100% + 7px);
-    left: 50%;
+    right: 0;
     z-index: 60;
     width: max-content;
+    max-width: calc(100vw - 24px);
     padding: 3px 7px;
     color: var(--ink);
     background: var(--paper);
@@ -142,7 +296,7 @@
     font-family: var(--font-serif);
     font-size: 11px;
     line-height: 1.4;
-    transform: translate(-50%, -3px);
+    transform: translateY(-3px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -158,9 +312,156 @@
 
   .theme-cycle-button:hover::after,
   .theme-cycle-button:focus-visible::after {
-    transform: translate(-50%, 0);
+    transform: translateY(0);
     opacity: 1;
     visibility: visible;
+  }
+
+  .theme-cycle-button[aria-expanded="true"]::after {
+    display: none;
+  }
+
+  .theme-picker-panel {
+    position: absolute;
+    top: calc(100% + 14px);
+    right: 0;
+    z-index: 60;
+    box-sizing: border-box;
+    width: min(340px, calc(100vw - 32px));
+    max-height: calc(100dvh - 100px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 16px;
+    color: var(--ink);
+    background: var(--paper-bright);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--stamp);
+    border-radius: 3px;
+    box-shadow: 0 18px 48px color-mix(in srgb, var(--ink) 16%, transparent);
+    transform: translateX(var(--theme-panel-offset, 0px));
+    animation: theme-panel-in 150ms ease-out;
+  }
+
+  .theme-picker-panel[hidden] { display: none; }
+
+  .theme-picker-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .theme-picker-heading h2 {
+    margin: 0;
+    font-family: var(--font-kai);
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+
+  .theme-picker-heading p {
+    margin: 4px 0 0;
+    color: var(--ink-soft);
+    font-family: var(--font-serif);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .theme-picker-close {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 0;
+    font-family: var(--font-sans);
+    font-size: 23px;
+    cursor: pointer;
+  }
+
+  .theme-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .theme-choice {
+    min-width: 0;
+    padding: 6px;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--border-soft);
+    border-radius: 2px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 140ms ease, background-color 140ms ease;
+  }
+
+  .theme-choice:hover,
+  .theme-choice[aria-pressed="true"] {
+    border-color: var(--stamp);
+    background: color-mix(in srgb, var(--stamp) 5%, var(--paper-bright));
+  }
+
+  .theme-choice:focus-visible {
+    outline: 2px solid var(--stamp);
+    outline-offset: 2px;
+  }
+
+  .theme-choice-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 48px;
+    color: var(--ink);
+    background: var(--paper);
+    border-radius: 1px;
+  }
+
+  .theme-choice-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    color: var(--stamp);
+  }
+
+  .theme-choice-preview[data-theme="moon"] .theme-choice-icon { color: var(--accent); }
+  .theme-choice-preview[data-theme="ink"] .theme-choice-icon,
+  .theme-choice-preview[data-theme="dusk"] .theme-choice-icon { color: var(--ink); }
+
+  .theme-choice-sample {
+    font-family: var(--font-kai);
+    font-size: 16px;
+    line-height: 1;
+    letter-spacing: 0.03em;
+  }
+
+  .theme-choice-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 3px 0;
+    font-family: var(--font-serif);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .theme-choice-check {
+    color: var(--stamp);
+    visibility: hidden;
+  }
+
+  .theme-choice[aria-pressed="true"] .theme-choice-check { visibility: visible; }
+
+  @keyframes theme-panel-in {
+    from { opacity: 0; transform: translate(var(--theme-panel-offset, 0px), -5px); }
+    to { opacity: 1; transform: translate(var(--theme-panel-offset, 0px), 0); }
   }
 
   .theme-icon {
@@ -178,60 +479,10 @@
     display: grid;
   }
 
-  .theme-glyph {
-    position: relative;
-    display: block;
-    color: currentColor;
-  }
-
-  .theme-glyph-paper {
-    width: 13px;
-    height: 16px;
-    border: 1.5px solid currentColor;
-    box-sizing: border-box;
-    transform: rotate(-2deg);
-  }
-
-  .theme-glyph-paper::before {
-    content: "";
-    position: absolute;
-    top: 4px;
-    right: 2px;
-    left: 3px;
-    height: 1px;
-    background: currentColor;
-    box-shadow: 0 4px 0 currentColor;
-    opacity: 0.72;
-  }
-
-  .theme-glyph-moon {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    box-shadow: 4px 1px 0 0 currentColor;
-    transform: translate(-2px, -1px) rotate(-12deg);
-  }
-
-  .theme-glyph-ink {
-    width: 11px;
-    height: 14px;
-    border-radius: 9px 9px 9px 2px;
-    background: currentColor;
-    transform: rotate(45deg) translate(-1px, 1px);
-  }
-
-  .theme-glyph-sand {
-    width: 20px;
-    height: 20px;
-  }
-
-  .theme-glyph-sand svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .theme-cycle-button[data-current-theme="paper"] .theme-icon {
+  .theme-cycle-button[data-current-theme="paper"] .theme-icon,
+  .theme-cycle-button[data-current-theme="celadon"] .theme-icon,
+  .theme-cycle-button[data-current-theme="bamboo"] .theme-icon,
+  .theme-cycle-button[data-current-theme="lotus"] .theme-icon {
     color: var(--stamp);
   }
 
@@ -243,7 +494,8 @@
     color: var(--stamp);
   }
 
-  .theme-cycle-button[data-current-theme="ink"] .theme-icon {
+  .theme-cycle-button[data-current-theme="ink"] .theme-icon,
+  .theme-cycle-button[data-current-theme="dusk"] .theme-icon {
     color: var(--ink);
   }
 
@@ -252,5 +504,7 @@
     .theme-cycle-button::after {
       transition: none;
     }
+    .theme-picker-panel { animation: none; }
+    .theme-choice { transition: none; }
   }
 </style>

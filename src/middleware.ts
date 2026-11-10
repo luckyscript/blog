@@ -10,6 +10,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const path = context.url.pathname;
   const adminPage = path === "/admin" || path.startsWith("/admin/");
   const adminApi = path.startsWith("/api/admin/");
+  // Images are immutable files, independent of the database and upstream services.
+  if (path.startsWith('/media/moments/')) return next();
   try {
     if (adminPage || adminApi) {
       if (

@@ -56,6 +56,7 @@ async function main() {
   const nodeArgs = ["--import", "tsx"];
   await run([...nodeArgs, "scripts/db-setup.ts"], environment);
   await run([...nodeArgs, "scripts/import-content.ts"], environment);
+  await run([...nodeArgs, 'scripts/import-links.ts', '--apply'],environment);
   const listener = createServer();
   listener.listen(0, "127.0.0.1");
   await once(listener, "listening");
@@ -106,10 +107,12 @@ async function main() {
   }
   if (!ready) throw new Error(`独立测试服务未能启动\n${serverOutput}`);
   console.log(`集成测试使用临时数据库 ${schema} 与独立本机服务`);
-  await run([...nodeArgs, "--test", "tests/integration.ts"], {
-    ...environment,
-    TEST_BASE_URL: origin,
-  });
+  try {
+    await run([...nodeArgs, "--test", '--test-concurrency=1', "tests/integration.ts", 'tests/authoring-integration.ts'], {
+      ...environment,
+      TEST_BASE_URL: origin,
+    });
+  } catch(error) { console.error(serverOutput.slice(-6000)); throw error; }
 }
 
 main()

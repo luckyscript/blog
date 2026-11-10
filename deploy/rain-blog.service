@@ -9,9 +9,9 @@ StartLimitBurst=10
 Type=simple
 User=rain-blog
 Group=rain-blog
-SupplementaryGroups=rain-blog-code
+SupplementaryGroups=rain-blog-code rain-blog-media
 WorkingDirectory=/opt/rain-blog/current
-Environment=NODE_ENV=production HOST=127.0.0.1 PORT=3000
+Environment=NODE_ENV=production HOST=127.0.0.1 PORT=3000 MOMENTS_MEDIA_DIRECTORY=/var/lib/rain-blog-media
 ExecStart=/opt/rain-blog/runtime/bin/node --env-file=/etc/rain-blog/web.env --max-old-space-size=384 dist/server/entry.mjs
 Restart=on-failure
 RestartSec=5

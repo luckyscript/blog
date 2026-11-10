@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { sectionLabels, type PostInput } from "../../lib/server/content-input";
+import { platformLabels } from '../../lib/moments/types';
 import Turnstile, { type TurnstileSettings } from "./Turnstile";
+import { clipboardImages, insertEditorText, replaceImagePlaceholder, mediaMarkdown, stripPendingImages } from '../../lib/admin/editor-media';
+import LocalMoments from './LocalMoments';
+import LinksManager from './LinksManager';
 
 type User = { id: string; email: string };
 type Notice = { text: string; error?: boolean } | null;
@@ -77,6 +81,8 @@ function Spinner() {
 }
 function Icon({ name }: { name: string }) {
   const paths: Record<string, React.ReactNode> = {
+    moments: <><path d="M4 4h16v12H9l-5 4z" /><path d="M8 8h8M8 12h5" /></>,
+    links: <><path d="m9 15 6-6M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 10a4 4 0 0 0 6 0l4-4a4 4 0 0 0-6-6l-1 1" /></>,
     posts: (
       <>
         <path d="M5 3h10l4 4v14H5z" />
@@ -143,6 +149,8 @@ export default function AdminApp({
   const view = route.startsWith("posts/") ? "editor" : route || "posts";
   const links = [
     ["", "posts", "文章"],
+    ["moments", "moments", "碎碎念"],
+    ['links','links','链接'],
     ["media", "media", "媒体库"],
     ["taxonomy", "taxonomy", "分类与标签"],
     ["settings", "settings", "设置与迁移"],
@@ -218,6 +226,8 @@ export default function AdminApp({
             />
           )}
           {view === "media" && <MediaLibrary />}
+          {view === 'moments' && <LocalMoments request={api} upload={uploadPreparedMedia} mediaPicker={onSelect=><MediaLibrary picker onSelect={onSelect} />} />}
+          {view === 'links' && <LinksManager request={api} />}
           {view === "taxonomy" && <Taxonomy />}
           {view === "settings" && <Settings />}
         </main>
@@ -666,6 +676,12 @@ function Editor({ postId }: { postId: string | null }) {
   const lastSaved = useRef("");
   const savingPromise = useRef<Promise<Post | null> | null>(null);
   const textarea = useRef<HTMLTextAreaElement>(null);
+  const [imageUploads, setImageUploads] = useState(0);
+  const imageUploadCount = useRef(0);
+  const pendingImageMarkers = useRef(new Set<string>());
+  const uploadSequence = useRef(0);
+  const editorActive = useRef(true);
+  useEffect(() => { editorActive.current = true; return () => { editorActive.current = false; }; }, []);
   const dirty = JSON.stringify(input) !== lastSaved.current;
   const storageKey = () =>
     `inkrain-unsaved-${recordRef.current?.id ?? postId ?? "new"}`;
@@ -687,7 +703,7 @@ function Editor({ postId }: { postId: string | null }) {
           try {
             const pending = localStorage.getItem(storageKey());
             if (pending && pending !== lastSaved.current)
-              setRecover(JSON.parse(pending));
+              { const recovery = JSON.parse(pending); setRecover({ ...recovery, markdown: stripPendingImages(recovery.markdown) }); }
           } catch {
             /* Optional browser recovery. */
           }
@@ -696,21 +712,21 @@ function Editor({ postId }: { postId: string | null }) {
     else {
       try {
         const pending = localStorage.getItem(storageKey());
-        if (pending) setRecover(JSON.parse(pending));
+        if (pending) { const recovery = JSON.parse(pending); setRecover({ ...recovery, markdown: stripPendingImages(recovery.markdown) }); }
       } catch {}
     }
   }, []);
   useEffect(() => {
     if (!loaded || !dirty || !input.title.trim()) return;
     try {
-      localStorage.setItem(storageKey(), JSON.stringify(input));
+      localStorage.setItem(storageKey(), JSON.stringify({ ...input, markdown: stripPendingImages(input.markdown, pendingImageMarkers.current) }));
     } catch {}
-    if (notice?.error || busy || record?.status === "trash") return;
+    if (notice?.error || busy || imageUploads || record?.status === "trash") return;
     const timer = setTimeout(() => {
       save().catch((error) => setNotice({ text: error.message, error: true }));
     }, 1800);
     return () => clearTimeout(timer);
-  }, [input, loaded, busy]);
+  }, [input, loaded, busy, imageUploads]);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
       if (
@@ -746,9 +762,11 @@ function Editor({ postId }: { postId: string | null }) {
     };
   }, [input.markdown]);
   async function save(): Promise<Post | null> {
+    if (imageUploadCount.current) throw new Error('图片正在上传，请稍后保存或发布');
     if (savingPromise.current) {
       await savingPromise.current;
     }
+    if (imageUploadCount.current) throw new Error('图片正在上传，请稍后保存或发布');
     const snapshot = inputRef.current;
     if (!snapshot.title.trim()) throw new Error("请先填写文章标题");
     if (JSON.stringify(snapshot) === lastSaved.current && recordRef.current)
@@ -825,10 +843,7 @@ function Editor({ postId }: { postId: string | null }) {
   function insertMedia(item: any) {
     const element = textarea.current;
     const current = inputRef.current;
-    const snippet =
-      item.mime === "application/pdf"
-        ? `[${item.alt || item.name}](${item.url})`
-        : `![${String(item.alt || "").replace(/[\[\]\n]/g, "")}](${item.url})`;
+    const snippet = mediaMarkdown(item);
     const start = element?.selectionStart ?? current.markdown.length;
     const end = element?.selectionEnd ?? start;
     field(
@@ -839,6 +854,57 @@ function Editor({ postId }: { postId: string | null }) {
       )}\n${snippet}\n${current.markdown.slice(end)}`
     );
     setPicker(false);
+  }
+  function pasteImages(event: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const files = clipboardImages(event.clipboardData);
+    if (!files.length) return;
+    event.preventDefault();
+    const element = event.currentTarget;
+    const start = element.selectionStart, end = element.selectionEnd;
+    const entries = files.map(file => ({ file, placeholder: `\n[图片上传中（${++uploadSequence.current}）…]\n` }));
+    entries.forEach(entry => pendingImageMarkers.current.add(entry.placeholder));
+    const block = entries.map(item => item.placeholder).join('');
+    let stagedMarkdown = '';
+    setInput(current => { stagedMarkdown = insertEditorText(current.markdown, block, start, end).markdown; return { ...current, markdown: stagedMarkdown }; });
+    imageUploadCount.current += entries.length;
+    setImageUploads(count => count + entries.length);
+    setNotice({ text: `正在上传 ${entries.length} 张图片…` });
+    requestAnimationFrame(() => { if (document.activeElement === element && element.value === stagedMarkdown) element.setSelectionRange(start + block.length, start + block.length); });
+    void (async () => {
+      let failed = false;
+      const uploaded: string[] = [];
+      for (const entry of entries) {
+        try {
+          const item = await uploadPreparedMedia(entry.file, '');
+          if (!editorActive.current) return;
+          uploaded.push(item.url);
+          const snippet = `\n${mediaMarkdown(item)}\n`;
+          const active = textarea.current;
+          const selectionStart = active?.selectionStart ?? 0, selectionEnd = active?.selectionEnd ?? 0;
+          let applied = '', cursorStart = selectionStart, cursorEnd = selectionEnd;
+          setInput(current => {
+            const index = current.markdown.indexOf(entry.placeholder);
+            const replacement = replaceImagePlaceholder(current.markdown, entry.placeholder, snippet);
+            applied = replacement.markdown;
+            if (replacement.inserted) {
+              const adjust = (position: number) => position <= index ? position : position < index + entry.placeholder.length ? index + snippet.length : position + snippet.length - entry.placeholder.length;
+              cursorStart = adjust(selectionStart); cursorEnd = adjust(selectionEnd);
+            }
+            return { ...current, markdown: replacement.markdown };
+          });
+          requestAnimationFrame(() => { if (active && document.activeElement === active && active.value === applied) active.setSelectionRange(cursorStart, cursorEnd); });
+        } catch (error: any) {
+          failed = true;
+          if (editorActive.current) {
+            setInput(current => ({ ...current, markdown: replaceImagePlaceholder(current.markdown, entry.placeholder, '').markdown }));
+            setNotice({ text: `图片上传失败：${error.message}。可以重新粘贴重试。`, error: true });
+          }
+        } finally { pendingImageMarkers.current.delete(entry.placeholder); imageUploadCount.current = Math.max(0, imageUploadCount.current - 1); if (editorActive.current) setImageUploads(count => Math.max(0, count - 1)); }
+      }
+      if (!failed && editorActive.current) requestAnimationFrame(() => {
+        if (editorActive.current) setNotice({ text: uploaded.every(url => inputRef.current.markdown.includes(url)) ? `${entries.length} 张图片已上传并插入正文。` : '图片已上传，原占位文字已变动，可在媒体库中插入。' });
+      });
+    })();
   }
   if (!loaded)
     return (
@@ -869,7 +935,7 @@ function Editor({ postId }: { postId: string | null }) {
           </span>
           <button
             className="button"
-            disabled={busy || saving || record?.status === "trash"}
+            disabled={busy || saving || imageUploads > 0 || record?.status === "trash"}
             onClick={() => {
               setNotice(null);
               save()
@@ -883,7 +949,7 @@ function Editor({ postId }: { postId: string | null }) {
           </button>
           <button
             className="button primary"
-            disabled={busy || saving || record?.status === "trash"}
+            disabled={busy || saving || imageUploads > 0 || record?.status === "trash"}
             onClick={() => action("publish")}
           >
             {busy
@@ -968,8 +1034,9 @@ function Editor({ postId }: { postId: string | null }) {
                   aria-label="Markdown 正文"
                   value={input.markdown}
                   onChange={(event) => field("markdown", event.target.value)}
+                  onPaste={pasteImages}
                   placeholder={
-                    "从这里开始写作…\n\n支持 Markdown、代码块、表格和现有 Markdoc 标签。"
+                    "从这里开始写作…\n\n支持 Markdown，可直接粘贴图片，上传后自动插入正文。"
                   }
                   spellCheck={false}
                 />
@@ -996,7 +1063,7 @@ function Editor({ postId }: { postId: string | null }) {
             </div>
             <div className="writing-footer">
               <span>
-                {input.markdown.length.toLocaleString()} 字符 · Markdown
+                {imageUploads ? `${imageUploads} 张图片上传中…` : `${input.markdown.length.toLocaleString()} 字符 · Markdown · 可直接粘贴图片`}
               </span>
               {record && (
                 <a
@@ -1004,7 +1071,7 @@ function Editor({ postId }: { postId: string | null }) {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  完整预览已保存草稿 ↗
+                  完整预览已保存草稿
                 </a>
               )}
             </div>
@@ -1161,7 +1228,7 @@ function Editor({ postId }: { postId: string | null }) {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  查看公开页面 ↗
+                  查看公开页面
                 </a>
                 <button
                   className="button small"
@@ -1296,6 +1363,15 @@ async function prepareFile(file: File): Promise<File> {
   });
 }
 
+async function uploadPreparedMedia(file: File, alt: string) {
+  const processed = await prepareFile(file);
+  if (!processed.size || processed.size > 8 * 1024 * 1024) throw new Error('处理后的文件应在 8 MB 以内');
+  const form = new FormData(); form.set('file', processed); form.set('alt', alt);
+  const item = await api('media', { method: 'POST', body: form });
+  if (item.status !== 'ready' || !item.url) throw new Error('图片上传尚未完成');
+  return item;
+}
+
 function MediaLibrary({
   picker = false,
   onSelect,
@@ -1323,6 +1399,7 @@ function MediaLibrary({
         item.status === "ready" &&
         `${item.name} ${item.alt}`.toLowerCase().includes(search.toLowerCase())
     ) ?? [];
+  const storage = data?.storage || { configured: data?.github.configured, label: 'GitHub 图床' };
   return (
     <>
       {!picker && (
@@ -1332,14 +1409,13 @@ function MediaLibrary({
             <h1>媒体库</h1>
             <p>给文字配上画面，留下看得见的记忆。</p>
           </div>
-          <span className="badge-outline">GitHub 图床</span>
+          <span className="badge-outline">{storage.label || '图片存储'}</span>
         </div>
       )}
       <Message notice={notice} />
-      {data && !data.github.configured && (
+      {data && !storage.configured && (
         <div className="notice">
-          现有图片可以直接使用。新文件上传需要在服务端 .env 配置
-          GITHUB_MEDIA_TOKEN，仓库为 {data.github.repo}。
+          图片上传暂不可用，已有图片仍可使用。请联系站点管理员检查图床连接。
         </div>
       )}
       <form
@@ -1350,12 +1426,8 @@ function MediaLibrary({
           setBusy(true);
           setNotice(null);
           try {
-            const processed = await prepareFile(file);
-            const form = new FormData();
-            form.set("file", processed);
-            form.set("alt", alt);
-            const item = await api("media", { method: "POST", body: form });
-            setNotice({ text: "文件已上传到 GitHub 图床。" });
+            const item = await uploadPreparedMedia(file, alt);
+            setNotice({ text: `文件已上传到${storage.label || '图床'}。` });
             setAlt("");
             setFile(null);
             await load();
@@ -1382,7 +1454,7 @@ function MediaLibrary({
             aria-label="选择上传文件"
             type="file"
             accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
-            disabled={busy || !data?.github.configured}
+            disabled={busy || !storage.configured}
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}
           />
           <input
@@ -1394,7 +1466,7 @@ function MediaLibrary({
           />
           <button
             className="button primary"
-            disabled={busy || !file || !data?.github.configured}
+            disabled={busy || !file || !storage.configured}
           >
             {busy ? "正在上传…" : "上传到图床"}
           </button>
@@ -1666,11 +1738,12 @@ function Settings() {
   const [scan, setScan] = useState<any>(null);
   const [busy, setBusy] = useState(false);
   const [github, setGithub] = useState<any>(null);
+  const [storage, setStorage] = useState<any>(null);
   const [momentSources, setMomentSources] = useState<any[] | null>(null);
   const [momentsError, setMomentsError] = useState("");
   useEffect(() => {
     api("media")
-      .then((value) => setGithub(value.github))
+      .then((value) => { setGithub(value.github); setStorage(value.storage); })
       .catch(() => {});
     api("moments/sources").then(setMomentSources).catch(error => setMomentsError(error.message));
   }, []);
@@ -1711,12 +1784,12 @@ function Settings() {
           {momentSources === null && !momentsError && <p>正在读取同步状态…</p>}
           {momentSources?.length === 0 && <p>尚未配置同步来源。</p>}
           {momentSources?.map(source => <div key={source.id} className="scan-result">
-            <strong>{source.platform === "telegram" ? "Telegram" : source.platform === "x" ? "X / Twitter" : "微博"} · {source.title} {source.account !== source.title && source.mode !== 'archive' ? `(${source.account})` : ''}</strong>
-            <span>已保存 {source.count} 条 · {source.mode === 'archive' ? '历史存档已导入' : source.lastError === 'WEIBO_AUTH_REQUIRED' ? '等待微博官方授权' : source.backfillComplete ? '历史补抓完成' : '历史补抓尚未完成'}</span>
+            <strong>{platformLabels[source.platform as keyof typeof platformLabels] || source.platform} · {source.title} {source.account !== source.title && source.mode !== 'archive' ? `(${source.account})` : ''}</strong>
+            <span>已保存 {source.count} 条 · {source.mode === 'archive' ? '历史存档已导入' : source.lastError === 'WEIBO_AUTH_REQUIRED' ? '等待微博网页登录授权' : source.backfillComplete ? '历史补抓完成' : '历史补抓尚未完成'}</span>
             {source.mode === 'live' && <p>检查间隔：{Math.round(source.intervalSeconds / 60)} 分钟{source.platform === 'weibo' ? '，每轮最多 2 页' : ''}</p>}
             <p>最近成功：{source.lastSuccessAt ? formatDate(source.lastSuccessAt) : "尚未成功"}</p>
             <p>最近尝试：{source.lastAttemptAt ? formatDate(source.lastAttemptAt) : "尚未运行"}</p>
-            {source.lastError === 'WEIBO_AUTH_REQUIRED' ? <p>请为此账号完成微博开放平台认证和官方授权，授权后自动开始同步。</p> : source.lastError && <p role="alert">同步失败：{source.lastError}，已有内容不受影响。</p>}
+            {source.lastError === 'WEIBO_AUTH_REQUIRED' ? <p>请为此账号完成微博扫码登录，登录后自动开始同步。</p> : source.lastError && <p role="alert">同步失败：{source.lastError}，已有内容不受影响。</p>}
           </div>)}
         </section>
         <section className="panel settings-panel">
@@ -1776,32 +1849,31 @@ function Settings() {
         </section>
         <section className="panel settings-panel">
           <span className="step-number">03 / MEDIA</span>
-          <h2>GitHub 图片仓库</h2>
+          <h2>{storage?.label || '图片存储'}</h2>
           <dl className="config-list">
             <div>
-              <dt>仓库</dt>
-              <dd>{github?.repo ?? "…"}</dd>
+              <dt>{storage?.provider === 'r2' ? '服务' : '仓库'}</dt>
+              <dd>{storage?.provider === 'r2' ? 'Cloudflare R2' : github?.repo ?? '…'}</dd>
             </div>
             <div>
-              <dt>分支</dt>
-              <dd>{github?.branch ?? "…"}</dd>
+              <dt>{storage?.provider === 'r2' ? '访问域名' : '分支'}</dt>
+              <dd>{storage?.provider === 'r2' ? storage.publicOrigin : github?.branch ?? '…'}</dd>
             </div>
             <div>
               <dt>上传权限</dt>
               <dd>
                 <span
                   className={`status-badge ${
-                    github?.configured ? "published" : "draft"
+                    (storage?.configured ?? github?.configured) ? "published" : "draft"
                   }`}
                 >
-                  {github?.configured ? "已配置令牌" : "待配置令牌"}
+                  {(storage?.configured ?? github?.configured) ? '上传已就绪' : '上传未就绪'}
                 </span>
               </dd>
             </div>
           </dl>
           <p>
-            在服务端 .env 设置 <code>GITHUB_MEDIA_TOKEN</code>，授予图片仓库
-            Contents 的读写权限。修改后重启应用。
+            粘贴图片和媒体库上传使用同一图床，上传完成后可以插入文章。
           </p>
           <a href="/admin/media" className="text-link">
             前往媒体库 →

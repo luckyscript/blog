@@ -4,8 +4,16 @@ import { db } from "../../db";
 import { media } from "../../db/schema";
 import { env } from "./env";
 import { AppError } from "./errors";
+import { articleR2Configuration, uploadArticleToR2 } from './media-r2';
 
 export const MAX_UPLOAD = 8 * 1024 * 1024;
+export function mediaStorageConfiguration() {
+  const provider = env('MEDIA_STORAGE_PROVIDER', 'github');
+  if (provider === 'r2') return articleR2Configuration();
+  if (provider !== 'github') throw new AppError(503, '图片存储配置有误');
+  const config = githubConfiguration();
+  return { provider, label: 'GitHub 图床', configured: config.configured, publicOrigin: '' };
+}
 export function githubConfiguration() {
   const repo = env("GITHUB_MEDIA_REPO", "luckyscript/image");
   const branch = env("GITHUB_MEDIA_BRANCH", "master");
@@ -123,10 +131,11 @@ export async function uploadToGithub(
 }
 
 export async function uploadMedia(file: File, alt: string) {
-  if (!githubConfiguration().configured)
+  const storage = mediaStorageConfiguration();
+  if (!storage.configured)
     throw new AppError(
       503,
-      "请先在服务端配置 GITHUB_MEDIA_TOKEN，现有图片仍可正常使用"
+      "图片上传暂不可用，已有图片仍可正常使用"
     );
   if (!file.size || file.size > MAX_UPLOAD)
     throw new AppError(400, "文件大小应在 1 字节至 8 MB 之间");
@@ -139,7 +148,7 @@ export async function uploadMedia(file: File, alt: string) {
       .from(media)
       .where(eq(media.checksum, checksum))
       .for("update");
-    if (existing?.status === "ready")
+    if (existing?.status === "ready" && (storage.provider !== 'r2' || existing.url.startsWith(storage.publicOrigin + '/media/articles/')))
       return { ready: existing, id: existing.id, key: existing.key };
     if (
       existing?.status === "pending" &&
@@ -148,8 +157,7 @@ export async function uploadMedia(file: File, alt: string) {
       throw new AppError(409, "这份文件正在上传，请稍后在媒体库查看");
     }
     const now = new Date();
-    const key =
-      existing?.key ??
+    const key = storage.provider === 'r2' ? `media/articles/${checksum}.${type.extension}` : existing?.key ??
       `${githubConfiguration().prefix}/${now.getUTCFullYear()}/${String(
         now.getUTCMonth() + 1
       ).padStart(2, "0")}/${checksum}.${type.extension}`;
@@ -179,10 +187,10 @@ export async function uploadMedia(file: File, alt: string) {
   if (claim.ready) return claim.ready;
   const { id, key } = claim;
   try {
-    const result = await uploadToGithub(bytes, key);
+    const result = storage.provider === 'r2' ? await uploadArticleToR2(bytes, key.split('/').at(-1)!) : await uploadToGithub(bytes, key);
     await db()
       .update(media)
-      .set({ ...result, status: "ready" })
+      .set({ ...result, key, status: "ready" })
       .where(eq(media.id, id));
     const [row] = await db().select().from(media).where(eq(media.id, id));
     return row;
@@ -199,5 +207,6 @@ export async function listMedia() {
       .orderBy(desc(media.createdAt))
       .limit(200),
     github: githubConfiguration(),
+    storage: mediaStorageConfiguration(),
   };
 }

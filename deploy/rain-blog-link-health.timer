@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh link connectivity checks
+
+[Timer]
+OnCalendar=Sun *-*-* 04:40:00 Asia/Shanghai
+RandomizedDelaySec=5min
+Persistent=true
+Unit=rain-blog-link-health.service
+
+[Install]
+WantedBy=timers.target

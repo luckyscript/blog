@@ -9,6 +9,7 @@ import { momentChannel } from '../../../lib/moments/store'
 const channel = await momentChannel({
   before: Astro.params.cursor,
   q: Astro.url.searchParams.get("q") || "",
+  platform: Astro.url.searchParams.get('platform') || '',
 })
 
 export const prerender = false

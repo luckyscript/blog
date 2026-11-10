@@ -5,9 +5,13 @@ import { env } from "../server/env";
 import { AppError } from "../server/errors";
 import { normalizeMoment } from "./content";
 import { collectPages } from "./plan";
+import { cacheMomentImages, momentImageCache } from './media-cache';
+import { publicMomentImages } from './media-public';
 import { telegramAdapter } from "./telegram";
 import { weiboAccounts, weiboAdapter, weiboInterval, weiboTitles } from "./weibo";
 import { weiboToken } from "./weibo-auth";
+import { weiboTransport, weiboWebAdapter } from './weibo-web';
+import { xAccounts, xAdapter, xInterval } from './x';
 import type { MomentAdapter, MomentInput, Platform, SyncState } from "./types";
 
 type SqlConnection = PoolConnection | Connection;
@@ -21,6 +25,10 @@ export async function ensureMomentSource() {
   for (const uid of weiboAccounts()) {
     await getPool().query(`INSERT INTO blog_moment_sources (id,platform,account,title,sync_state,last_error,created_at)
       VALUES (?, 'weibo', ?, ?, '{}', 'WEIBO_AUTH_REQUIRED', UTC_TIMESTAMP(3)) ON DUPLICATE KEY UPDATE account=VALUES(account)`, [`weibo:${uid}`, uid, weiboTitles[uid] || uid]);
+  }
+  for (const account of xAccounts()) {
+    await getPool().query(`INSERT INTO blog_moment_sources (id,platform,account,title,sync_state,created_at)
+      VALUES (?, 'x', ?, ?, '{}', UTC_TIMESTAMP(3)) ON DUPLICATE KEY UPDATE account=VALUES(account)`, [`x:${account}`, account, `@${account}`]);
   }
 }
 
@@ -55,7 +63,7 @@ export async function saveMomentPage(connection: SqlConnection, sourceId: string
 }
 export function syncError(error: unknown): string {
   const e = error as any;
-  if (/^(?:TELEGRAM|MOMENTS|WEIBO)_[A-Z0-9_]+$/.test(e?.message || '')) return e.message;
+  if (/^(?:TELEGRAM|MOMENTS|WEIBO|X)_[A-Z0-9_]+$/.test(e?.message || '')) return e.message;
   if (['TimeoutError', 'AbortError'].includes(e?.name)) return 'MOMENTS_TIMEOUT';
   const code = e?.cause?.code || e?.code;
   return typeof code === 'string' && /^[A-Z_0-9]{1,60}$/.test(code) ? code : 'MOMENTS_SYNC_FAILED';
@@ -64,8 +72,10 @@ export async function syncMomentSource(sourceId: string, options: { maxPages?: n
   const connection = options.connection || await getPool().getConnection();
   const lockName = 'rain_moments_' + createHash('sha256').update(sourceId).digest('hex').slice(0, 32);
   let locked = false, adapter: MomentAdapter | undefined, runId: string | undefined;
+  let imageCache: ReturnType<typeof momentImageCache> | undefined;
   let received = 0, changed = 0, pages = 0;
   try {
+    imageCache = momentImageCache({ proxy: sourceId.startsWith('weibo:') ? process.env.MOMENTS_WEIBO_HTTP_PROXY : process.env.MOMENTS_HTTP_PROXY });
     const [locks] = await connection.query<any[]>('SELECT GET_LOCK(?,0) AS acquired', [lockName]);
     if (Number(locks[0].acquired) !== 1) return { sourceId, skipped: true };
     locked = true;
@@ -78,10 +88,14 @@ export async function syncMomentSource(sourceId: string, options: { maxPages?: n
     await connection.query("INSERT INTO blog_moment_sync_runs (id,source_id,started_at,outcome) VALUES (?,?,UTC_TIMESTAMP(3),'running')", [runId,sourceId]);
     if (options.adapter) adapter = options.adapter;
     else if (source.platform === 'telegram') adapter = telegramAdapter(source.account);
-    else if (source.platform === 'weibo') adapter = weiboAdapter(source.account, signal => weiboToken(source.account, signal));
+    else if (source.platform === 'weibo') adapter = weiboTransport() === 'web' ? weiboWebAdapter(source.account) : weiboAdapter(source.account, signal => weiboToken(source.account, signal));
+    else if (source.platform === 'x') adapter = xAdapter(source.account);
     else throw new Error('MOMENTS_PROVIDER_NOT_CONFIGURED');
     const result = await collectPages(adapter, jsonValue(source.sync_state) as SyncState, async posts => {
-      changed += await saveMomentPage(connection, sourceId, posts); received += posts.length; pages++;
+      // Publish a page only after every image has a durable local copy. A failed
+      // download leaves the previous content and checkpoint untouched.
+      const cached = await cacheMomentImages(posts, imageCache!, options.signal);
+      changed += await saveMomentPage(connection, sourceId, cached); received += posts.length; pages++;
     }, options.maxPages ?? 5, options.signal);
     await connection.query('UPDATE blog_moment_sources SET sync_state=?,last_success_at=UTC_TIMESTAMP(3),last_error=NULL WHERE id=?', [JSON.stringify(result.state), sourceId]);
     await connection.query("UPDATE blog_moment_sync_runs SET finished_at=UTC_TIMESTAMP(3),outcome='success',pages=?,received=?,changed=? WHERE id=?", [pages,received,changed,runId]);
@@ -96,8 +110,11 @@ export async function syncMomentSource(sourceId: string, options: { maxPages?: n
   } finally {
     try { await adapter?.close?.(); }
     finally {
-      try { if (locked) await connection.query('SELECT RELEASE_LOCK(?)', [lockName]); }
-      finally { if (!options.connection) (connection as PoolConnection).release(); }
+      try { await imageCache?.close(); }
+      finally {
+        try { if (locked) await connection.query('SELECT RELEASE_LOCK(?)', [lockName]); }
+        finally { if (!options.connection) (connection as PoolConnection).release(); }
+      }
     }
   }
 }
@@ -107,7 +124,7 @@ export async function momentSources() {
   return rows.map(row => ({ id: row.id, platform: row.platform as Platform, account: row.account, title: row.title, enabled: !!row.enabled,
     count: Number(row.count), lastAttemptAt: row.last_attempt_at, lastSuccessAt: row.last_success_at, lastError: row.last_error,
     mode: jsonValue(row.sync_state)?.archive ? 'archive' : 'live',
-    intervalSeconds: row.platform === 'weibo' ? weiboInterval() : Number(env('MOMENTS_SYNC_INTERVAL_SECONDS', '300')),
+    intervalSeconds: row.platform === 'weibo' ? weiboInterval() : row.platform === 'x' ? xInterval() : Number(env('MOMENTS_SYNC_INTERVAL_SECONDS', '300')),
     backfillComplete: !!jsonValue(row.sync_state)?.backfillComplete }));
 }
 
@@ -120,13 +137,15 @@ async function findRow(id: string, cursorOnly = false) {
   return rows[0];
 }
 function publicMoment(row: any) {
-  return { id: row.id, externalId: row.external_id, platform: row.platform as Platform, account: row.account, sourceUrl: row.source_url,
-    title: row.title, text: row.body_text, content: row.body_html, datetime: new Date(row.published_at).toISOString(), tags: jsonValue(row.tags), media: jsonValue(row.media) };
+  const images = publicMomentImages(row.body_html, jsonValue(row.media));
+  return { id: row.id, externalId: row.external_id, platform: row.platform as Platform, account: row.account, sourceUrl: row.platform === 'local' ? '' : row.source_url,
+    title: row.title, text: row.body_text, content: images.content, datetime: new Date(row.published_at).toISOString(), tags: jsonValue(row.tags), media: images.media };
 }
 export async function momentById(id: string) {
   const row = await findRow(id); if (!row) throw new AppError(404, '这条碎碎念没有找到'); return publicMoment(row);
 }
-export async function momentChannel(options: { before?: string; after?: string; q?: string; limit?: number } = {}) {
+export async function momentChannel(options: { before?: string; after?: string; q?: string; platform?: string; limit?: number } = {}) {
+  if (options.platform && !['telegram', 'weibo', 'x', 'local'].includes(options.platform)) throw new AppError(400, '碎碎念来源不存在');
   const limit = Math.min(50, Math.max(1, options.limit ?? 20));
   const conditions = ["m.status='published'", 's.enabled=TRUE', 'm.published_at<=UTC_TIMESTAMP(3)']; const values: any[] = [];
   const cursorId = options.before || options.after;
@@ -136,16 +155,17 @@ export async function momentChannel(options: { before?: string; after?: string; 
     conditions.push(`(m.published_at ${op} ? OR (m.published_at=? AND m.id ${op} ?))`); values.push(cursor.published_at, cursor.published_at, cursor.id);
   }
   if (options.q) { conditions.push("LOCATE(?, m.body_text)>0"); values.push(options.q.slice(0, 200)); }
+  if (options.platform) { conditions.push('s.platform=?'); values.push(options.platform); }
   const [rows] = await getPool().query<any[]>(selectMoment + ' WHERE ' + conditions.join(' AND ') + ` ORDER BY m.published_at ${options.after ? 'ASC' : 'DESC'},m.id ${options.after ? 'ASC' : 'DESC'} LIMIT ?`, [...values,limit]);
   if (options.after) rows.reverse();
   let hasOlder = false, hasNewer = false;
   if (rows.length && limit > 3) {
     const exists = await Promise.all(['older','newer'].map(async direction => {
       const row = direction === 'older' ? rows[rows.length-1] : rows[0]; const op = direction === 'older' ? '<' : '>';
-      const [found] = await getPool().query<any[]>('SELECT 1' + momentFrom + ` WHERE m.status='published' AND s.enabled=TRUE AND m.published_at<=UTC_TIMESTAMP(3) AND (m.published_at ${op} ? OR (m.published_at=? AND m.id ${op} ?))` + (options.q ? ' AND LOCATE(?,m.body_text)>0' : '') + ' LIMIT 1', [row.published_at,row.published_at,row.id,...(options.q ? [options.q.slice(0,200)] : [])]);
+      const [found] = await getPool().query<any[]>('SELECT 1' + momentFrom + ` WHERE m.status='published' AND s.enabled=TRUE AND m.published_at<=UTC_TIMESTAMP(3) AND (m.published_at ${op} ? OR (m.published_at=? AND m.id ${op} ?))` + (options.q ? ' AND LOCATE(?,m.body_text)>0' : '') + (options.platform ? ' AND s.platform=?' : '') + ' LIMIT 1', [row.published_at,row.published_at,row.id,...(options.q ? [options.q.slice(0,200)] : []),...(options.platform ? [options.platform] : [])]);
       return !!found.length;
     }));
     [hasOlder,hasNewer] = exists;
   }
-  return { title: '碎碎念', posts: rows.map(publicMoment), hasOlder, hasNewer, query: options.q || '' };
+  return { title: '碎碎念', posts: rows.map(publicMoment), hasOlder, hasNewer, query: options.q || '', platform: options.platform || '' };
 }

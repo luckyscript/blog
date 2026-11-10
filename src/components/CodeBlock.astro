@@ -12,8 +12,8 @@ const highlightedCode = lang !== 'text'
   : prism.util.encode(content);
 ---
 
-<pre class="language-{lang}">
-  <code class="language-{lang}" set:html={highlightedCode}></code>
+<pre class={`language-${lang}`}>
+  <code class={`language-${lang}`} set:html={highlightedCode}></code>
 </pre>
 
 <style is:global>

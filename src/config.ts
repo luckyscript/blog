@@ -23,6 +23,7 @@ export const WEIBO_CONFIG = {
 export const NAV = {
   首页: '/',
   生活: '/blog',
+  技术: '/tech',
   笔记: 'https://ink.rainonpiano.com/',
   链接: '/link',
   PPT: '/ppt',

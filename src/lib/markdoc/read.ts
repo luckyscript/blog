@@ -4,7 +4,7 @@ import matter from "gray-matter";
 import fs from "fs/promises";
 import { globby } from "globby";
 import { usesDatabase } from '../server/env';
-import { databaseReadOne, databaseReadAll, databaseReadGroups, databaseReadRecentBlog } from '../server/public-content';
+import { databaseReadOne, databaseReadAll, databaseReadGroups, databaseReadRecentBlog, databaseReadRecentPosts } from '../server/public-content';
 import { renderedBody } from './render-cache';
 import { AppError } from '../server/errors';
 export { parseAndTransform } from './render';
@@ -66,6 +66,13 @@ export async function read<T extends z.ZodTypeAny>({
 export async function readRecentBlog<T extends z.ZodTypeAny>({ frontmatterSchema, limit = 3 }: { frontmatterSchema: T; limit?: number }) {
   if (usesDatabase()) return databaseReadRecentBlog(limit);
   return (await readBlog({ frontmatterSchema })).flatMap(group => group.posts.map(post => ({ ...post, year: group.year })))
+    .filter(post => !(post.frontmatter as any).draft)
+    .sort((a, b) => new Date((b.frontmatter as any).date).getTime() - new Date((a.frontmatter as any).date).getTime()).slice(0, limit);
+}
+
+export async function readRecentTech<T extends z.ZodTypeAny>({ frontmatterSchema, limit = 3 }: { frontmatterSchema: T; limit?: number }) {
+  if (usesDatabase()) return databaseReadRecentPosts('tech', limit);
+  return (await readTech({ frontmatterSchema })).flatMap(group => group.posts.map(post => ({ ...post, year: group.year })))
     .filter(post => !(post.frontmatter as any).draft)
     .sort((a, b) => new Date((b.frontmatter as any).date).getTime() - new Date((a.frontmatter as any).date).getTime()).slice(0, limit);
 }

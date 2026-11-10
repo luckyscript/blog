@@ -5,18 +5,23 @@ import Intro from "../components/Intro.astro";
 import PersonalDesc from "../components/PersonalDesc.astro";
 import { SITE_TITLE } from "../config";
 import { momentChannel } from "../lib/moments/store";
-import { readRecentBlog } from "../lib/markdoc/read";
+import { readRecentBlog, readRecentTech } from "../lib/markdoc/read";
 import { blog } from "../lib/markdoc/frontmatter.schema";
 
-const [channel, recentPosts] = await Promise.all([
+const [channel, recentPosts, recentTechPosts] = await Promise.all([
   momentChannel({ limit: 3 }),
   readRecentBlog({ frontmatterSchema: blog, limit: 3 }),
+  readRecentTech({ frontmatterSchema: blog, limit: 3 }),
 ]);
 
 const compactChannel = {
   ...channel,
   posts: (channel?.posts ?? []).slice(0, 3),
 };
+const techDateFormat = new Intl.DateTimeFormat('sv-SE', {
+  timeZone: process.env.TIMEZONE || 'Asia/Shanghai',
+  year: 'numeric', month: '2-digit', day: '2-digit',
+});
 
 function formatMomentDate(datetime) {
   const date = new Date(datetime);
@@ -72,9 +77,26 @@ export const prerender = false;
       </div>
     </section>
 
+    <section class="home-section" aria-labelledby="home-tech-heading">
+      <header class="home-section-head">
+        <span class="home-section-index">贰 · Technology</span>
+        <h2 id="home-tech-heading">技术文章</h2>
+      </header>
+      <div class="home-section-content recent-posts">
+        {recentTechPosts.map((post) => (
+          <a class="unset recent-post" href={post.frontmatter.external ? post.frontmatter.url : `/tech/${post.year}/${post.slug}`} target={post.frontmatter.external ? "_blank" : undefined}>
+            <time datetime={post.frontmatter.date.toISOString()}>{techDateFormat.format(post.frontmatter.date)}</time>
+            <strong>{post.frontmatter.title}</strong>
+            <span aria-hidden="true">读</span>
+          </a>
+        ))}
+        <a class="unset section-more" href="/tech">查看全部技术文章</a>
+      </div>
+    </section>
+
     <section class="home-section">
       <header class="home-section-head">
-        <span class="home-section-index">贰 · Moments</span>
+        <span class="home-section-index">叁 · Moments</span>
         <h2>碎碎念</h2>
       </header>
       <div class="home-section-content home-moments" data-dynamic-moments>
@@ -93,7 +115,7 @@ export const prerender = false;
 
     <section class="home-section">
       <header class="home-section-head">
-        <span class="home-section-index">叁 · About</span>
+        <span class="home-section-index">肆 · About</span>
         <h2>关于我</h2>
       </header>
       <div class="home-section-content">

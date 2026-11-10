@@ -1,4 +1,5 @@
 ---
+import { estimateReadingMinutes } from "../../lib/reading-time";
 import { readOne, readAll } from "../../lib/markdoc/read";
 import { card } from "../../lib/markdoc/frontmatter.schema";
 import Renderer from "../../components/Renderer.astro";
@@ -19,7 +20,7 @@ const { content, frontmatter } = await readOne({
 });
 ---
 
-<ContentLayout date={frontmatter.date}>
+<ContentLayout readingMinutes={estimateReadingMinutes(content)} title={frontmatter.title} date={frontmatter.date}>
   <BlogPostMeta
     canonicalUrl={frontmatter.canonicalUrl}
     title={frontmatter.title}

@@ -1,0 +1,29 @@
+---
+import { readingMaterials } from '../lib/reading-materials';
+---
+<div class="reading-material-toolbar">
+  <button type="button" class="reading-material-switch" aria-label="切换书写载体，当前宣纸，下一种竹简">
+    {readingMaterials.map(material=><svg data-material-icon={material.id} width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" aria-hidden="true"><path d={material.path} /></svg>)}
+  </button>
+  <span class="sr-only" aria-live="polite" data-material-notice></span>
+</div>
+<script>
+  import { readingMaterials } from '../lib/reading-materials';
+  function selectMaterial(value:string,animate=false) {
+    const index=Math.max(0,readingMaterials.findIndex(item=>item.id===value));
+    const current=readingMaterials[index],next=readingMaterials[(index+1)%readingMaterials.length];
+    document.documentElement.dataset.readingMaterial=current.id;
+    document.querySelectorAll<HTMLButtonElement>('.reading-material-switch').forEach(button=>button.setAttribute('aria-label',`切换书写载体，当前${current.name}，下一种${next.name}`));
+    if(animate) {
+      const notice=document.querySelector('[data-material-notice]');if(notice)notice.textContent=`已切换为${current.name}`;
+      if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.querySelector('.reading-article')?.animate([{opacity:.76},{opacity:1}],{duration:220,easing:'ease-out'});
+    }
+  }
+  selectMaterial(document.documentElement.dataset.readingMaterial||'paper');
+  document.querySelectorAll<HTMLButtonElement>('.reading-material-switch').forEach(button=>button.addEventListener('click',()=>{
+    const index=Math.max(0,readingMaterials.findIndex(item=>item.id===document.documentElement.dataset.readingMaterial));
+    const next=readingMaterials[(index+1)%readingMaterials.length].id;
+    selectMaterial(next,true);try{localStorage.setItem('inkrain-reading-material',next);}catch{}
+  }));
+  window.addEventListener('storage',event=>{if(event.key==='inkrain-reading-material')selectMaterial(event.newValue||'paper');});
+</script>

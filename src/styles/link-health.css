@@ -1,0 +1,6 @@
+.link-health { display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font:11px/1.7 var(--font-serif,var(--serif,serif));color:var(--ink-muted,var(--muted,#7d857e)); }
+.link-health::before { content:'';width:5px;height:5px;flex:0 0 5px;border-radius:50%;background:currentColor; }
+.link-health[data-tone="good"] { color:#33704e; }.link-health[data-tone="limited"] { color:#946926; }.link-health[data-tone="bad"] { color:#ac5348; }
+.dark .link-health[data-tone="good"] { color:#9bc6a6; }.dark .link-health[data-tone="limited"] { color:#d4b576; }.dark .link-health[data-tone="bad"] { color:#e9a095; }
+.link-health-meta { display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0;color:var(--ink-muted,var(--muted,#7d857e));font-size:11px; }
+.link-checked-at { color:var(--ink-muted,#7d857e);white-space:nowrap;font:10px/1.6 var(--font-mono,monospace); }

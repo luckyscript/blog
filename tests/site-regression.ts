@@ -53,7 +53,6 @@ test("所有已发布文章和本地栏目均可访问，草稿与后台不进�
       "/card",
       "/rss.xml",
       "/sitemap.xml",
-      "/moments/archive",
     ];
     let checked = 0;
     for (const path of pages) {
@@ -116,9 +115,40 @@ test("碎碎念首页、接口、分页和旧链接都读取已同步数据", as
       if (!channel.hasOlder) break;
       const cursor=channel.posts.at(-1)!.id; path=`/moments/before/${cursor}`; channel=await momentChannel({before:cursor});
     } while(channel.posts.length);
-    for(const id of [latest.posts[0].id,latest.posts[0].externalId]) {
-      const response=await fetch(new URL(`/moments/posts/${id}`,origin));assert.equal(response.status,200);assert.ok((await response.text()).includes(latest.posts[0].sourceUrl));
+    const telegram = (await momentChannel({platform:'telegram',limit:1})).posts[0];
+    for(const [id,sourceUrl] of [[latest.posts[0].id,latest.posts[0].sourceUrl],[telegram.externalId,telegram.sourceUrl]]) {
+      const response=await fetch(new URL(`/moments/posts/${id}`,origin));assert.equal(response.status,200);assert.ok((await response.text()).includes(sourceUrl));
     }
     console.log(`已验证 ${seen.size} 条已入库碎碎念的列表、分页和详情入口`);
   } finally {await closeDatabase();}
+});
+
+test('旧碎片入口永久跳转，本站随记在统一时间线中支持搜索、分页和详情', async () => {
+  const origin = process.env.TEST_BASE_URL || 'http://127.0.0.1:3000';
+  assert.ok(['localhost', '127.0.0.1'].includes(new URL(origin).hostname));
+  try {
+    for (const path of ['/moments/archive', '/moments/archive/20', '/moments/archive/480']) {
+      const response = await fetch(new URL(path, origin), { redirect: 'manual' });
+      assert.equal(response.status, 301, path);
+      assert.equal(response.headers.get('location'), '/moments');
+    }
+    const local = await momentChannel({ platform: 'local' });
+    assert.equal(local.posts.length, 20);
+    const remaining = await momentChannel({ platform: 'local', before: local.posts.at(-1)!.id });
+    assert.equal(remaining.posts.length, 14);
+    assert.equal(remaining.hasOlder, false);
+    assert.equal(new Set([...local.posts, ...remaining.posts].map(post => post.id)).size, 34);
+    const home = await (await fetch(new URL('/moments', origin))).text();
+    assert.doesNotMatch(home, /旧碎片|href="\/moments\/archive/);
+    const post = local.posts[0];
+    const search = new URL('/moments', origin);
+    search.searchParams.set('q', post.text.slice(0, 10));
+    const html = await (await fetch(search)).text();
+    assert.ok(html.includes(`/moments/posts/${post.id}`));
+    const detail = await fetch(new URL(`/moments/posts/${post.id}`, origin));
+    assert.equal(detail.status, 200);
+    const detailHtml = await detail.text();
+    assert.ok(detailHtml.includes(post.datetime));
+    assert.doesNotMatch(detailHtml, /@notes/);
+  } finally { await closeDatabase(); }
 });

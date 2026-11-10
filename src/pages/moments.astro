@@ -6,7 +6,7 @@ import TelegramList from '../components/TelegramList.astro'
 import { SITE_TITLE } from '../config'
 import { momentChannel } from '../lib/moments/store'
 
-const channel = await momentChannel()
+const channel = await momentChannel({ q: Astro.url.searchParams.get('q') || '', platform: Astro.url.searchParams.get('platform') || '' })
 
 export const prerender = false
 ---

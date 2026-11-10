@@ -7,16 +7,17 @@ After=network-online.target
 Type=simple
 User=rain-blog-moments
 Group=rain-blog-moments
-SupplementaryGroups=rain-blog-code
+SupplementaryGroups=rain-blog-code rain-blog-media
 WorkingDirectory=/opt/rain-blog/current
-Environment=NODE_ENV=production
-ExecStart=/opt/rain-blog/runtime/bin/node --env-file=/etc/rain-blog/moments.env --max-old-space-size=128 --import tsx scripts/sync-moments.ts --service
+Environment=NODE_ENV=production MOMENTS_MEDIA_DIRECTORY=/var/lib/rain-blog-media
+ExecStart=/opt/rain-blog/runtime/bin/node --dns-result-order=ipv4first --no-network-family-autoselection --env-file=/etc/rain-blog/moments.env --max-old-space-size=128 --import tsx scripts/sync-moments.ts --service
 Restart=on-failure
 RestartSec=15
 TimeoutStopSec=30
 UMask=0077
 StateDirectory=rain-blog-moments
 StateDirectoryMode=0700
+ReadWritePaths=/var/lib/rain-blog-media
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict

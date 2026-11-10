@@ -1,87 +1,17 @@
 ---
-const {
-  title = "碎碎念",
-  eyebrow = "BroadcastChannel · Moments",
-  description = "日常片段、链接、现场感，以及那些还没有长成文章的想法。",
-} = Astro.props;
+const { title = '碎碎念', eyebrow = '日常 · 片段', description = '日常片段、链接、现场感，以及那些还没有长成文章的想法。' } = Astro.props;
 ---
-
 <section class="moments-hero">
-  <div class="moments-title">
-    <p class="moments-eyebrow">{eyebrow}</p>
-    <h1>{title}</h1>
-  </div>
+  <div class="moments-title"><p class="moments-eyebrow"><span class="moments-seal" aria-hidden="true">记</span>{eyebrow}</p><h1>{title}</h1></div>
   <div class="moments-intro">
     <p>{description}</p>
-    <nav class="moments-actions" aria-label="碎碎念导航">
-      <a class="unset" href="/moments">最新</a>
-      <a class="unset" href="/moments/archive">旧碎片</a>
-      <a class="unset" href="/card">本地卡片</a>
-    </nav>
   </div>
 </section>
-
 <style>
-  .moments-hero {
-    display: grid;
-    grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1fr);
-    gap: 64px;
-    align-items: end;
-    padding: 18px 0 46px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .moments-eyebrow {
-    margin: 0 0 14px;
-    color: var(--stamp);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  h1 {
-    margin: 0;
-    color: var(--ink);
-    font-family: var(--font-kai);
-    font-size: clamp(3.4rem, 8vw, 6.2rem);
-    font-weight: 400;
-    line-height: 1;
-  }
-
-  .moments-intro > p {
-    max-width: 480px;
-    margin: 0;
-    color: var(--ink-soft);
-    line-height: 1.8;
-  }
-
-  .moments-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 22px;
-    margin-top: 24px;
-  }
-
-  .moments-actions a {
-    color: var(--ink-muted);
-    border-bottom: 1px solid transparent;
-    font-family: var(--font-sans);
-    font-size: 12px;
-    background-image: none !important;
-  }
-
-  .moments-actions a:hover {
-    color: var(--stamp);
-    border-color: currentColor;
-  }
-
-  @media (max-width: 680px) {
-    .moments-hero {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 24px;
-      padding-top: 4px;
-      padding-bottom: 34px;
-    }
-  }
+  .moments-hero{max-width:840px;margin:0 auto;display:grid;grid-template-columns:minmax(220px,.85fr) minmax(0,1.15fr);gap:40px;align-items:end;padding:0 0 30px;border-bottom:1px solid var(--border)}
+  .moments-eyebrow{display:flex;gap:11px;align-items:center;margin:0 0 16px;color:var(--ink-soft);font-family:var(--font-serif);font-size:13px;letter-spacing:.13em}
+  .moments-seal{display:grid;place-items:center;width:25px;height:28px;border:1px solid color-mix(in srgb,var(--stamp) 60%,transparent);color:var(--stamp);font-family:var(--font-kai);font-size:18px;letter-spacing:0;transform:rotate(-4deg)}
+  h1{margin:0;color:var(--ink);font-family:var(--font-kai);font-size:clamp(3rem,6.8vw,4.8rem);font-weight:400;line-height:1.1;overflow-wrap:anywhere}
+  .moments-intro>p{max-width:410px;margin:0;color:var(--ink-soft);font-size:15px;line-height:1.9}
+  @media(max-width:680px){.moments-hero{grid-template-columns:1fr;gap:18px;padding-bottom:24px}.moments-eyebrow{margin-bottom:12px}.moments-intro>p{font-size:14px;max-width:32em}}
 </style>

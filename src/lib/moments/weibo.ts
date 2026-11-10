@@ -68,7 +68,8 @@ export function parseWeiboStatus(status: any, account: string, depth = 0): Momen
   }
   const video = secureMedia(status.page_info?.media_info?.stream_url_hd ?? status.page_info?.media_info?.stream_url);
   if (video) media.push({ type: 'video', url: video, alt: '' });
-  if (depth === 0 && status.retweeted_status && !status.retweeted_status.deleted) {
+  if (depth === 0 && status.retweeted_status && !status.retweeted_status.deleted &&
+      (!status.retweeted_status.visible || Number(status.retweeted_status.visible.type) === 0)) {
     const originalAccount = decimalId(status.retweeted_status.user?.idstr ?? status.retweeted_status.user?.id);
     const original = parseWeiboStatus(status.retweeted_status, originalAccount, depth + 1);
     if (original) {

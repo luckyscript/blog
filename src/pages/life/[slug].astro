@@ -1,4 +1,5 @@
 ---
+import { estimateReadingMinutes } from "../../lib/reading-time";
 import { readOne, readAll } from "../../lib/markdoc/read";
 import { blog } from "../../lib/markdoc/frontmatter.schema";
 import Renderer from "../../components/Renderer.astro";
@@ -27,7 +28,7 @@ const ogImageAbsoluteUrl =
     : undefined;
 ---
 
-<ContentLayout title={frontmatter.title} date={frontmatter.date}>
+<ContentLayout readingMinutes={estimateReadingMinutes(content)} title={frontmatter.title} date={frontmatter.date}>
   <BlogPostMeta
     canonicalUrl={frontmatter.canonicalUrl}
     title={frontmatter.title}

@@ -19,6 +19,7 @@ const sortedPosts = posts
       new Date(b.frontmatter.date).valueOf() -
       new Date(a.frontmatter.date).valueOf()
   );
+if (!sortedPosts.length) return Astro.redirect('/moments?platform=local', 301);
 ---
 
 <PageLayout>

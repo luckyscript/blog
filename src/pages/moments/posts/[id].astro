@@ -14,8 +14,8 @@ export const prerender = false
   <PageMeta title={`${post?.title || '碎碎念'} | ${SITE_TITLE}`} description={post?.text} slot="meta" />
   <Fragment slot="main">
     <section class="moments-detail">
-      <a class="unset moment-page-link" href="/moments">返回碎碎念</a>
-      {post ? <TelegramItem post={post} /> : <p>这条碎碎念没有找到。</p>}
+      <a class="unset moment-back" href="/moments">← 回到碎碎念</a>
+      {post ? <TelegramItem post={post} detailed={true} /> : <p>这条碎碎念没有找到。</p>}
     </section>
   </Fragment>
 </PageLayout>

@@ -1,28 +1,29 @@
-<script is:inline>
+---
+import { themeOrder, themes } from "../lib/themes";
+---
+
+<script is:inline define:vars={{ themeOrder, themes }}>
   (function () {
     if (typeof window === "undefined") return;
 
-    var validThemes = ["paper", "moon", "sand", "ink"];
-    var savedTheme = localStorage.getItem("inkrain-theme");
-    var legacyTheme = localStorage.getItem("theme");
+    var savedTheme = null;
+    var legacyTheme = null;
+    try {
+      savedTheme = localStorage.getItem("inkrain-theme");
+      legacyTheme = localStorage.getItem("theme");
+    } catch {}
     var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    var theme = validThemes.indexOf(savedTheme) >= 0
+    var theme = themeOrder.indexOf(savedTheme) >= 0
       ? savedTheme
       : legacyTheme === "dark" || (!legacyTheme && prefersDark)
         ? "ink"
         : "paper";
 
     document.documentElement.dataset.theme = theme;
-    document.documentElement.classList.toggle("dark", theme === "ink");
+    document.documentElement.classList.toggle("dark", themes[theme].dark);
 
     var themeColor = document.querySelector('meta[name="theme-color"]');
-    var themeColors = {
-      paper: "#f4f0e6",
-      moon: "#edf4f3",
-      sand: "#f2e3c5",
-      ink: "#20272b"
-    };
-    if (themeColor) themeColor.content = themeColors[theme];
+    if (themeColor) themeColor.content = themes[theme].color;
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

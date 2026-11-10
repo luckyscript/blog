@@ -13,6 +13,7 @@
     <p class="intro-lead">
       这里收藏长文章、技术笔记，也收留那些尚未长成文章的片刻。纸面留白，墨色落字，朱砂只为重要之处。
     </p>
+    <a class="unset intro-tech-link" href="/tech">读技术文章 <span aria-hidden="true">→</span></a>
   </div>
   <div class="intro-inscription" aria-hidden="true">
     <span>一纸春秋 · 几行风雨</span>
@@ -55,10 +56,31 @@
     opacity: 0.56;
   }
 
-  :global(html[data-theme="ink"]) .intro-art {
+  :global(html[data-theme="celadon"]) .intro-art {
+    filter: grayscale(0.35) sepia(0.22) hue-rotate(80deg) saturate(0.65);
+    opacity: 0.48;
+  }
+
+  :global(html[data-theme="bamboo"]) .intro-art {
+    filter: sepia(0.35) hue-rotate(40deg) saturate(0.75);
+    opacity: 0.5;
+  }
+
+  :global(html[data-theme="lotus"]) .intro-art {
+    filter: grayscale(1);
+    opacity: 0.44;
+  }
+
+  :global(html[data-theme="ink"]) .intro-art,
+  :global(html[data-theme="dusk"]) .intro-art {
     filter: invert(1) grayscale(1);
     mix-blend-mode: screen;
     opacity: 0.22;
+  }
+
+  :global(html[data-theme="dusk"]) .intro-art {
+    filter: invert(1) grayscale(0.8) sepia(0.2) hue-rotate(200deg);
+    opacity: 0.18;
   }
 
   .intro-copy {
@@ -93,6 +115,21 @@
     font-size: 16px;
     line-height: 1.85;
   }
+
+  .intro-tech-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 24px;
+    padding-bottom: 4px;
+    color: var(--stamp);
+    border-bottom: 1px solid currentColor;
+    font-family: var(--font-serif);
+    font-size: 14px;
+    background-image: none !important;
+  }
+
+  .intro-tech-link:hover { color: var(--ink); }
 
   .intro-inscription {
     position: relative;

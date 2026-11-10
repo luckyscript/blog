@@ -10,7 +10,7 @@ tags:
 
 ---
 
-### 定义
+## 定义
 
 二叉查找树（Binary Search Tree），也称有序二叉树（ordered binary tree）,排序二叉树（sorted binary tree），是指一棵空树或者具有下列性质的二叉树：
 1. 若任意节点的左子树不空，则左子树上所有结点的值均小于它的根结点的值；
@@ -22,7 +22,7 @@ tags:
 ![242108011547176](https://cloud.githubusercontent.com/assets/9391201/13770345/4d3c3044-eac1-11e5-93e9-27a01b4c146d.png)
 在此基础上，加上节点之间的大小关系，就是二叉查找树：
 ![242108022794732](https://cloud.githubusercontent.com/assets/9391201/13770400/b7faa960-eac1-11e5-8cf2-dc789ebf92fb.png)
-### 实现
+## 实现
 
 ``` Haskell
 data Binary_Tree a = Null | Node {element::a,left_tree,right_tree::Binary_Tree a}
@@ -79,7 +79,7 @@ insert_element_to_tree a bs_tree = case bs_tree of
 ![242108044987088](https://cloud.githubusercontent.com/assets/9391201/13770830/bfecac74-eac4-11e5-833b-7c814a2ba428.png)
 ### 最大最小值
 
-二叉查找树中，最左和最右节点即为最小值和最大值，所以我们只需递归调用即可。
+二叉查找树中，**最左和最右节点即为最小值和最大值**，所以我们只需递归调用即可。
 
 ``` Haskell
 maximum' :: (Ord a) => BS_Tree a -> a
@@ -117,9 +117,9 @@ minimum' bs_tree = case bs_tree of
 
 整个过程如下图
 ![242109141701837](https://cloud.githubusercontent.com/assets/9391201/13770964/7e3637ea-eac5-11e5-8535-b23581a93455.png)
-### 分析
+## 分析
 
-二叉查找树的运行时间和树的形状有关，树的形状又和插入元素的顺序有关。在最好的情况下，节点完全平衡，从根节点到最底层叶子节点只有lgN个节点。在最差的情况下，根节点到最底层叶子节点会有N各节点。在一般情况下，树的形状和最好的情况接近。
+**二叉查找树的运行时间和树的形状有关**，树的形状又和插入元素的顺序有关。在最好的情况下，节点完全平衡，从根节点到最底层叶子节点只有lgN个节点。在最差的情况下，根节点到最底层叶子节点会有N各节点。在一般情况下，树的形状和最好的情况接近。
 ![242110209675830](https://cloud.githubusercontent.com/assets/9391201/13770989/a11d0130-eac5-11e5-912b-0302f204648b.png)
 在分析二叉查找树的时候，我们通常会假设插入的元素顺序是随机的。对BST的分析类似与快速排序中的查找：
 
@@ -127,4 +127,4 @@ minimum' bs_tree = case bs_tree of
 
 BST中位于顶部的元素就是快速排序中的第一个划分的元素，该元素左边的元素全部小于该元素，右边的元素均大于该元素。
 
-对于N个不同元素，随机插入的二叉查找树来说，其平均查找/插入的时间复杂度大约为2lnN，这个和快速排序的分析一样，具体的证明方法不再赘述，参照快速排序。
+对于N个不同元素，随机插入的二叉查找树来说，其**平均查找/插入的时间复杂度大约为2lnN**，这个和快速排序的分析一样，具体的证明方法不再赘述，参照快速排序。

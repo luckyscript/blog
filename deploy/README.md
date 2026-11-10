@@ -96,6 +96,19 @@ Cloudflare Turnstile 正式密钥和域名未配置时，登录保持禁用。�
 
 `rain-blog-moments.service` 使用独立的系统用户和同名私有组 `rain-blog-moments`，加入只读代码组 `rain-blog-code`。创建 `/etc/rain-blog/moments.env`，权限 `root:rain-blog-moments 640`，只填 `DATABASE_URL`、`MOMENTS_TELEGRAM_CHANNEL`、`MOMENTS_SYNC_INTERVAL_SECONDS` 和需要的 `MOMENTS_HTTP_PROXY` / `MOMENTS_TELEGRAM_ORIGIN`。不要复制网站登录或备份凭据。
 
+ECS 使用 PopCat 时，登录后运行 `popcat proxy always`、`popcat proxy lan off`、`popcat proxy on`，让混合代理在 `127.0.0.1:23333` 独立运行。将 `rain-blog-moments-popcat.conf` 安装为 `/etc/systemd/system/rain-blog-moments.service.d/popcat.conf`，执行 `systemctl daemon-reload` 并重启同步服务。该配置仅让 Telegram 页面与图片下载使用代理，不设置全局代理或局域网网关。管理界面保持 `127.0.0.1:23380`，远程管理通过 SSH 本地端口转发；账号凭据由 PopCat 保存在其私有状态目录，不放入博客环境文件或仓库。
+
+图片使用独立持久目录，不放在 release 或私有微博凭据目录中。安装两个 unit 前创建只读共享组和目录：
+
+```sh
+groupadd --system rain-blog-media
+usermod -aG rain-blog-media rain-blog
+usermod -aG rain-blog-media rain-blog-moments
+install -d -o rain-blog-moments -g rain-blog-media -m 2750 /var/lib/rain-blog-media
+```
+
+两个 unit 都设置 `MOMENTS_MEDIA_DIRECTORY=/var/lib/rain-blog-media`；只有同步服务有该目录的写权限，网站只读。保留 `/var/lib/rain-blog-moments` 的 `0700` 权限。备份和恢复时同时保留媒体目录及其 `.refs` 索引；数据库中的图片路径依赖这些文件。
+
 迁移前生成数据库备份，执行 `db:setup` 应用 `003_moments.sql`，再从能连接 Telegram 的机器执行 `npm run moments:sync -- --backfill`。发布网站后，安装同步服务的 unit 文件并启用：
 
 ```sh
@@ -107,5 +120,42 @@ journalctl -u rain-blog-moments --since '10 minutes ago'
 ```
 
 每次切换 current 后同时重启该服务。数据库命名锁防止同一来源并发同步；失败会记录到后台设置页，下一轮继续。无可用 Telegram 访问通道时，同步健康检查失败是预期的真实状态；网站仍读取已保存内容。原有备份服务会自动包含新增表，无需更改备份范围。
+
+同步进程固定使用 IPv4，规避当前 ECS 到微博 / R2 的双栈连接超时。持久图片目录须在部署时设置为 `rain-blog-moments:rain-blog-media`、`2750`；运行时不重新设置目录的 setgid 位，因为 `RestrictSUIDSGID=true` 会拒绝这类操作并返回 `EPERM`。新增图片仍设置为 `0640`，继承目录的共享组。
+
+### 链接健康检查
+
+先备份数据库并运行 `db:setup` 应用 `005_link_health.sql`。创建独立系统用户 `rain-blog-links`，只加入 `rain-blog-code` 只读代码组。`/etc/rain-blog/links.env` 仅保存 `DATABASE_URL`，归 `root:rain-blog-links`、权限 `0640`，不复制其他服务的凭据。
+
+安装 `rain-blog-link-health.service` 和 `.timer` 到 `/etc/systemd/system/`，`systemctl daemon-reload` 后运行 `systemctl enable --now rain-blog-link-health.timer`，首次另行 `systemctl start rain-blog-link-health.service`。定时器每周日北京时间 04:40 后随机延迟至多五分钟执行，停机错过后补跑。服务以三路并发复查已发布链接，数据库命名锁防止重叠运行；旧网址的响应不能覆盖编辑后的新目标。日志只输出数量与状态，不输出页面、Cookie 或凭据。前台只查询保存结果。
+
+### 微博免费网页同步
+
+将 `deploy/rain-blog-moments-weibo.conf` 安装为 `/etc/systemd/system/rain-blog-moments.service.d/weibo.conf`，执行 `systemctl daemon-reload` 并重启同步服务。默认 `MOMENTS_WEIBO_TRANSPORT=web`，不调用付费 API。只有显式设置 `official` 才会使用原有开放平台适配器。
+
+两个账号各自扫码登录；扫码辅助程序使用隔离的 `/opt/rain-blog/weibo-runtime` Python 环境，依赖见 `deploy/requirements-weibo.txt`。辅助页只监听服务器回环地址，通过 SSH 本地转发访问，授权后关闭辅助服务与转发。同步本身使用 Node.js，只发送固定微博网页地址的读取请求，不需要 Python 常驻。辅助程序入口为 `scripts/weibo-web-login.py`，以同步用户运行，仅监听 `127.0.0.1:23383`。例如：
+
+```sh
+systemd-run --unit=rain-blog-weibo-login --property=User=rain-blog-moments --property=Group=rain-blog-moments --property=SupplementaryGroups=rain-blog-code --property=NoNewPrivileges=true /opt/rain-blog/weibo-runtime/bin/python /opt/rain-blog/current/scripts/weibo-web-login.py
+# 在自己的电脑建立转发，然后打开 http://127.0.0.1:23383/
+ssh -L 127.0.0.1:23383:127.0.0.1:23383 root@YOUR_ECS
+# 两个账号都显示“已登录并保存”后关闭辅助服务与 SSH 转发
+systemctl stop rain-blog-weibo-login
+```
+
+扫码通过后先写入私有临时会话，再从微博首页解析登录配置核对 UID；网络失败可重试校验，避免重新扫码。校验通过才生成正式 UID 文件。临时文件不被同步器读取，不把辅助页面的“已扫码”误当作同步成功。
+
+
+登录文件位于 `/var/lib/rain-blog-moments/weibo-web/<UID>.json`，目录 `0700`、文件 `0600`，均归 `rain-blog-moments` 所有。保存前必须核对实际登录 UID，两个会话不可混用。网站进程不能读取该私有目录。微博图片默认直接连接新浪 CDN，并带微博 Referer；需要代理时单独配置 `MOMENTS_WEIBO_HTTP_PROXY`。Telegram / X 继续使用原有代理。
+
+迁移前将 `blog_moments`、`blog_moment_sources` 完整快照写入私有备份。先验证每个账号首个分页，再以小批次调用 `syncMomentSource('weibo:UID', {maxPages:5})` 续跑，直到来源 `backfillComplete` 为真。旧的官方数字游标不可直接用于网页分页；更换通道前备份并重置相应来源的同步状态，不动历史存档。全程保留未返回的旧记录；图片下载失败不推进该批游标。完成后核对来源条数、时间范围、原记录状态及所有站内图片，不能仅以进程存活判断成功。
+
+### X / Twitter
+
+`deploy/rain-blog-moments-x.conf` 为 `rainonpiano`、`raininpiano` 配置每小时读取。安装为 `/etc/systemd/system/rain-blog-moments.service.d/x.conf` 后执行 `systemctl daemon-reload` 并重启同步服务。适配器通过 `scripts/x-read.py` 调用固定版本 `twitter-cli==0.8.5` 的只读请求；Python 环境位于 `/opt/rain-blog/x-runtime`，依赖见 `deploy/requirements-x.txt`，不使用付费 X API。
+
+凭据仅在用户明确授权后，经 SSH 直接保存到 `/var/lib/rain-blog-moments/x/session.json`，包含 `auth_token`、`ct0`，可选 `cookie_string`。目录归 `rain-blog-moments` 所有且为 `0700`，文件为 `0600`；不放入仓库、博客环境文件、命令行参数或日志。更新凭据后下一轮重新读取。未登录、受限流、返回缺失或账号非公开时明确失败，不将失败误报为空历史。
+
+X 按独立原始推文 ID 保存；保留转推外层 ID、原作者署名和发布时间。长文优先读取完整正文，截断而没有全文时停止推进游标；仅接收配置账号的公开内容。历史游标与增量检查点可续跑，常规每轮最多 2 页；补历史可以单独调用 `syncMomentSource('x:用户名', {maxPages:100})`，不会触发其他平台同步。历史完整范围取决于 X 实际返回的数据。`pbs.twimg.com` 图片和视频封面进入现有持久图片缓存，视频内容仍通过源站地址播放。
 
 回滚时将 current 原子切回保留的旧版本，再重启两服务。配置和备份位于发布目录之外，不随版本切换删除。数据库结构变更必须另行确认兼容性。

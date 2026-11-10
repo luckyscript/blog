@@ -2,6 +2,7 @@ import sanitizeHtml from "sanitize-html";
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import type { MomentInput } from "./types";
+import { isCachedMomentImage } from './media-path';
 
 export const escapeHtml = (value: string) => value.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 export function httpsUrl(value: string) {
@@ -26,7 +27,7 @@ const inputSchema = z.object({
   externalId: z.string().regex(/^[\w-]{1,128}$/), sourceUrl: z.string().url().refine(v => !!httpsUrl(v)),
   title: z.string().max(500), text: z.string().max(500_000), html: z.string().max(1_000_000),
   publishedAt: z.string().refine(v => Number.isFinite(Date.parse(v))), tags: z.array(z.string().max(100)).max(100),
-  media: z.array(z.object({ type: z.enum(["image", "video", "audio"]), url: z.string().refine(v => !!httpsUrl(v)), alt: z.string().max(500) })).max(100),
+  media: z.array(z.object({ type: z.enum(["image", "video", "audio"]), url: z.string().refine(v => !!httpsUrl(v) || isCachedMomentImage(v)), alt: z.string().max(500) })).max(100),
 });
 export function normalizeMoment(input: MomentInput) {
   const value = inputSchema.parse(input);

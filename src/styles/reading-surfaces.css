@@ -1,0 +1,81 @@
+.inkrain-main.reading-main { width:min(calc(100% - 48px),860px);padding-top:28px; }
+.reading-material-toolbar { display:flex;justify-content:flex-end;margin:0 0 18px; }
+.reading-material-switch { display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:6px;border:1px solid var(--border);border-radius:2px;background:transparent;color:var(--ink-soft);cursor:pointer; }
+.reading-material-switch:focus-visible { outline:2px solid var(--stamp);outline-offset:5px; }
+.reading-material-switch:hover { color:var(--stamp);border-color:var(--stamp);background:var(--wash); }
+.reading-material-switch [data-material-icon] { display:none; }
+[data-reading-material="paper"] [data-material-icon="paper"],
+[data-reading-material="bamboo"] [data-material-icon="bamboo"],
+[data-reading-material="bronze"] [data-material-icon="bronze"],
+[data-reading-material="bone"] [data-material-icon="bone"] { display:block; }
+
+.reading-article {
+  --paper:#f5f0e4;--paper-deep:#eae2d0;--ink:#34342e;--ink-soft:#615b4f;--ink-muted:#7d7362;--stamp:#8d463b;--accent:#6c6746;--border:#d0c3a9;--border-soft:#ded4bf;
+  position:relative;isolation:isolate;padding:60px 78px 42px;border:1px solid #d9cdb7;border-radius:2px;
+  background-color:var(--paper);
+  background-image:linear-gradient(rgb(250 247 238 / .46),rgb(250 247 238 / .46)),url('/reading-surfaces/paper-tile-v2.svg');
+  background-size:auto,1180px 1180px;
+  box-shadow:0 2px 4px rgb(67 49 29 / .025),0 14px 40px rgb(67 49 29 / .045),inset 0 0 0 1px rgb(255 255 255 / .6);
+}
+.reading-header::before { left:-49px;top:4px; }
+.reading-article::before,.reading-article::after { pointer-events:none; }
+
+[data-reading-material="bamboo"] .reading-article {
+  --paper:#e3d1a9;--paper-deep:#d5bf8b;--ink:#352d1e;--ink-soft:#635135;--ink-muted:#786442;--stamp:#7c3e27;--accent:#5b5e31;--border:#b39a63;--border-soft:#cbb483;
+  border-color:#b39b6c;border-radius:6px;
+  background-image:linear-gradient(90deg,rgb(223 200 153 / .08),rgb(244 233 201 / .72) 12% 88%,rgb(223 200 153 / .08)),url('/reading-surfaces/bamboo-tile-v2.svg');
+  background-size:auto,1280px 1280px;
+  box-shadow:inset 3px 0 4px rgb(88 64 23 / .12),inset -3px 0 4px rgb(88 64 23 / .12),0 15px 35px rgb(68 47 19 / .09);
+}
+[data-reading-material="bamboo"] .reading-article::before,
+[data-reading-material="bamboo"] .reading-article::after {
+  content:'';position:absolute;left:9px;right:9px;top:20px;height:7px;border:1px solid #796342;border-radius:2px;
+  background:repeating-linear-gradient(130deg,#a58a5f 0 2px,#d6be8e 2px 3px,#8e744d 3px 4px);
+  box-shadow:0 2px 3px rgb(54 40 19 / .22),inset 0 1px 1px #e2cfa6;
+}
+[data-reading-material="bamboo"] .reading-article::after { top:auto;bottom:20px; }
+[data-reading-material="bamboo"] .reading-header::before { content:'简牍记事'; }
+
+[data-reading-material="bronze"] .reading-article {
+  --paper:#302c22;--paper-deep:#242119;--ink:#eee1bd;--ink-soft:#d7c8a7;--ink-muted:#beae8c;--stamp:#f1cc8b;--accent:#b7c7a6;--border:#958264;--border-soft:#706147;
+  border-color:#9e8860;border-radius:5px;
+  background-image:linear-gradient(rgb(20 19 13 / .18),rgb(20 19 13 / .18)),url('/reading-surfaces/bronze-tile-v2.svg');
+  background-size:auto,1300px 1300px;
+  box-shadow:inset 0 1px 2px rgb(249 217 150 / .38),inset 2px 0 3px rgb(249 217 150 / .15),inset -2px -3px 4px rgb(0 0 0 / .45),0 14px 40px rgb(31 24 12 / .14);
+}
+[data-reading-material="bronze"] .reading-article::before {
+  content:'';position:absolute;inset:10px;border:14px solid transparent;border-image:url('/reading-surfaces/bronze-border-v2.svg') 24 round;opacity:.6;
+}
+[data-reading-material="bronze"] .reading-header::before { content:'金石有声'; }
+[data-reading-material="bronze"] .reading-title,
+[data-reading-material="bronze"] .reading-content h2 { text-shadow:0 1px 0 #0c0b08; }
+
+[data-reading-material="bone"] .reading-article {
+  --paper:#f1e3c6;--paper-deep:#e2d0aa;--ink:#443523;--ink-soft:#705a3e;--ink-muted:#86704f;--stamp:#8f4b2e;--accent:#786241;--border:#bfa478;--border-soft:#d5bf98;
+  border-color:#c7af86;border-radius:35px 19px 38px 26px / 75px 60px 80px 65px;
+  background-image:linear-gradient(rgb(252 243 220 / .4),rgb(252 243 220 / .4)),url('/reading-surfaces/bone-tile-v2.svg');
+  background-size:auto,1280px 1280px;
+  box-shadow:inset 0 0 32px rgb(139 101 48 / .13),inset 1px 2px 2px rgb(255 255 255 / .65),0 12px 32px rgb(66 44 19 / .08);
+}
+[data-reading-material="bone"] .reading-article::before { content:'';position:absolute;inset:13px;border:1px solid rgb(157 125 77 / .19);border-radius:28px 13px 30px 20px / 60px 48px 64px 52px; }
+[data-reading-material="bone"] .reading-article::after {
+  content:'';position:absolute;top:30px;right:29px;width:23px;height:68px;opacity:.48;
+  background:radial-gradient(ellipse at 50% 8px,#a48a61 0 2px,#dfcba7 3px 5px,transparent 6px),radial-gradient(ellipse at 50% 28px,#a48a61 0 2px,#dfcba7 3px 5px,transparent 6px),radial-gradient(ellipse at 50% 48px,#a48a61 0 2px,#dfcba7 3px 5px,transparent 6px);
+}
+[data-reading-material="bone"] .reading-header::before { content:'契刻成章'; }
+
+@media(max-width:1040px){.reading-header::before{display:none;}}
+@media(max-width:767px){
+  .inkrain-main.reading-main { width:calc(100% - 24px);padding-top:15px; }
+  .reading-material-toolbar { margin:0 8px 12px; }
+  .reading-article { padding:38px 20px 33px; }
+  [data-reading-material="bamboo"] .reading-article::before { top:13px; }[data-reading-material="bamboo"] .reading-article::after { bottom:13px; }
+  [data-reading-material="bronze"] .reading-article::before { inset:5px;border-width:8px; }
+  [data-reading-material="bone"] .reading-article { border-radius:21px 12px 25px 16px / 40px 32px 45px 36px; }
+  [data-reading-material="bone"] .reading-article::before { inset:7px;border-radius:17px 9px 20px 12px / 32px 26px 36px 29px; }
+  [data-reading-material="bone"] .reading-article::after { top:15px;right:17px;width:52px;height:10px;background:radial-gradient(ellipse at 8px 50%,#a48a61 0 1px,#dfcba7 2px 3px,transparent 4px),radial-gradient(ellipse at 25px 50%,#a48a61 0 1px,#dfcba7 2px 3px,transparent 4px),radial-gradient(ellipse at 42px 50%,#a48a61 0 1px,#dfcba7 2px 3px,transparent 4px); }
+}
+@media print {
+  .reading-material-toolbar,.reading-article::before,.reading-article::after { display:none!important; }
+  .reading-article { padding:0;border:0;border-radius:0;box-shadow:none;background:white!important;color:black!important;--paper:white!important;--paper-deep:#f4f4f4!important;--ink:black!important;--ink-soft:#333!important;--ink-muted:#555!important;--stamp:black!important;--accent:black!important;--border:#aaa!important;--border-soft:#ddd!important; }
+}

@@ -1,6 +1,7 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { closeDatabase } from "../src/db";
 import { ensureMomentSource, momentSources, syncMomentSource, syncError } from "../src/lib/moments/store";
+import { weiboTransport } from '../src/lib/moments/weibo-web';
 
 const controller = new AbortController();
 process.once('SIGTERM', () => controller.abort());
@@ -21,8 +22,9 @@ async function main() {
     for (const source of await momentSources()) {
       if (!source.enabled || source.mode === 'archive' || controller.signal.aborted) continue;
       if (args.includes('--service') && source.lastAttemptAt && Date.now() - new Date(source.lastAttemptAt).getTime() < source.intervalSeconds * 1000) continue;
-      // Weibo calls may use paid credits: even explicit backfills stay bounded to two pages per run.
-      const maxPages = source.platform === 'weibo' ? 2 : args.includes('--backfill') ? 100 : 5;
+      // Only explicitly selected official Weibo calls consume paid credits.
+      const paidWeibo = source.platform === 'weibo' && weiboTransport() === 'official';
+      const maxPages = paidWeibo ? 2 : args.includes('--backfill') ? 100 : ['x', 'weibo'].includes(source.platform) ? 2 : 5;
       try { console.log(JSON.stringify({ event:'moments_sync_success', ...await syncMomentSource(source.id, { maxPages, signal: controller.signal }) })); }
       catch (error) { if (controller.signal.aborted) break; failures++; console.error(JSON.stringify({ event:'moments_sync_failed', sourceId:source.id, error:syncError(error) })); }
     }

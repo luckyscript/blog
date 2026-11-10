@@ -1,160 +1,462 @@
 ---
-import { readOne, readAll } from "../lib/markdoc/read";
+import { readAll } from "../lib/markdoc/read";
 import { blog } from "../lib/markdoc/frontmatter.schema";
 import PageLayout from "../layouts/PageLayout.astro";
 import PageMeta from "../components/PageMeta.astro";
-import Renderer from "../components/Renderer.astro";
 import { SITE_TITLE } from "../config";
-import { AppError } from '../lib/server/errors';
-
-const posts = await readAll({
-  directory: "link",
-  frontmatterSchema: blog,
-});
-
-const sortedPosts = posts
-  .filter((p) => p.frontmatter.draft !== true)
-  .sort(
-    (a, b) =>
-      new Date(b.frontmatter.date).valueOf() -
-      new Date(a.frontmatter.date).valueOf()
-  );
-
-let content;
-try {
-  ({ content } = await readOne({ directory: 'link', slug: 'link', frontmatterSchema: blog }));
-} catch (error) {
-  if (!(error instanceof AppError && error.status === 404)) throw error;
-}
+import { listCuratedLinks } from "../lib/server/links";
+import LinkHealth from '../components/LinkHealth.astro';
+const requestedView=Astro.url.searchParams.get('view');
+const initialView=requestedView==='list'?'list':'cards';
+const allLinks = await listCuratedLinks();
+const category = (Astro.url.searchParams.get("category") || "").slice(0, 100);
+const query = (Astro.url.searchParams.get("q") || "").trim().slice(0, 100);
+const categories = [...new Set(allLinks.map((link) => link.category))];
+const matching = allLinks.filter(
+  (link) =>
+    (!category || link.category === category) &&
+    (!query ||
+      `${link.name} ${link.description} ${link.url}`
+        .toLocaleLowerCase()
+        .includes(query.toLocaleLowerCase()))
+);
+const pages = Math.max(1, Math.ceil(matching.length / 15));
+const page = Math.min(
+  pages,
+  Math.max(1, Math.floor(Number(Astro.url.searchParams.get("page")) || 1))
+);
+const links = matching.slice((page - 1) * 15, page * 15);
+const topics = (
+  await readAll({ directory: "link", frontmatterSchema: blog })
+).filter((post) => !post.frontmatter.draft && !post.frontmatter.external);
+const address = (nextCategory: string, nextPage = 1) => {
+  const p = new URLSearchParams();
+  if (nextCategory) p.set("category", nextCategory);
+  if (query) p.set("q", query);
+  if (nextPage > 1) p.set("page", String(nextPage));
+  if(initialView==='list')p.set('view','list');
+  return "/link" + (p.size ? "?" + p : "");
+};
 ---
 
 <PageLayout>
-  <PageMeta title={`link | ${SITE_TITLE}`} slot="meta" />
-  <section slot="main" class="inkrain-link-page">
-    <header class="listing-head">
-      <h2 class="listing-heading">链接 <span class="listing-subtitle">Links · Reading paths</span></h2>
+  <PageMeta title={`链接 | ${SITE_TITLE}`} slot="meta" />
+  <section slot="main" class="links-page" data-links-view={initialView}>
+    <script is:inline define:vars={{requestedView}}>
+      (function(){var page=document.currentScript.closest('.links-page');var saved=null;try{saved=localStorage.getItem('inkrain-links-view');}catch{}page.dataset.linksView=['cards','list'].includes(requestedView)?requestedView:saved==='list'?'list':'cards';})();
+    </script>
+    <header class="links-hero">
+      <div>
+        <p class="links-eyebrow">
+          <span aria-hidden="true">藏</span>网上往来 · 纸上收藏
+        </p><h1>链接</h1>
+      </div><p class="links-description">
+        一些常去的地方，一些值得重读的文字。<br
+        />循着这些书签，偶尔也能遇见另一片天地。
+      </p>
     </header>
-    <ul class="unset">
-      {sortedPosts.map((post) => {
-        const formattedDate = new Date(
-          post.frontmatter.date
-        ).toLocaleDateString("zh-CN", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-        return (
-          <li class="post-row">
-            {post.frontmatter.external ? (
-              <a
-                href={post.frontmatter.url}
-                target="_blank"
-                class="unset post-link"
-              >
-                <span class="post-title">{post.frontmatter.title}</span>
-                <span class="post-meta">
-                  <time datetime={post.frontmatter.date.toISOString()}>
-                    {formattedDate}
-                  </time>
-                </span>
-              </a>
-            ) : (
-              <a
-                href={`/link/${post.slug}`}
-                class="unset post-link"
-              >
-                <span class="post-title">{post.frontmatter.title}</span>
-                <span class="post-meta">
-                  <time datetime={post.frontmatter.date.toISOString()}>
-                    {formattedDate}
-                  </time>
-                </span>
-              </a>
-            )}
-          </li>
-        );
-      })}
-    </ul>
-    <div class="link-content">
-      {content && <Renderer content={content} />}
+    {
+      topics.length > 0 && (
+        <nav class="links-topics" aria-label="链接专题">
+          <span>专题手记</span>
+          {topics.map((post) => (
+            <a class="unset" href={`/link/${post.slug}`}>
+              {post.frontmatter.title}
+            </a>
+          ))}
+        </nav>
+      )
+    }
+    <div class="links-tools">
+      <nav aria-label="按链接分类筛选">
+        <a
+          class:list={["unset", !category && "selected"]}
+          href={address("")} data-links-nav
+          aria-current={!category ? "page" : undefined}
+          >全部 <span>{allLinks.length}</span></a
+        >{
+          categories.map((item) => (
+            <a
+              class:list={["unset", category === item && "selected"]}
+              href={address(item)} data-links-nav
+              aria-current={category === item ? "page" : undefined}
+            >
+              {item}
+            </a>
+          ))
+        }
+      </nav><form action="/link" method="get" role="search">
+        <input type="hidden" name="view" value={initialView} />
+        {
+          category && <input type="hidden" name="category" value={category} />
+        }<label class="sr-only" for="links-search">搜索链接</label><input
+          id="links-search"
+          name="q"
+          type="search"
+          value={query}
+          placeholder="寻找一个书签…"
+          maxlength="100"
+        /><button type="submit" aria-label="搜索链接"
+          ><svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+            ><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"
+            ></path></svg
+          ></button>
+      </form>
     </div>
+    <div class="links-view-bar"><p>{matching.length} 个书签<span>访问状态每周更新</span></p><div class="links-view-switch" role="group" aria-label="切换链接视图"><button type="button" data-links-view-choice="cards" aria-pressed={initialView==='cards'?'true':'false'} aria-label="卡片视图" title="卡片视图"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx=".6"/><rect x="14" y="4" width="6" height="6" rx=".6"/><rect x="4" y="14" width="6" height="6" rx=".6"/><rect x="14" y="14" width="6" height="6" rx=".6"/></svg></button><button type="button" data-links-view-choice="list" aria-pressed={initialView==='list'?'true':'false'} aria-label="列表视图" title="列表视图"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M3 6h2M3 12h2M3 18h2"/></svg></button></div><span class="sr-only" data-links-view-notice aria-live="polite"/></div>
+    <div class="links-list-heading" aria-hidden="true"><span>链接</span><span>分类</span><span>访问状态</span><span>到访</span></div>
+    <div class="links-grid">
+      {
+        links.map((link) => (
+          <a
+            class="unset bookmark"
+            href={`/link/to/${link.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div class="bookmark-heading"><span class="bookmark-category">{link.category}</span><span aria-hidden="true" class="bookmark-seal">藏</span></div>
+            <div class="bookmark-copy"><h2>{link.name}</h2>{link.description && <p>{link.description}</p>}</div>
+            <footer>
+              <>
+                <span class="bookmark-host">{new URL(link.url).hostname.replace(/^www\./, "")}</span>
+                <span class="bookmark-visits">{link.visits}<span class="bookmark-visits-unit"> 次到访</span></span>
+                <div class="bookmark-health"><LinkHealth health={link.health}/></div>
+              </>
+            </footer>
+          </a>
+        ))
+      }
+    </div>
+    {
+      !links.length && (
+        <div class="links-empty">
+          <p>{query ? "没有找到这个书签。" : "这里的书签正在慢慢积累。"}</p>
+          {(query || category) && (
+            <a class="unset" href="/link">
+              查看全部链接
+            </a>
+          )}
+        </div>
+      )
+    }
+    {
+      pages > 1 && (
+        <nav class="links-pagination" aria-label="链接分页">
+          {page > 1 ? (
+            <a class="unset" href={address(category, page - 1)} data-links-nav>
+              上一页
+            </a>
+          ) : (
+            <span />
+          )}
+          <span>
+            {page} / {pages}
+          </span>
+          {page < pages ? (
+            <a class="unset" href={address(category, page + 1)} data-links-nav>
+              下一页
+            </a>
+          ) : (
+            <span />
+          )}
+        </nav>
+      )
+    }
   </section>
 </PageLayout>
-
+<script>
+  const page=document.querySelector<HTMLElement>('.links-page');
+  function setView(value:string,announce=false){
+    if(!page)return;const view=value==='list'?'list':'cards';page.dataset.linksView=view;
+    page.querySelectorAll<HTMLButtonElement>('[data-links-view-choice]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.linksViewChoice===view)));
+    const field=page.querySelector<HTMLInputElement>('input[name="view"]');if(field)field.value=view;
+    page.querySelectorAll<HTMLAnchorElement>('[data-links-nav]').forEach(link=>{const url=new URL(link.href);if(view==='list')url.searchParams.set('view',view);else url.searchParams.delete('view');link.href=url.pathname+url.search;});
+    if(announce){const notice=page.querySelector('[data-links-view-notice]');if(notice)notice.textContent=view==='list'?'已切换为列表视图':'已切换为卡片视图';}
+  }
+  setView(page?.dataset.linksView||'cards');
+  page?.querySelectorAll<HTMLButtonElement>('[data-links-view-choice]').forEach(button=>button.addEventListener('click',()=>{const view=button.dataset.linksViewChoice==='list'?'list':'cards';setView(view,true);try{localStorage.setItem('inkrain-links-view',view);}catch{}const url=new URL(location.href);if(view==='list')url.searchParams.set('view',view);else url.searchParams.delete('view');history.replaceState(null,'',url.pathname+url.search); }));
+</script>
 <style>
-  .inkrain-link-page {
-    padding: 1.5rem 0 3rem;
+  .links-page {
+    --links-list-columns:minmax(0,1fr) 110px 145px 70px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-bottom: 30px;
   }
-  .listing-heading {
-    font-family: "CangEr", "Kaiti SC", "STKaiti", serif;
-    font-size: 2rem;
-    font-weight: 400;
-    color: rgb(var(--color-text-heading));
-    margin: 0 0 0.25rem;
-    padding-left: 1rem;
-    position: relative;
+  .links-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 35px;
+    padding-bottom: 34px;
+    border-bottom: 1px solid var(--border);
   }
-  .listing-heading::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(to bottom, rgb(var(--color-stamp)), rgb(var(--color-stamp) / 0.3));
-    border-radius: 2px;
+  .links-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 18px;
+    font: 13px var(--font-serif);
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
   }
-  .listing-subtitle {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.85rem;
-    color: rgb(var(--color-ink-muted));
-    letter-spacing: 0.1em;
-    font-weight: 400;
+  .links-eyebrow > span {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 28px;
+    border: 1px solid var(--stamp);
+    color: var(--stamp);
+    font: 18px var(--font-kai);
+    transform: rotate(-4deg);
   }
-  .inkrain-link-page ul {
-    list-style: none;
-    padding: 0;
-    margin: 1.5rem 0 0;
+  h1 {
+    margin: 0;
+    font: clamp(3rem, 6.8vw, 4.8rem) / 1.1 var(--font-kai);
+    color: var(--ink);
   }
-  .post-row {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgb(var(--color-border-soft));
+  .links-description {
+    margin: 0 0 4px;
+    font: 15px/1.9 var(--font-serif);
+    color: var(--ink-soft);
   }
-  .post-row:last-child {
-    border-bottom: none;
+  .links-topics {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px 25px;
+    margin: 23px 0 0;
+    font: 14px var(--font-serif);
   }
-  .post-link {
+  .links-topics > span {
+    color: var(--ink-muted);
+    font-size: 12px;
+  }
+  .links-topics > a {
+    color: var(--stamp);
+    background: none !important;
+  }
+  .links-tools {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 22px;
+    align-items: center;
+    margin: 28px 0 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .links-tools nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .links-tools nav a {
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    background: none !important;
+  }
+  .links-tools nav a.selected {
+    border-color: var(--border);
+    background: var(--wash) !important;
+    color: var(--stamp);
+  }
+  .links-tools nav a > span {
+    margin-left: 4px;
+    color: var(--ink-muted);
+    font: 11px var(--font-mono);
+  }
+  .links-tools form {
+    display: flex;
+    min-width: 190px;
+    border-bottom: 1px solid var(--border);
+  }
+  .links-tools input {
+    width: 170px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 7px 0;
+    font: 13px var(--font-serif);
+    outline-offset: 4px;
+  }
+  .links-tools button {
+    border: 0;
+    background: transparent;
+    color: var(--ink-muted);
+    padding: 6px;
+    cursor: pointer;
+  }
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .links-view-bar { display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 17px; }
+  .links-view-bar p { display:flex;flex-wrap:wrap;gap:16px;margin:0;color:var(--ink-soft);font:12px var(--font-serif); }.links-view-bar p>span { color:var(--ink-muted); }
+  .links-view-switch { display:inline-flex;gap:4px; }.links-view-switch button { display:grid;place-items:center;width:32px;height:32px;padding:5px;border:1px solid transparent;border-radius:3px;color:var(--ink-muted);background:transparent;cursor:pointer; }.links-view-switch button[aria-pressed="true"] { color:var(--stamp);border-color:var(--border);background:var(--wash); }.links-view-switch button:focus-visible { outline:2px solid var(--stamp);outline-offset:3px; }
+  .links-list-heading { display:none; }
+  .bookmark {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    text-decoration: none !important;
+    min-height: 185px;
+    padding: 23px 21px;
+    border: 1px solid var(--border-soft);
+    border-radius: 3px;
+    background: var(--panel);
+    background-image: none !important;
+    transition: border-color 0.2s, transform 0.2s;
   }
-  @media (min-width: 768px) {
-    .post-link {
-      flex-direction: row;
-      align-items: baseline;
-      justify-content: space-between;
+  .bookmark:hover {
+    border-color: var(--stamp);
+    transform: translateY(-2px);
+  }
+  .bookmark:focus-visible {
+    outline: 2px solid var(--stamp);
+    outline-offset: 4px;
+  }
+  .bookmark-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    color: var(--ink-muted);
+  }
+  .bookmark-category {
+    font: 11px var(--font-serif);
+    letter-spacing: 0.07em;
+  }
+  .bookmark-seal { color:var(--stamp);font:15px var(--font-kai);opacity:.65; }
+  .bookmark h2 {
+    margin: 17px 0 12px;
+    color: var(--ink);
+    font: 20px/1.5 var(--font-serif);
+    overflow-wrap: anywhere;
+  }
+  .bookmark:hover h2 {
+    color: var(--stamp);
+  }
+  .bookmark p {
+    margin: 0 0 18px;
+    color: var(--ink-soft);
+    font: 13px/1.8 var(--font-serif);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .bookmark footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap:wrap;
+    margin-top: auto;
+    padding-top: 13px;
+    border-top: 1px solid var(--border-soft);
+    color: var(--ink-muted);
+    font: 10px/1.6 var(--font-mono);
+  }
+  .bookmark-visits { white-space:nowrap; }
+  .bookmark-health { display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;flex:0 0 100%; }
+  .links-page[data-links-view="list"] .links-list-heading { display:grid;grid-template-columns:var(--links-list-columns);gap:18px;padding:13px 18px;border-block:1px solid var(--border);color:var(--ink-muted);font:11px var(--font-serif); }
+  .links-page[data-links-view="list"] .links-grid { grid-template-columns:minmax(0,1fr);gap:0; }
+  .links-page[data-links-view="list"] .bookmark { display:grid;grid-template-columns:var(--links-list-columns);gap:4px 18px;min-height:0;padding:20px 18px;border:0;border-bottom:1px solid var(--border-soft);border-radius:0;background:transparent;align-items:center; }
+  .links-page[data-links-view="list"] .bookmark:hover { transform:none;background:var(--wash); }
+  .links-page[data-links-view="list"] .bookmark-heading,.links-page[data-links-view="list"] .bookmark footer { display:contents; }
+  .links-page[data-links-view="list"] .bookmark-copy { grid-column:1;grid-row:1;min-width:0; }
+  .links-page[data-links-view="list"] .bookmark h2 { margin:0;font-size:18px; }
+  .links-page[data-links-view="list"] .bookmark p { margin:6px 0 0;-webkit-line-clamp:1; }
+  .links-page[data-links-view="list"] .bookmark-category { grid-column:2;grid-row:1 / span 2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+  .links-page[data-links-view="list"] .bookmark-seal { display:none; }
+  .links-page[data-links-view="list"] .bookmark-host { grid-column:1;grid-row:2;margin-top:3px;font-size:10px; }
+  .links-page[data-links-view="list"] .bookmark-visits { grid-column:4;grid-row:1 / span 2;font-size:12px; }
+  .links-page[data-links-view="list"] .bookmark-visits-unit { display:none; }
+  .links-page[data-links-view="list"] .bookmark-health { grid-column:3;grid-row:1 / span 2;display:flex;flex-direction:column;align-items:start;gap:3px; }
+  .bookmark footer > span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .bookmark footer > span:last-child {
+    white-space: nowrap;
+  }
+  .links-empty {
+    padding: 55px 0;
+    text-align: center;
+    color: var(--ink-soft);
+    font: 16px var(--font-serif);
+  }
+  .links-empty a {
+    font-size: 13px;
+    color: var(--stamp);
+  }
+  .links-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  @media (max-width: 850px) {
+    .links-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-  .post-link::after {
-    display: none !important;
+  @media (max-width: 580px) {
+    .links-page[data-links-view="list"] .links-list-heading { display:none; }
+    .links-page[data-links-view="list"] .bookmark { grid-template-columns:minmax(0,1fr) 112px;gap:5px 12px;padding:18px 8px; }
+    .links-page[data-links-view="list"] .bookmark-category { grid-column:1;grid-row:3;font-size:10px;color:var(--ink-muted); }
+    .links-page[data-links-view="list"] .bookmark-health { grid-column:2;grid-row:1 / span 2;align-items:end; }
+    .links-page[data-links-view="list"] .bookmark-visits { grid-column:2;grid-row:3;font-size:10px;text-align:right;color:var(--ink-muted); }.links-page[data-links-view="list"] .bookmark-visits-unit { display:inline; }
+    .links-page[data-links-view="list"] .bookmark h2 { font-size:17px; }
+    .links-hero {
+      align-items: start;
+      flex-direction: column;
+      gap: 22px;
+      padding-bottom: 25px;
+    }
+    .links-description {
+      font-size: 14px;
+    }
+    .links-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 13px;
+    }
+    .bookmark {
+      min-height: 170px;
+      padding: 21px;
+    }
+    .links-tools form {
+      width: 100%;
+    }
+    .links-tools input {
+      flex: 1;
+      width: auto;
+    }
+    .links-topics {
+      gap: 12px 20px;
+    }
+    .links-tools {
+      margin-top: 23px;
+    }
   }
-  .post-title {
-    font-family: "Source Serif Pro", "Songti SC", Georgia, serif;
-    font-size: 1.05rem;
-    color: rgb(var(--color-ink));
-    transition: color 0.2s ease;
-  }
-  .post-link:hover .post-title {
-    color: rgb(var(--color-stamp));
-  }
-  .post-meta {
-    font-size: 0.8rem;
-    font-family: "JetBrains Mono", monospace;
-    color: rgb(var(--color-ink-muted));
-    letter-spacing: 0.02em;
-  }
-  .link-content {
-    margin-top: 2rem;
+  @media (prefers-reduced-motion: reduce) {
+    .bookmark {
+      transition: none;
+    }
   }
 </style>

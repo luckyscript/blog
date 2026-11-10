@@ -4,6 +4,7 @@
 
 @layer base {
   .theme-inkrain {
+    color-scheme: light;
     --paper: #f4f0e6;
     --paper-deep: #e8e0d0;
     --paper-bright: #faf7ef;
@@ -50,7 +51,7 @@
     --color-text-code: 39 37 34;
     --color-text-selection: 250 247 239;
 
-    --font-serif: "Source Serif Pro", "Songti SC", "Noto Serif SC", "STSong", Georgia, serif;
+    --font-serif: "Source Serif Pro", "Songti SC", "Noto Serif SC", "Source Han Serif SC", "SimSun", "STSong", Georgia, serif;
     --font-sans: "Inter", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
     --font-kai: "CangEr", "Kaiti SC", "STKaiti", "Noto Serif SC", serif;
     --font-mono: "JetBrains Mono", "Sarasa Mono SC", Menlo, monospace;
@@ -163,6 +164,146 @@
     --color-text-selection: 32 39 43;
   }
 
+  /* New palettes use traditional colors with quieter derived surface shades.
+     Palette reference: https://cht-colors.pages.dev/ */
+  .theme-inkrain[data-theme="celadon"] {
+    --paper: #e0eee8;
+    --paper-deep: #cdded5;
+    --paper-bright: #f0f6f2;
+    --ink: #424c50;
+    --ink-soft: #4b605a;
+    --ink-muted: #586e66;
+    --stamp: #426666;
+    --accent: #365e55;
+    --border: #acc4b8;
+    --border-soft: #c7d9d0;
+    --focus-ring: 0 0 0 3px rgb(66 102 102 / 0.2);
+
+    --color-ink: 66 76 80;
+    --color-ink-soft: 75 96 90;
+    --color-ink-muted: 88 110 102;
+    --color-stamp: 66 102 102;
+    --color-accent: 54 94 85;
+    --color-bg-body: 224 238 232;
+    --color-bg-panel: 224 238 232;
+    --color-bg-code: 205 222 213;
+    --color-bg-selection: 66 102 102;
+    --color-border: 172 196 184;
+    --color-border-soft: 199 217 208;
+    --color-border-code: 172 196 184;
+    --color-text-body: 66 76 80;
+    --color-text-heading: 66 76 80;
+    --color-text-bold: 66 76 80;
+    --color-text-muted: 88 110 102;
+    --color-text-link: 66 102 102;
+    --color-text-code: 66 76 80;
+    --color-text-selection: 240 246 242;
+  }
+
+  .theme-inkrain[data-theme="bamboo"] {
+    --paper: #f3f9f1;
+    --paper-deep: #e2ebd9;
+    --paper-bright: #fafcf7;
+    --ink: #354535;
+    --ink-soft: #4e6245;
+    --ink-muted: #63735a;
+    --stamp: #057748;
+    --accent: #526b3f;
+    --border: #bacbb0;
+    --border-soft: #d7e2ce;
+    --focus-ring: 0 0 0 3px rgb(5 119 72 / 0.2);
+
+    --color-ink: 53 69 53;
+    --color-ink-soft: 78 98 69;
+    --color-ink-muted: 99 115 90;
+    --color-stamp: 5 119 72;
+    --color-accent: 82 107 63;
+    --color-bg-body: 243 249 241;
+    --color-bg-panel: 243 249 241;
+    --color-bg-code: 226 235 217;
+    --color-bg-selection: 5 119 72;
+    --color-border: 186 203 176;
+    --color-border-soft: 215 226 206;
+    --color-border-code: 186 203 176;
+    --color-text-body: 53 69 53;
+    --color-text-heading: 53 69 53;
+    --color-text-bold: 53 69 53;
+    --color-text-muted: 99 115 90;
+    --color-text-link: 5 119 72;
+    --color-text-code: 53 69 53;
+    --color-text-selection: 250 252 247;
+  }
+
+  .theme-inkrain[data-theme="lotus"] {
+    /* Pale blush paper, charcoal text, and a small touch of dusty mauve. */
+    --paper: #f8f4f3;
+    --paper-deep: #eee6e8;
+    --paper-bright: #fdfafa;
+    --ink: #393638;
+    --ink-soft: #625b60;
+    --ink-muted: #766b71;
+    --stamp: #815b70;
+    --accent: #76576b;
+    --border: #d6cbd0;
+    --border-soft: #e7dfe2;
+    --focus-ring: 0 0 0 3px rgb(129 91 112 / 0.2);
+
+    --color-ink: 57 54 56;
+    --color-ink-soft: 98 91 96;
+    --color-ink-muted: 118 107 113;
+    --color-stamp: 129 91 112;
+    --color-accent: 118 87 107;
+    --color-bg-body: 248 244 243;
+    --color-bg-panel: 248 244 243;
+    --color-bg-code: 238 230 232;
+    --color-bg-selection: 129 91 112;
+    --color-border: 214 203 208;
+    --color-border-soft: 231 223 226;
+    --color-border-code: 214 203 208;
+    --color-text-body: 57 54 56;
+    --color-text-heading: 57 54 56;
+    --color-text-bold: 57 54 56;
+    --color-text-muted: 118 107 113;
+    --color-text-link: 129 91 112;
+    --color-text-code: 57 54 56;
+    --color-text-selection: 253 250 250;
+  }
+
+  .theme-inkrain[data-theme="dusk"] {
+    color-scheme: dark;
+    --paper: #3d3b4f;
+    --paper-deep: #323041;
+    --paper-bright: #464358;
+    --ink: #e9e7ef;
+    --ink-soft: #d5cfe4;
+    --ink-muted: #b7abc8;
+    --stamp: #b0a4e3;
+    --accent: #cca4e3;
+    --border: #69637e;
+    --border-soft: #514c64;
+    --focus-ring: 0 0 0 3px rgb(176 164 227 / 0.25);
+
+    --color-ink: 233 231 239;
+    --color-ink-soft: 213 207 228;
+    --color-ink-muted: 183 171 200;
+    --color-stamp: 176 164 227;
+    --color-accent: 204 164 227;
+    --color-bg-body: 61 59 79;
+    --color-bg-panel: 61 59 79;
+    --color-bg-code: 50 48 65;
+    --color-bg-selection: 176 164 227;
+    --color-border: 105 99 126;
+    --color-border-soft: 81 76 100;
+    --color-border-code: 105 99 126;
+    --color-text-body: 233 231 239;
+    --color-text-heading: 233 231 239;
+    --color-text-bold: 233 231 239;
+    --color-text-muted: 183 171 200;
+    --color-text-link: 204 164 227;
+    --color-text-code: 233 231 239;
+    --color-text-selection: 61 59 79;
+  }
+
   :root {
     font-family: var(--font-serif);
     font-size: 17px;
@@ -227,6 +368,78 @@
       transition: none;
     }
   }
+}
+
+/* Ink wash theme reveal. These rules only apply to an explicit theme change. */
+html[data-theme-transition]::view-transition {
+  pointer-events: none;
+}
+
+html[data-theme-transition]::view-transition-group(*),
+html[data-theme-transition]::view-transition-old(*),
+html[data-theme-transition]::view-transition-new(*) {
+  animation: none;
+}
+
+html[data-theme-transition]::view-transition-old(root),
+html[data-theme-transition]::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+html[data-theme-transition]::view-transition-old(root) {
+  z-index: 1;
+}
+
+html[data-theme-transition]::view-transition-new(root) {
+  z-index: 2;
+}
+
+html[data-theme-transition]::view-transition-group(theme-caption) {
+  z-index: 3;
+}
+
+html[data-theme-transition]::view-transition-group(theme-control) {
+  z-index: 4;
+}
+
+html[data-theme-transition]::view-transition-old(theme-control) {
+  display: none;
+}
+
+html[data-theme-transition] .theme-cycle-button {
+  view-transition-name: theme-control;
+}
+
+html[data-theme-transition],
+html[data-theme-transition] *,
+html[data-theme-transition] *::before,
+html[data-theme-transition] *::after {
+  transition: none !important;
+}
+
+.theme-reveal-caption {
+  position: fixed;
+  right: clamp(24px, 8vw, 128px);
+  bottom: clamp(40px, 10vh, 120px);
+  z-index: 100;
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  font-family: var(--font-kai);
+  font-size: clamp(72px, 12vw, 144px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  user-select: none;
+  view-transition-name: theme-caption;
+}
+
+.theme-reveal-caption::before {
+  content: "一纸新色";
+  font-family: var(--font-serif);
+  font-size: 11px;
+  letter-spacing: 0.4em;
 }
 
 @layer components {
@@ -513,7 +726,7 @@
   .post-link {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: baseline;
+    align-items: center;
     gap: 20px;
     min-height: 80px;
     padding: 20px 0;
@@ -543,6 +756,8 @@
   }
 
   .post-title {
+    min-width: 0;
+    overflow-wrap: anywhere;
     color: var(--ink) !important;
     font-family: var(--font-serif) !important;
     font-size: clamp(1.08rem, 1.8vw, 1.24rem) !important;
@@ -555,20 +770,57 @@
     display: flex;
     align-items: center;
     gap: 9px;
-    color: var(--ink-muted) !important;
+    color: var(--ink-soft) !important;
     font-family: var(--font-mono) !important;
-    font-size: 10px !important;
+    font-size: 12px !important;
     letter-spacing: 0.06em !important;
     text-transform: uppercase;
     white-space: nowrap;
   }
 
   .post-category {
-    padding: 1px 6px !important;
+    display: block;
+    justify-self: start;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 2px 7px !important;
     color: var(--stamp) !important;
     border: 1px solid color-mix(in srgb, var(--stamp) 48%, transparent) !important;
     border-radius: 0 !important;
-    font-size: 9px !important;
+    font-family: var(--font-sans);
+    font-size: 11px !important;
+    line-height: 1.6;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .post-meta time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .post-meta.post-meta--categorized {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 8rem;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    gap: 14px;
+  }
+
+  .post-meta--categorized time {
+    grid-column: 2;
+    text-align: right;
+    white-space: nowrap;
+    letter-spacing: 0;
+  }
+
+  @media (min-width: 768px) {
+    .post-link.post-link--categorized {
+      grid-template-columns: minmax(0, 1fr) 15rem;
+      align-items: center !important;
+      column-gap: 32px;
+    }
   }
 
   .link-content {

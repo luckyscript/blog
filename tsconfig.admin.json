@@ -17,7 +17,9 @@
     "src/middleware.ts",
     "src/components/admin/**/*.tsx",
     "src/pages/api/admin/**/*.ts",
+    "src/pages/link/to/**/*.ts",
     "src/pages/api/health.ts",
+    "src/pages/media/**/*.ts",
     "src/env.d.ts",
     "scripts/**/*.ts",
     "tests/**/*.ts"

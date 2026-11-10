@@ -91,7 +91,7 @@ export function renderHtml(tree: any) {
           : attrs.url;
       return new Markdoc.Tag("p", {}, [
         new Markdoc.Tag("a", { href: href || "#" }, [
-          attrs.label || "查看嵌入内容 ↗",
+          attrs.label || "查看嵌入内容",
         ]),
       ]);
     }

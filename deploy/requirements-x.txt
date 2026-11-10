@@ -1,0 +1,2 @@
+# Published wheel audited for the read-only scripts/x-read.py bridge.
+twitter-cli==0.8.5

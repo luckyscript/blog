@@ -1,4 +1,4 @@
-export type Platform = "telegram" | "x" | "weibo";
+export type Platform = "telegram" | "x" | "weibo" | "local";
 export type MomentMedia = { type: "image" | "video" | "audio"; url: string; alt: string };
 export type MomentInput = {
   externalId: string;
@@ -16,6 +16,7 @@ export interface MomentAdapter {
   close?(): Promise<void>;
 }
 export type SyncState = {
+  archive?: boolean;
   checkpoint?: string;
   catchupTarget?: string;
   catchupHead?: string;
@@ -24,5 +25,5 @@ export type SyncState = {
   backfillComplete?: boolean;
 };
 export const platformLabels: Record<Platform, string> = {
-  telegram: "Telegram", x: "X / Twitter", weibo: "微博",
+  telegram: "Telegram", x: "X / Twitter", weibo: "微博", local: "本站",
 };

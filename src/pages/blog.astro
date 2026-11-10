@@ -45,10 +45,10 @@ const sortedPosts = posts
                 <a
                   href={post.frontmatter.url}
                   target="_blank"
-                  class="unset post-link"
+                  class="unset post-link post-link--categorized"
                 >
                   <span class="post-title">{post.frontmatter.title}</span>
-                  <span class="post-meta">
+                  <span class="post-meta post-meta--categorized">
                     <span class="post-category">{post.frontmatter.category}</span>
                     <time datetime={post.frontmatter.date.toISOString()}>
                       {formattedDate}
@@ -59,10 +59,10 @@ const sortedPosts = posts
                 <a
                   href={`/blog/${post.year}/${post.slug}`}
                   title={post.frontmatter.description}
-                  class="unset post-link"
+                  class="unset post-link post-link--categorized"
                 >
                   <span class="post-title">{post.frontmatter.title}</span>
-                  <span class="post-meta">
+                  <span class="post-meta post-meta--categorized">
                     <span class="post-category">{post.frontmatter.category}</span>
                     <time datetime={post.frontmatter.date.toISOString()}>
                       {formattedDate}

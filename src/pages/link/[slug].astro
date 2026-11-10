@@ -1,10 +1,13 @@
 ---
+import { estimateReadingMinutes } from "../../lib/reading-time";
 import { readOne, readAll } from "../../lib/markdoc/read";
 import { blog } from "../../lib/markdoc/frontmatter.schema";
 import Renderer from "../../components/Renderer.astro";
 import BlogPostMeta from "../../components/BlogPostMeta.astro";
 import ContentLayout from "../../layouts/ContentLayout.astro";
 import { SITE_URL } from "../../config";
+import { listCuratedLinks, routeCuratedLinks, registeredLinkForUrl } from '../../lib/server/links';
+import { AppError } from '../../lib/server/errors';
 
 
 
@@ -20,7 +23,13 @@ const { content, frontmatter } = await readOne({
 });
 if (frontmatter.pageContent) return Astro.redirect('/link', 301);
 
-if (frontmatter.external && frontmatter.url) return Astro.redirect(frontmatter.url, 302);
+const registeredLinks=await listCuratedLinks(true);
+if (frontmatter.external && frontmatter.url) {
+  const destination=registeredLinkForUrl(frontmatter.url,registeredLinks);
+  if(!destination||destination.status!=='published')throw new AppError(404,'链接不存在或已下线');
+  return Astro.redirect(`/link/to/${destination.id}`,302);
+}
+const linkedContent=routeCuratedLinks(content,registeredLinks);
 
 const ogImageAbsoluteUrl =
   frontmatter.external !== true && frontmatter.ogImagePath
@@ -28,7 +37,7 @@ const ogImageAbsoluteUrl =
     : undefined;
 ---
 
-<ContentLayout title={frontmatter.title} date={frontmatter.date}>
+<ContentLayout readingMinutes={estimateReadingMinutes(content)} title={frontmatter.title} date={frontmatter.date}>
   <BlogPostMeta
     canonicalUrl={frontmatter.canonicalUrl}
     title={frontmatter.title}
@@ -38,5 +47,5 @@ const ogImageAbsoluteUrl =
     ogImageAbsoluteUrl={ogImageAbsoluteUrl}
     slot="meta"
   />
-  <Renderer content={content} slot="content" />
+  <Renderer content={linkedContent} slot="content" />
 </ContentLayout>

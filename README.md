@@ -1,12 +1,18 @@
 # 下雨就像弹钢琴 · 内容后台
 
-Astro 前台与 React 管理后台运行在同一个 Node 服务中。文章正式版本、编辑草稿、分类标签、历史版本、登录会话和媒体索引存入 MySQL；图片与附件继续使用 GitHub 公开图床。碎碎念通过独立同步服务写入 MySQL，前台请求不再访问 Telegram。
+Astro 前台与 React 管理后台运行在同一个 Node 服务中。文章正式版本、编辑草稿、分类标签、历史版本、登录会话和媒体索引存入 MySQL；线上文章与碎碎念图片使用 Cloudflare R2，并保留 ECS 持久副本。碎碎念通过独立同步服务写入 MySQL，前台请求不再访问 Telegram。
 
 ## 外观主题
+
+文章阅读区的「书写载体」按钮单击即依次切换宣纸、竹简、青铜、甲骨，选择保存在当前浏览器，跨文章与刷新继续生效。四种表面使用独立的细节纹理与装帧，沿用宋体和相同的正文宽度，图片、代码、表格保持可读。打印使用白纸样式。纹理原图、网页编码及提示词见 `docs/reading-surfaces.md`。
 
 页眉的外观按钮依次切换「宣纸 → 月白 → 鸣沙 → 玄墨」。选择会在当前浏览器保存，刷新和打开其他前台页面时继续使用。「鸣沙」以[中国传统色](https://cht-colors.pages.dev/)中的牙色、枯黄浅阶为底，搭配赭色、褐色与煤黑；正文、链接、代码块和首页水墨图一起适配暖砂色调。
 
 ## 碎碎念同步
+
+后台 `/admin/moments` 可发布「本站」碎碎念：文字、最多九张图片、发布时间、草稿、编辑和可恢复回收站。图片上传和剪贴板粘贴复用 R2 上传通道；上传完成后才可保存或发布。自写内容使用 `local:manual` 来源，不参与外站同步。旧的本地存档继续展示，后台标为历史随记；外站原文不能经本站发布接口改写。前台单图高度限制为桌面 260px、手机 220px，多图以三列正方形缩略图展示，点击查看完整大图。
+
+原“旧碎片”已合并到 `/moments`，按原始发布时间与各平台内容混排。451 条微博存档复用已入库记录，34 条本地随记通过 `npm run moments:import-local` 一次性补齐；可先加 `-- --dry-run` 预检。导入是事务内仅新增操作，重复执行不覆盖已有内容或恢复回收站记录，来源标记为“本站”。原 `/moments/archive` 及其分页永久跳转到统一时间线。
 
 首页、`/moments`、分页、搜索、详情和 `/api/moments.json` 均读取 MySQL。原 `/moments/posts/数字ID` 继续查找默认 Telegram 频道，新链接使用站内 UUID，为多个平台提供独立、无冲突的地址。
 
@@ -23,36 +29,37 @@ npm run moments:service
 npm run moments:health
 ```
 
-同步使用当前公开 Telegram 频道的网页预览，不需要账号密码或 Bot Token。抓取有超时和响应大小限制，断点保存在数据库；落后多页时继续补齐缺口，避免只检查最近一页而漏掉内容。最近页会重新检查编辑；已补抓的旧历史不会每次全量重扫。网页改版、私密频道、删除及未在预览中提供的内容不保证可获取。媒体只保存原始引用，不代表图片或视频已永久归档；原链接可能过期，图片仓库与媒体归档应单独处理。
+同步使用当前公开 Telegram 频道的网页预览，不需要账号密码或 Bot Token。抓取有超时和响应大小限制，断点保存在数据库；落后多页时继续补齐缺口，避免只检查最近一页而漏掉内容。最近页会重新检查编辑；已补抓的旧历史不会每次全量重扫。网页改版、私密频道、删除及未在预览中提供的内容不保证可获取。图片会进入下述持久缓存；视频文件仍引用源站，未在预览中提供的媒体无法归档。
 
 `MOMENTS_TELEGRAM_CHANNEL` 默认 `jsjhlkblog`，兼容旧 `CHANNEL` 配置。大陆 ECS 无法直连 Telegram 时，在独立的同步配置中填写服务器可达的 `MOMENTS_HTTP_PROXY`（HTTP/HTTPS），或自己维护的 HTTPS 预览中转 `MOMENTS_TELEGRAM_ORIGIN`。代理凭据不放入网站构建产物或浏览器。没有可用访问通道时，服务会记录失败并每轮重试，页面继续展示已有内容；“进程运行”不等于“同步成功”。后台设置页可查看保存条数、最近尝试/成功时间、历史补抓和错误状态。
 
 ECS 使用 `deploy/rain-blog-moments.service`，独立用户 `rain-blog-moments` 和 `/etc/rain-blog/moments.env`。该文件只配置数据库、频道、同步间隔和必要的访问通道，不复制后台登录、Cloudflare 或 GitHub 凭据。通用数据库备份会自动包含这三张新表。
 
+碎碎念图片在同步入库前保存到 `MOMENTS_MEDIA_DIRECTORY`（本机默认 `.local/moments-media`，ECS 为 `/var/lib/rain-blog-media`），使用内容 SHA-256 命名，通过 `/media/moments/<hash>.<ext>` 提供同源访问。缓存没有过期清理，不随版本发布替换；URL 索引可在来源离线时复用已有图片。下载失败不更新该页内容和同步位置。只接受 Telegram / 新浪 / X 图片 CDN 的 HTTPS 图片，限制跳转、大小和超时，校验图片格式，不开放任意 URL 代理。`MOMENTS_HTTP_PROXY` 用于 Telegram / X 的读取与图片下载；微博图片默认直连，可单独设置 `MOMENTS_WEIBO_HTTP_PROXY`。已经保存的图片不依赖 Telegram 连通性，新内容抓取仍需可用访问通道。
+
+修复历史失效图片时，在能连接来源的机器运行 `npm run moments:cache-images -- stage --manifest .local/moments-media-repair.json`，重新获取 Telegram 图片地址并保存所有历史图片。先把缓存目录（含 `.refs`）复制到服务器的持久目录，再运行 `npm run moments:cache-images -- apply --manifest /path/manifest.json --backup /private/path/before-images.json`。应用前验证每张图片的 SHA-256、锁定来源并核对原内容指纹，生成修复前快照；仅更换图片引用，保留内容、发布时间和回收站状态。数据库备份之外，还需保留媒体目录备份。
+
 ### 微博两个账号
 
-默认接入 `5351049607`（luckyscript）和 `1562002727`（jsjhlk）。通过微博官方 CLI 服务的 `statuses/user_timeline/biz` 读取各自授权账号，使用官方命令元数据校验参数；没有授权、权限不足、长文不完整或返回异常时明确失败，已有内容保留。X / Twitter 仍待接入。
+默认接入 `5351049607`（luckyscript）和 `1562002727`（jsjhlk）。`MOMENTS_WEIBO_TRANSPORT=web` 为默认免费方案，只读取微博网页接口，不调用付费开放平台。两个账号分别扫码登录，经登录身份核验后，将各自会话保存到 `MOMENTS_WEIBO_WEB_CREDENTIAL_DIRECTORY/<UID>.json`。目录归同步用户所有且权限为 `0700`，文件为 `0600`，格式为 `{ "account": "UID", "cookies": { "SUB": "..." } }`。会话不进入仓库、前台产物、命令参数或日志；会话过期后重新扫码更新。
+
+网页适配器核对当前登录账号和目标主页 UID，逐页获取历史，补齐长文、图片元数据及转载中的图片；无法确认身份、长文缺失、图片缺失、限流或异常分页会停止，不将错误当作空历史。默认每账号每小时检查一次，每轮最多 2 页；手动 `--backfill` 最多 100 页，可重复执行续跑。历史范围以微博实际开放的公开内容为准，私密、已删除或账号可见范围以外的内容不发布。
 
 ```sh
 # 本地历史文件：先校验，再导入；重复执行只补充新记录。
 npm run moments:import-weibo -- --dry-run
 npm run moments:import-weibo
-# 两个账号分别运行，按提示在微博官方页面完成设备授权。
-npm run moments:auth-weibo -- 5351049607
-npm run moments:auth-weibo -- 1562002727
 ```
 
-需要先在 [微博开放平台](https://open.weibo.com/cli/quickstart) 完成开发者认证和服务开通。授权脚本会读取一次 `users/show/biz` 核对 UID，再将访问/刷新令牌写入私有目录，自动续期时保存轮换后的刷新令牌。不要将令牌发送到聊天、提交 Git 或放入前台环境；不要求微博密码或 Cookie。不同账号的授权不可混用。官方服务可能计费，程序不会购买套餐。默认每账号每小时检查一次，每轮最多 2 页（每页 50 条）；手动 `--backfill` 也遵守此限制。元数据请求和授权时的身份核对另计，以平台实际权限及计费为准。
+本地 451 条带明确微博来源页脚的记录导入“微博历史存档”，缺少作者 UID 的记录保留来源未知状态。后续经核验的网页数据按全局微博 ID 认领原记录，保留站内链接、首次保存时间和软删除状态。微博 ID 使用无精度损失的十进制字符串。图片入库前下载至持久媒体目录，原始微博链接保留，既有记录原版保存在迁移前快照中；抓取失败或未返回的记录不会被删除。同步迁移前应备份数据库与媒体目录。
 
-ECS 的 `moments.env` 增加 `MOMENTS_WEIBO_CREDENTIAL_DIRECTORY=/var/lib/rain-blog-moments/weibo`，凭据归独立同步用户所有。以该用户执行授权：
+原有官方接口仅在明确设置 `MOMENTS_WEIBO_TRANSPORT=official` 时启用，需要另行开通微博开放平台服务，可能计费。`moments:auth-weibo` 是该可选付费通道的授权命令，不用于免费网页方案；该通道每轮及手动补历史均限制为 2 页。
 
-```sh
-cd /opt/rain-blog/current
-sudo -u rain-blog-moments /opt/rain-blog/runtime/bin/node --env-file=/etc/rain-blog/moments.env --import tsx scripts/weibo-auth.ts 5351049607
-# 第二个账号同样执行，最后一个参数改为 1562002727。
-```
+### R2 图片转存
 
-本地 451 条带明确微博来源页脚的历史记录可导入到“微博历史存档”；其余普通卡片不混入。存档缺少作者 UID，保留来源未知的状态。后续官方数据确认作者时，按全局微博 ID 认领原记录，保留站内链接和软删除状态，避免历史导入和自动抓取重复。微博短链的 base62 ID 转为无精度损失的十进制字符串，避免大小写被 MySQL 默认排序规则混淆。只保存公开内容及媒体引用，微博图片存在防盗链或源链接失效风险，尚未复制到 GitHub 图床。官方接口可读取的历史范围取决于账号权限，不保证能回溯所有年份。
+可将碎碎念图片同时保存到 Cloudflare R2 标准存储。`MOMENTS_R2_CREDENTIAL_FILE` 指向同步用户独有的 `0600` JSON 文件，包含 `accountId`、`bucket`、`accessKeyId`、`secretAccessKey`；令牌只授予该桶的对象读写权限，不放入环境变量、仓库或浏览器产物。同步先保存 ECS 文件，再上传 R2 并核对内容摘要，任一环节失败都不发布该页。已缓存的源站图片也会补传，既有对象不重复上传。
+
+`npm run moments:mirror-images -- --dry-run` 生成公开记录的图片迁移清单；`--upload` 并发补传；`--verify` 逐张校验 S3 对象及自定义域名的内容摘要。先完成迁移与核验，再给网站设置 `MOMENTS_MEDIA_PUBLIC_ORIGIN=https://images.rainonpiano.com`。页面及 API 在输出时使用 R2 图片域名，数据库仍保留原站内图片路径；ECS 副本和旧链接继续可用。R2 接入只处理已转存的图片，不上传凭据、媒体索引或其他文件。
 
 ## 本地启动
 
@@ -108,6 +115,18 @@ TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 
 ## 数据与发布
 
+### 链接收藏
+
+`blog_links` 独立保存收藏链接、分类、介绍、排序、点击次数、发布状态和版本。发布前运行 `npm run db:setup` 应用 `004_curated_links.sql`；`npm run db:import-links` 只预检，追加 `-- --apply` 将原链接文章中的公开网址一次性归档，重复执行保留后台修改和回收站状态。原文章与 Markdown 不变，专题页中的外链在渲染时映射到固定 UUID。
+
+后台 `/admin/links` 负责录入、编辑、发布和回收站，前台 `/link` 只展示、分类筛选和搜索。`/link/to/<完整 UUID v4>` 只读取已发布的登记目标，拒绝查询参数、无效 UUID、未发布或已下线链接。保存和跳转时均校验 HTTP/HTTPS 公开网址，拒绝其他协议、凭据、控制字符、IP、内网主机、端口与二次跳转路径；修改目标保持 UUID 不变。数据库自动备份会包含此表。
+
+链接页可切换卡片与列表视图，选择保存在当前浏览器，并由 `view=list` 参数分享或保留筛选、搜索、分页。访问状态从 `blog_link_health` 读取，显示最近检查时间；前台加载不访问对方网站。状态区分可访问、访问受限、页面失效、服务异常、暂未连通和检查受限，不把反爬或网络超时报成页面不存在，也不自动下线链接。修改目标网址后旧健康结果立即失效。
+
+`npm run links:check` 检查未检查、目标已变更或超过七天的公开链接；追加 `-- --force` 全部复查。每条最多 12 秒、最多四次重定向、并发三条，只请求响应头；HEAD 被拒绝时使用 GET 并在响应头后关闭。每跳解析并核验全部 DNS 地址，将连接固定到核验后的公网地址，保留原始 Host 与 TLS 校验，拒绝内网、回环、云元数据及保留地址。定时部署见 `deploy/rain-blog-link-health.service` / `.timer`，每周日北京时间 04:40 后五分钟内复查一次；首次上线先执行一次。
+
+`/ppt` 以演示卡片展示全部已发布文稿：有封面时显示封面，没有封面时生成主题色的标题页。保留原文稿链接、摘要与日期。
+
 - `CONTENT_SOURCE=mysql`：前台通过数据库读取已发布文章。连接失败返回错误，避免把旧文件内容误当成线上正式版本。
 - `CONTENT_SOURCE=markdown`：用于核对迁移前的原始页面。后台内容仍写入 MySQL，此模式下发布不会改变文件前台。
 - 导入支持 `blog / tech / sight / link / ppt / projects / life / card`。排除模板、提示词、Obsidian 配置和回收站目录。完整预检通过后才开始写入；已导入来源跳过，数据库中的后续编辑不会被导入覆盖。
@@ -121,9 +140,17 @@ TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 - 首页、详情、列表、分类、RSS、Sitemap 均在请求时读取数据库。Sitemap 为 `/sitemap.xml`，只包含已发布内容。后台和预览设置 `noindex`、`private, no-store`。
 - 历史 Markdown 保留在仓库，切换后以数据库为内容依据；后台可以导出单篇 Markdown 和全部正式内容/草稿 JSON。
 
-## GitHub 图床
+## 后台图片上传
 
-在 `.env` 中配置并重启服务：
+线上设置 `MEDIA_STORAGE_PROVIDER=r2`，使用 `deploy/rain-blog-article-media-r2.conf` 配置独立的上传目录、私有凭据文件和公开图片域名。后台用户只看到存储服务、域名和就绪状态；凭据不会下发浏览器。`ARTICLE_R2_CREDENTIAL_FILE` 必须为运行网站用户拥有的 `0600` 文件，格式与碎碎念 R2 配置相同。服务器先写入持久目录，再上传并校验 R2 内容摘要，成功后才返回图片地址。`/media/articles/<hash>.<ext>` 继续提供 ECS 副本访问。
+
+在正文编辑框直接粘贴剪贴板中的图片，会自动上传到 R2 并在光标处插入 Markdown。上传期间可以继续编辑文字，保存和发布会等待图片完成；失败会移除占位文字并提示重试。普通文本粘贴沿用编辑器行为。媒体库也使用同一上传通道。
+
+历史 GitHub 图片按原文件内容转存，不重新压缩；数据库迁移前保存私有快照，并把受影响文章及草稿的原版写入历史版本。迁移只更新图片引用和媒体索引，不删除 GitHub 原文件。
+
+### 兼容 GitHub 图床
+
+未设置 `MEDIA_STORAGE_PROVIDER` 时保留 GitHub 上传兼容能力。在 `.env` 中配置并重启服务：
 
 ```dotenv
 GITHUB_MEDIA_REPO=luckyscript/image

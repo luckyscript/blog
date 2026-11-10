@@ -34,6 +34,17 @@ export const loginAttempts = mysqlTable("blog_login_attempts", {
   count: int("count").notNull(),
   resetsAt: time("resets_at").notNull(),
 });
+export const curatedLinks = mysqlTable('blog_links', {
+  id: id(), name:varchar('name',{length:160}).notNull(),url:text('url').notNull(),
+  description:varchar('description',{length:500}).notNull().default(''),category:varchar('category',{length:100}).notNull(),
+  status:varchar('status',{length:16}).notNull(),sortOrder:int('sort_order').notNull().default(0),visits:int('visits').notNull().default(0),
+  sourceKey:varchar('source_key',{length:64}).unique(),version:int('version').notNull().default(1),createdAt:time('created_at').notNull(),updatedAt:time('updated_at').notNull(),
+},table=>[index('blog_links_public').on(table.status,table.sortOrder,table.createdAt)]);
+export const linkHealth = mysqlTable('blog_link_health', {
+  linkId:varchar('link_id',{length:36}).primaryKey().references(()=>curatedLinks.id,{onDelete:'cascade'}),
+  urlHash:varchar('url_hash',{length:64}).notNull(),state:varchar('state',{length:16}).notNull(),
+  httpStatus:int('http_status'),latencyMs:int('latency_ms'),reason:varchar('reason',{length:24}).notNull().default(''),checkedAt:time('checked_at').notNull(),
+});
 export const categories = mysqlTable("blog_categories", {
   id: id(),
   name: varchar("name", { length: 100 }).notNull().unique(),

@@ -1,99 +1,46 @@
 ---
-import "src/styles/telegramItem.css";
-import "prismjs/themes/prism.css";
-import dayjs from "src/lib/dayjs";
-import { getEnv } from "src/lib/env";
-import { platformLabels } from "src/lib/moments/types";
+import 'src/styles/telegramItem.css';
+import 'prismjs/themes/prism.css';
+import dayjs from 'src/lib/dayjs';
+import { getEnv } from 'src/lib/env';
+import { platformLabels } from 'src/lib/moments/types';
+import { presentMoment } from 'src/lib/moments/presentation';
+import PlatformLogo from './PlatformLogo.astro';
 
-const locale = getEnv("LOCALE", Astro);
-const timezone = getEnv("TIMEZONE", Astro);
+const locale = getEnv('LOCALE', Astro);
+const timezone = getEnv('TIMEZONE', Astro);
 locale && dayjs.locale(locale);
-
-const { post, compact = false } = Astro.props;
+const { post, compact = false, detailed = false } = Astro.props;
 const datetime = dayjs(post.datetime).tz(timezone);
-const timeago = datetime.isBefore(dayjs().subtract(1, "w"))
-  ? datetime.format("HH:mm · ll")
-  : datetime.fromNow();
+const exactDate = datetime.format('YYYY年M月D日 HH:mm');
+const { body, lightboxes, previewGallery } = presentMoment(post.content, post.id);
+const longNote = !detailed && post.text.length > 650;
+const platform = post.platform === 'x' ? 'X' : platformLabels[post.platform] || post.platform;
 ---
 
-<article
-  class:list={["telegram-item", compact && "telegram-item-compact"]}
-  style={{ "view-transition-name": `post-${post.id}` }}
->
+<article class:list={['telegram-item', compact && 'telegram-item-compact', detailed && 'telegram-item-detailed']} style={{'view-transition-name': `post-${post.id}`}}>
   <div class="time-wrapper">
-    <a class="unset telegram-permalink" href={`/moments/posts/${post.id}`} aria-label={`打开碎碎念 ${post.id}`}>
-      <time datetime={post.datetime} title={timeago}>{timeago}</time>
+    <a class="unset telegram-permalink" href={`/moments/posts/${post.id}`} aria-label={`阅读 ${exactDate} 的碎碎念`}>
+      <time datetime={post.datetime} title={exactDate}>
+        <span class="moment-date">{datetime.format('MM.DD')}</span>
+        <span class="moment-year">{datetime.format('YYYY')}<span aria-hidden="true"> · </span>{datetime.format('HH:mm')}</span>
+      </time>
     </a>
-    {post.sourceUrl && <a class="moment-source" href={post.sourceUrl} target="_blank" rel="noopener noreferrer">{platformLabels[post.platform] || post.platform} 原文 ↗</a>}
   </div>
-  {post.content.length > 0 && <div class="text-box telegram-content" set:html={post.content} />}
+  <div class="moment-main">
+    <header class="moment-context">
+      <span class="moment-platform" data-platform={post.platform} role="img" aria-label={platform} title={platform}><PlatformLogo platform={post.platform} /></span>
+      {post.sourceUrl && <a class="unset moment-source" href={post.sourceUrl} target="_blank" rel="noopener noreferrer" aria-label={`在 ${platform} 查看原文`}>原文</a>}
+    </header>
+    {longNote ? (
+      <div class="moment-long-note">
+        <div class="moment-preview"><p class="moment-excerpt">{post.text.slice(0, 260).trim()}…</p>{previewGallery && <div class="telegram-content" set:html={previewGallery} />}</div>
+        <details class="moment-expand">
+          <summary><span class="moment-expand-open">展开全文</span><span class="moment-expand-close">收起全文</span><span aria-hidden="true"> ↕</span></summary>
+          <div class="text-box telegram-content" set:html={body} />
+        </details>
+      </div>
+    ) : <div class="text-box telegram-content" set:html={body} />}
+    <div class="moment-lightboxes" set:html={lightboxes} />
+  </div>
 </article>
-
-<style>
-  .moment-source { display: block; margin-top: 6px; font-size: 10px; color: var(--ink-muted); }
-  .telegram-item {
-    position: relative;
-    display: grid;
-    grid-template-columns: 112px minmax(0, 1fr);
-    gap: 28px;
-    padding: 30px 0 36px;
-    border-bottom: 1px solid var(--border-soft);
-  }
-
-  .telegram-item::before {
-    content: "";
-    position: absolute;
-    top: 35px;
-    left: 98px;
-    width: 4px;
-    height: 4px;
-    background: var(--stamp);
-  }
-
-  .telegram-item:last-child {
-    border-bottom: 0;
-  }
-
-  .time-wrapper {
-    padding-top: 1px;
-    color: var(--ink-muted);
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.04em;
-  }
-
-  .telegram-permalink {
-    color: inherit;
-    background-image: none !important;
-  }
-
-  .telegram-permalink:hover {
-    color: var(--stamp);
-  }
-
-  .telegram-item-compact {
-    grid-template-columns: 90px minmax(0, 1fr);
-    gap: 22px;
-    padding-block: 22px 26px;
-  }
-
-  .telegram-item-compact::before {
-    top: 27px;
-    left: 78px;
-  }
-
-  @media (max-width: 680px) {
-    .telegram-item,
-    .telegram-item-compact {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 8px;
-      padding-block: 24px 30px;
-    }
-
-    .telegram-item::before,
-    .telegram-item-compact::before {
-      top: 29px;
-      left: -8px;
-    }
-  }
-</style>

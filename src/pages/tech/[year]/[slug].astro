@@ -1,4 +1,5 @@
 ---
+import { estimateReadingMinutes } from "../../../lib/reading-time";
 import { readOne, readTech } from "../../../lib/markdoc/read";
 import { blog } from "../../../lib/markdoc/frontmatter.schema";
 import Renderer from "../../../components/Renderer.astro";
@@ -29,6 +30,7 @@ const ogImageAbsoluteUrl =
 ---
 
 <ContentLayout
+  readingMinutes={estimateReadingMinutes(content)}
   title={frontmatter.title}
   date={frontmatter.date}
   update={frontmatter.update}

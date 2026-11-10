@@ -1,0 +1,36 @@
+---
+const { channel } = Astro.props;
+import PlatformLogo from './PlatformLogo.astro';
+const selected = channel.platform || '';
+const query = channel.query || '';
+const filters = [{value:'',label:'全部'},{value:'telegram',label:'Telegram'},{value:'weibo',label:'微博'},{value:'x',label:'X'},{value:'local',label:'本站'}];
+const href = (platform: string) => {const params=new URLSearchParams();if(platform)params.set('platform',platform);if(query)params.set('q',query);return '/moments'+(params.size?'?'+params:'');};
+---
+<div class="moments-controls">
+  <nav class="moment-filters" aria-label="按来源筛选">
+    {filters.map(filter=><a class="unset moment-filter" href={href(filter.value)} aria-current={selected===filter.value?'page':undefined}>{filter.value && <PlatformLogo platform={filter.value} />}{filter.label}</a>)}
+  </nav>
+  <form class="moment-search" action="/moments" method="get" role="search">
+    {selected && <input type="hidden" name="platform" value={selected} />}
+    <label class="sr-only" for="moment-search">搜索碎碎念</label>
+    <input id="moment-search" type="search" name="q" value={query} placeholder="找一段记忆…" maxlength="200" />
+    <button type="submit" aria-label="搜索碎碎念"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button>
+  </form>
+</div>
+{query && <div class="moment-search-result">包含「{query}」的片段 <a class="unset" href={selected?`/moments?platform=${selected}`:'/moments'}>清除搜索 ×</a></div>}
+<style>
+  .moments-controls{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0 18px;border-bottom:1px solid var(--border-soft)}
+  .moment-filters{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-width:0}
+  .moment-filter{display:inline-flex;align-items:center;gap:7px;padding:6px 12px!important;border:1px solid transparent;border-radius:3px;color:var(--ink-soft);font-size:13px;white-space:nowrap;background-image:none!important}
+  .moment-filter[aria-current]{color:var(--stamp);border-color:color-mix(in srgb,var(--stamp) 25%,transparent);background:color-mix(in srgb,var(--stamp) 7%,transparent)}
+  .moment-filter:hover{color:var(--stamp)}
+  .moment-search{display:flex;align-items:center;gap:8px;max-width:235px;border-bottom:1px solid var(--border);transition:border-color .16s}
+  .moment-search:focus-within{border-color:var(--stamp)}
+  .moment-search input{width:100%;min-width:0;border:0;outline:0;padding:7px 0;background:transparent;color:var(--ink);font:14px var(--font-serif)}
+  .moment-search input::placeholder{color:var(--ink-muted)}
+  .moment-search button{display:grid;place-items:center;min-width:36px;height:36px;border:0;color:var(--ink-soft);background:transparent;cursor:pointer}
+  svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5}
+  .moment-search-result{display:flex;flex-wrap:wrap;gap:12px;padding-top:18px;color:var(--ink-soft);font-size:13px;overflow-wrap:anywhere}.moment-search-result a{color:var(--stamp)}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  @media(max-width:580px){.moments-controls{flex-wrap:wrap;gap:12px;padding-top:17px}.moment-search{max-width:none;width:100%;flex-basis:100%}.moment-filter{padding:6px 13px!important}.moment-filters{width:100%;justify-content:space-between}}
+</style>

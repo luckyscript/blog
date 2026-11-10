@@ -1,0 +1,8 @@
+---
+import {healthDisplay,type LinkHealth} from '../lib/link-health';
+import '../styles/link-health.css';
+const {health}=Astro.props as {health?:LinkHealth|null};
+const info=healthDisplay(health);
+---
+<span class="link-health" data-tone={info.tone} title={info.title}>{info.label}</span>
+{info.checkedAt&&<time class="link-checked-at" datetime={info.checkedAt} title={info.title}>{info.checkedLabel}</time>}

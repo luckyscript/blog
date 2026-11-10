@@ -8,13 +8,13 @@ tags:
 
 ---
 
-### 信息来源:
+## 信息来源:
 
 - https://github.com/samyk/evercookie
 - http://samy.pl/evercookie
 
 
-### 主要实现方式
+## 主要实现方式
 
 1. Standard HTTP Cookies
 2. Flash Local Shared Objects
@@ -35,9 +35,9 @@ tags:
 17. .Java exploit CVE-2013-0422 - Attempts to escape the applet sandbox and write cookie data directly to the user's hard drive.
 
 
-### 实际实现情况
+## 实际实现情况
 
-经过检测主流浏览器可以实现的地方完全相同，之前认为IE应该会在userdata里存储，但是并没有。
+经过检测主流浏览器可以实现的地方完全相同，**之前认为IE应该会在userdata里存储，但是并没有**。
 
 1. cookie
 2. localstorage
@@ -50,7 +50,7 @@ tags:
 9. flash cookie
 
 
-### 清除方法
+## 清除方法
 
 - chrome
   - 设置 window.name
@@ -71,7 +71,7 @@ tags:
   - 清除sessionstorage
 
 
-### 其它
+## 其它
 
 - 由于我电脑firefox和Safari的flash是共享的，所以，evercookie在Safari上的时候，也会影响到firefox。
 - 在隐私模式下不起作用。
