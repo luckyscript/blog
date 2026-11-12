@@ -1,0 +1,5 @@
+.login-challenge-box{margin:18px 0 8px;min-width:0}
+#login-challenge{min-width:0;width:100%}
+#challenge-message{font-size:12px;line-height:1.7;color:#637358;margin:9px 0 0}
+#challenge-retry{font-size:12px;padding:8px 0;text-decoration:underline;text-underline-offset:4px}
+#auth-submit:disabled{opacity:.55;cursor:wait}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily photography backup
+
+[Timer]
+OnCalendar=*-*-* 04:35:00 Asia/Shanghai
+RandomizedDelaySec=600
+Persistent=true
+Unit=rain-blog-photography-backup.service
+
+[Install]
+WantedBy=timers.target

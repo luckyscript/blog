@@ -1,0 +1,1 @@
+export const studioDefaults={version:0,originalsOnly:true,coverId:null,desktopHeight:620,mobileHeight:570,x:50,y:50,mobileX:50,mobileY:50,titleAlign:'left',titleTop:12,titleSize:40,mobileTitleSize:30,shade:18,pan:true,headline:'山野之间，\n日常之中。',intro:'',about:'',artistName:'见山',aboutNote:'',contactEmail:'',aboutPhotoId:null};

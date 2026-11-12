@@ -1,0 +1,26 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { photographyData } from '../../lib/photography/service';
+import { photographyPage } from '../../lib/photography/presentation';
+import '../../styles/photography-theme.css';
+export const prerender = false;
+if (!Astro.url.pathname.endsWith('/')) return Astro.redirect(Astro.url.pathname + '/' + Astro.url.search, 301);
+const route = (Astro.params.path || '').replace(/\/$/, '');
+let page;
+try { page = photographyPage(await photographyData(), route ? route + '/' : '', Astro.url.origin); }
+catch { return new Response('摄影作品暂时无法连接，请稍后重试。', { status: 503 }); }
+if (!page) return new Response('这幅作品或影集不存在，或尚未发布。', { status: 404 });
+const tabs = [['', '摄影'], ['archive/', '作品档案'], ['collections/', '主题合集'], ['equipment/', '器物手记'], ['about/', '关于摄影']];
+---
+<PageLayout>
+  <Fragment slot="meta"><title>{page.title === '摄影' ? '摄影' : page.title + ' · 摄影'} · 下雨就像弹钢琴</title><meta name="description" content={page.description} /><link rel="canonical" href={Astro.url.origin + Astro.url.pathname} /><Fragment set:html={page.meta} /></Fragment>
+  <Fragment slot="main">
+    <nav class="photography-nav" aria-label="摄影导航">{tabs.map(([path, label]) => <a href={'/photography/' + path} aria-current={(route === path.replace(/\/$/, '') || (path==='collections/' && route.startsWith('collections/')) || (path==='archive/' && route.startsWith('works/'))) ? 'page' : undefined}>{label}</a>)}</nav>
+    <div class="photography-workspace" data-page={page.page} data-root="/photography/" data-album={page.slug}>
+      <Fragment set:html={page.body} />
+      <Fragment set:html={page.dialogs} />
+    </div>
+    <Fragment set:html={page.initialization} />
+    <script>import '../../lib/photography/client';</script>
+  </Fragment>
+</PageLayout>

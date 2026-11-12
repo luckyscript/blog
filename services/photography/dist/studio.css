@@ -1,0 +1,11 @@
+.hero.curated-hero{height:var(--cover-height);min-height:0;max-height:none}
+.curated-hero .hero-content{top:var(--cover-title-top);left:8%;right:8%}.curated-hero h1{font-size:min(var(--cover-title-size),calc((var(--cover-height) - 300px) / 3));line-height:1.45;margin-top:24px}.curated-hero .hero-description{margin-top:18px}
+.curated-hero .hero-shade{background:linear-gradient(90deg,rgb(8 28 23 / var(--cover-shade)),rgb(8 28 23 / calc(var(--cover-shade) * .35))),linear-gradient(0deg,#081c2366,transparent 30%)}
+.curated-hero[data-title-align=center] .hero-content{text-align:center}.curated-hero[data-title-align=center] .eyebrow,.curated-hero[data-title-align=center] .hero-actions{justify-content:center}
+.curated-hero[data-title-align=right] .hero-content{text-align:right}.curated-hero[data-title-align=right] .eyebrow,.curated-hero[data-title-align=right] .hero-actions{justify-content:flex-end}
+.album-composition{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:64px 28px;align-items:start}.album-photo-block{min-width:0}.album-photo-block.span-wide,.album-text-block{grid-column:1/-1}.album-photo-block .photo-card{padding:0!important;width:100%}.album-composition .photo-frame{aspect-ratio:auto!important}.album-composition .photo-frame img{position:relative;width:100%;height:auto;object-fit:contain}.album-text-block{padding:25px min(12%,120px);font-family:var(--serif);font-size:1.375rem;line-height:2;text-align:center;white-space:normal}.album-text-block p{margin:0}.representative-gallery .photo-card:only-child{grid-column:1/-1;max-width:1200px;width:100%}.representative-gallery .photo-card:only-child .photo-frame{aspect-ratio:auto}.representative-gallery .photo-card:only-child img{height:auto;position:relative}
+@media(max-width:700px){.hero.curated-hero{height:var(--cover-mobile-height);--cover-x:var(--cover-mobile-x);--cover-y:var(--cover-mobile-y)}.curated-hero h1{font-size:var(--cover-title-mobile-size)}.album-composition{grid-template-columns:1fr;gap:36px}.album-text-block{padding:15px 0;font-size:1.125rem}.curated-hero .hero-bottom{height:70px}.curated-hero .hero-content{left:7%;right:7%}}
+
+.album-composition>.photo-card{grid-column:auto!important;padding:0!important}
+
+@media(max-width:700px){.curated-hero .hero-image{object-position:var(--cover-mobile-x) var(--cover-mobile-y)!important}}

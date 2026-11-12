@@ -1,0 +1,42 @@
+[
+  {
+    "page": "home",
+    "route": "",
+    "title": "山野之间，日常之中。"
+  },
+  {
+    "page": "archive",
+    "route": "archive/",
+    "title": "作品档案"
+  },
+  {
+    "page": "collections",
+    "route": "collections/",
+    "title": "主题合集"
+  },
+  {
+    "page": "album",
+    "route": "collections/letters-from-the-wild/",
+    "title": "山野来信"
+  },
+  {
+    "page": "album",
+    "route": "collections/forms-of-water/",
+    "title": "水的形状"
+  },
+  {
+    "page": "album",
+    "route": "collections/light-along-the-way/",
+    "title": "沿途微光"
+  },
+  {
+    "page": "equipment",
+    "route": "equipment/",
+    "title": "器物手记"
+  },
+  {
+    "page": "about",
+    "route": "about/",
+    "title": "关于 见山"
+  }
+]

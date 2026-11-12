@@ -1878,3 +1878,17 @@ code {
     margin-bottom: 29px;
   }
 }
+
+/* Keep the seven admin sections inside their own mobile scroll area. */
+@media (max-width: 700px) {
+  .admin-shell > .sidebar > nav {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    justify-content: flex-start;
+  }
+  .admin-shell > .sidebar > nav > a {
+    flex: 0 0 auto;
+  }
+}

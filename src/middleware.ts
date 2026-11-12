@@ -37,7 +37,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
     const response = await next();
     if (adminPage || adminApi) {
-      response.headers.set("cache-control", "private, no-store");
+      // Preserve React's server-rendered admin markup through CDN transforms.
+      response.headers.set("cache-control", "private, no-store, no-transform");
       response.headers.set("x-robots-tag", "noindex, nofollow");
       response.headers.set(
         "x-frame-options",
@@ -59,7 +60,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
         );
       if (target) return context.redirect(target.path, 301);
     }
-    if (!adminPage && !adminApi && usesDatabase())
+    if (
+      !adminPage && !adminApi && usesDatabase() &&
+      !/\b(?:private|no-store)\b/i.test(response.headers.get("cache-control") || "")
+    )
       response.headers.set("cache-control", "no-cache");
     return response;
   } catch (error) {

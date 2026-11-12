@@ -1,0 +1,137 @@
+.photography-studio {
+  font-family: inherit;
+  --gold: var(--accent);
+  --green: var(--accent);
+  color: var(--ink);
+  background: var(--paper);
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Keep the imported studio out of the blog's .sidebar and .panel rules. */
+.photography-studio #workspace,
+.photography-studio .photography-panel {
+  min-width: 0;
+}
+.photography-studio:empty::before {
+  content: '正在加载摄影工作室…';
+}
+.photography-studio:empty::before,
+.photography-studio .photography-loading {
+  display: block;
+  padding: 32px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.photography-studio .photography-tabs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 0 26px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid var(--line);
+}
+.photography-studio .photography-tabs button {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  width: auto;
+  padding: 10px 15px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.photography-studio .photography-tabs button.active {
+  background: var(--surface);
+  color: var(--accent);
+  border-color: var(--line);
+}
+.photography-studio .photography-tabs button span {
+  display: none;
+}
+.photography-studio .desk {
+  margin: 0;
+  max-width: none;
+  padding: 0;
+}
+.photography-studio .desk h1 {
+  font: 32px var(--serif);
+}
+.photography-studio label {
+  margin: 0;
+}
+.photography-studio .primary {
+  background: var(--accent);
+}
+.photography-studio .photo-tile,
+.photography-studio .collection-tile,
+.photography-studio .info-card {
+  background: var(--surface);
+}
+.photography-studio #auth {
+  display: none !important;
+}
+.photography-studio .source-card {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.photography-studio dialog {
+  font-family: inherit;
+}
+.photography-studio .editor {
+  max-width: 95vw;
+}
+
+@media (max-width: 700px) {
+  .photography-studio .desk {
+    padding: 0;
+  }
+  .photography-studio .photography-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+  }
+  .photography-studio .photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* All studio pages share the host workspace's surfaces and sizing. */
+.photography-studio :is(.cover-controls,.home-order,.storage-stats article,.backup-list article,.job-row){background:var(--surface);border-color:var(--line);min-width:0}
+.photography-studio :is(.toolbar,.storage-heading,.job-row,.backup-list article){min-width:0;overflow-wrap:anywhere}
+.photography-studio .job-row>div{min-width:0}
+.photography-studio .job-row p{overflow-wrap:anywhere}
+.photography-studio :is(.cover-controls,.cover-preview-column,.collection-tile,.album-picker,.album-block){min-width:0;max-width:100%}
+.photography-studio .cover-controls :is(label,p){grid-column:1/-1}
+.photography-studio .cover-canvas--blog{background:var(--paper);color:var(--ink);padding:32px;font-family:var(--serif)}
+.photography-studio .cover-canvas--blog .cover-copy{padding:0 0 32px}
+.photography-studio .cover-canvas--blog .preview-kicker{display:block;font-size:10px;letter-spacing:.15em;color:var(--muted);margin-bottom:16px}
+.photography-studio .cover-canvas--blog .cover-copy h2{font-weight:400;line-height:1.5}
+.photography-studio .cover-canvas--blog .cover-copy p{font-size:15px;line-height:1.85;color:var(--muted);margin-top:20px}
+.photography-studio .cover-canvas--blog .cover-preview-stage{background:var(--surface)}
+.photography-studio .cover-canvas--blog .cover-preview-image{inset:0}
+.photography-studio .cover-canvas--blog .cover-preview-image img{height:100%;object-fit:contain}
+.photography-studio .cover-canvas--blog .preview-caption{font-size:12px;color:var(--muted);padding-top:12px}
+.photography-studio #cover-preview-wrap{background:var(--paper);border:1px solid var(--line)}
+.photography-studio .file-button{max-width:100%}
+.photography-studio .collection-tile{text-align:left;overflow-wrap:anywhere}
+@media(max-width:700px){
+ .photography-studio .cover-controls{display:flex;flex-direction:column;gap:18px}
+ .photography-studio .cover-controls>*{width:100%}
+ .photography-studio .storage-stats strong{font-size:clamp(17px,5vw,24px);overflow-wrap:anywhere}
+ .photography-studio .job-row{display:flex;flex-wrap:wrap;gap:12px}
+ .photography-studio .job-row>div:first-child{flex-basis:100%}
+ .photography-studio .backup-list article{align-items:start;flex-wrap:wrap}
+ .photography-studio .album-block>select{width:auto;min-width:0;flex:1}
+ .photography-studio .order-row{gap:7px}
+ .photography-studio .order-row>img{width:45px}
+ .photography-studio .source-card{flex-wrap:wrap;gap:16px}
+}

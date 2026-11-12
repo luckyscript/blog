@@ -1,0 +1,348 @@
+{
+  "photos": [
+    {
+      "id": 5,
+      "src": "assets/lucerne-layers.jpg",
+      "title": "山色有无中",
+      "description": "云雾将湖畔山峦分为深浅不同的蓝绿色层次。",
+      "category": "landscape",
+      "categoryLabel": "风光山野",
+      "subtitle": "LAYERS OF SILENCE",
+      "author": "Peter Steiner 1973",
+      "source": "https://unsplash.com/photos/misty-mountains-with-green-hills-and-a-lake-q8X3DgmEu1U",
+      "width": 1200,
+      "height": 1600,
+      "position": "center",
+      "date": "2026-09-06",
+      "dateIsExample": true,
+      "featured": true
+    },
+    {
+      "id": 2,
+      "src": "assets/turquoise-ripples.jpg",
+      "title": "一圈涟漪",
+      "description": "薄雾中的针叶林和碧绿色湖水，水面泛起一圈涟漪。",
+      "category": "landscape",
+      "categoryLabel": "风光山野",
+      "subtitle": "A MOMENT OF STILLNESS",
+      "author": "Andrew Svk",
+      "source": "https://unsplash.com/photos/a-green-lake-surrounded-by-trees-and-fog-9lLcLf490nM",
+      "width": 1200,
+      "height": 1500,
+      "position": "center",
+      "date": "2026-07-17",
+      "dateIsExample": true,
+      "featured": true
+    },
+    {
+      "id": 3,
+      "src": "assets/woodland-path.jpg",
+      "title": "林间小径",
+      "description": "树枝围成绿色拱廊，落叶铺满安静的小径。",
+      "category": "adventure",
+      "categoryLabel": "户外探索",
+      "subtitle": "WHERE THE PATH LEADS",
+      "author": "Sander Weeteling",
+      "source": "https://unsplash.com/photos/green-tree-hallway-taken-during-daytime-rlxZqmc6D_I",
+      "width": 1200,
+      "height": 780,
+      "position": "center",
+      "date": "2026-05-03",
+      "dateIsExample": true,
+      "featured": true
+    },
+    {
+      "id": 6,
+      "src": "assets/kyoto-rooftops.jpg",
+      "title": "京都暮色",
+      "description": "暖色夕阳照亮京都东山的屋檐、灯笼和街巷，远山温柔起伏。",
+      "category": "city",
+      "categoryLabel": "城市漫游",
+      "subtitle": "THE WARMTH OF A CITY",
+      "author": "Nathalie Lays",
+      "source": "https://unsplash.com/photos/traditional-japanese-street-with-cherry-blossoms-and-mountains-Nd1J6Rbky7w",
+      "width": 1200,
+      "height": 800,
+      "position": "center",
+      "date": "2025-11-07",
+      "dateIsExample": true,
+      "featured": true
+    },
+    {
+      "id": 4,
+      "src": "assets/ocean-evening.jpg",
+      "title": "潮汐慢下来",
+      "description": "暮色中海浪以长曝光化为柔软水雾，包围岸边礁石。",
+      "category": "landscape",
+      "categoryLabel": "风光山野",
+      "subtitle": "THE RHYTHM OF TIDES",
+      "author": "Philipp Deus",
+      "source": "https://unsplash.com/photos/sea-waves-crashing-on-rocks-during-sunset-5DmYw-5oSNA",
+      "width": 1200,
+      "height": 881,
+      "position": "center",
+      "date": "2026-07-11",
+      "dateIsExample": true,
+      "featured": true
+    },
+    {
+      "id": 8,
+      "src": "assets/flowers-in-light.jpg",
+      "title": "路边的微光",
+      "description": "夕阳照亮泥土小路旁的细小白花，留下温暖光晕。",
+      "category": "daily",
+      "categoryLabel": "日常片刻",
+      "subtitle": "SMALL THINGS, SOFT LIGHT",
+      "author": "Francesco Gallarotti",
+      "source": "https://unsplash.com/photos/white-flowers-during-daytime-rL6sOvctpo4",
+      "width": 1200,
+      "height": 800,
+      "position": "center",
+      "date": "2025-09-26",
+      "dateIsExample": true,
+      "featured": true
+    },
+    {
+      "id": 1,
+      "src": "assets/hero.jpg",
+      "title": "雾起翡翠湖",
+      "description": "清晨的翡翠湖，松林与山间云雾映入平静湖面。",
+      "category": "landscape",
+      "categoryLabel": "风光山野",
+      "subtitle": "INTO THE QUIET",
+      "author": "Nathalie Lays",
+      "source": "https://unsplash.com/photos/calm-lake-reflecting-misty-mountains-and-cloudy-sky-gTQ8U8NbDEc",
+      "width": 2200,
+      "height": 1237,
+      "position": "center",
+      "date": "2026-09-08",
+      "dateIsExample": true,
+      "featured": false
+    },
+    {
+      "id": 7,
+      "src": "assets/blue-snow-mountain.jpg",
+      "title": "蓝色山巅",
+      "description": "明亮蓝天下的积雪山峰，冷色山影与雪面相映。",
+      "category": "adventure",
+      "categoryLabel": "户外探索",
+      "subtitle": "BEYOND THE HORIZON",
+      "author": "Ernest Imoesi",
+      "source": "https://unsplash.com/photos/a-mountain-covered-in-snow-under-a-blue-sky-TeGtGGu1IpU",
+      "width": 1200,
+      "height": 1799,
+      "position": "center 80%",
+      "date": "2025-02-15",
+      "dateIsExample": true,
+      "featured": false
+    }
+  ],
+  "albums": [
+    {
+      "slug": "letters-from-the-wild",
+      "title": "山野来信",
+      "english": "LETTERS FROM THE WILD",
+      "label": "山峦 · 林间 · 远方",
+      "cover": 5,
+      "photos": [
+        5,
+        7,
+        3,
+        1
+      ],
+      "description": "离开熟悉的街道，走向山的另一边。关于远山、雾气与林间小径的四封来信。",
+      "story": "有些风景，需要把脚步放慢才能看见。山峦在雾里浮现，树木把道路收成一条细线。把视线交给远方，也把片刻安静留给自己。",
+      "quote": "在更辽阔的地方，听见更安静的自己。"
+    },
+    {
+      "slug": "forms-of-water",
+      "title": "水的形状",
+      "english": "THE SHAPE OF WATER",
+      "label": "湖泊 · 潮汐 · 倒影",
+      "cover": 2,
+      "photos": [
+        2,
+        4,
+        1
+      ],
+      "description": "从一圈涟漪，到一次潮汐。水没有固定的形状，却留下了时间经过的痕迹。",
+      "story": "平静的湖面把山翻转过来，海浪又把所有轮廓轻轻抹去。三个关于水的片段，记录同一种流动里的不同情绪。",
+      "quote": "时间流过，风景留下。"
+    },
+    {
+      "slug": "light-along-the-way",
+      "title": "沿途微光",
+      "english": "LIGHT ALONG THE WAY",
+      "label": "街巷 · 日常 · 暖光",
+      "cover": 6,
+      "photos": [
+        6,
+        8
+      ],
+      "description": "一条街，一朵花，一束恰好经过的光。不必走得很远，也能遇见值得收藏的画面。",
+      "story": "城市的屋檐和路边的小花，常常只占据旅途里很短的一秒。停下来，寻常的景物便有了自己的叙事。",
+      "quote": "那些很小的瞬间，让日子变得具体。"
+    }
+  ],
+  "equipment": [
+    {
+      "id": "nikon-zf",
+      "brand": "NIKON",
+      "model": "Zf",
+      "name": "Nikon Zf",
+      "number": "01",
+      "type": "全画幅微单相机",
+      "tagline": "把时光，握在手里。",
+      "intro": "银色机身与复古拨盘，让观看慢下来。走进街巷，在熟悉的日常里，留意光落下的那一刻。",
+      "approach": "把一个街角看得更久一点，等待人物、光线与背景在同一刻相遇。比起不断更换位置，耐心有时更接近一张好照片。",
+      "subjects": [
+        "街头漫游",
+        "旅行随拍",
+        "日常纪实"
+      ],
+      "category": "city",
+      "categoryLabel": "城市漫游",
+      "image": {
+        "src": "assets/equipment/nikon-zf-silver.jpg",
+        "alt": "Nikon Zf 银色官方产品图",
+        "width": 2064,
+        "height": 1272,
+        "source": "https://imaging.nikon.com/imaging/lineup/mirrorless/z_f/",
+        "attribution": "Nikon 尼康"
+      },
+      "color": "银色"
+    },
+    {
+      "id": "nikon-d850",
+      "brand": "NIKON",
+      "model": "D850",
+      "name": "Nikon D850",
+      "number": "02",
+      "type": "单反相机",
+      "tagline": "给细节，多一点时间。",
+      "intro": "面对山川的层次、建筑的秩序与缓慢变化的天光，用更从容的方式完成一次拍摄。",
+      "approach": "先观察光从哪里来，再决定画面留下什么。借助稳定的支撑，把前景、中景和远景的关系整理清楚，让风景自己说话。",
+      "subjects": [
+        "自然风光",
+        "建筑细节",
+        "静物观察"
+      ],
+      "category": "landscape",
+      "categoryLabel": "风光山野",
+      "image": {
+        "src": "assets/equipment/nikon-d850.jpg",
+        "alt": "Nikon D850 官方产品图",
+        "width": 2064,
+        "height": 1272,
+        "source": "https://imaging.nikon.com/imaging/lineup/dslr/d850/index.html",
+        "attribution": "Nikon 尼康"
+      }
+    },
+    {
+      "id": "insta360-ace-pro",
+      "brand": "INSTA360",
+      "model": "Ace Pro",
+      "name": "Insta360 Ace Pro",
+      "number": "03",
+      "type": "运动相机",
+      "tagline": "走进现场，靠近自由。",
+      "intro": "翻转触控屏让取景更直接。骑行、徒步，或是一段说走就走的旅程，让镜头跟着身体进入现场，把风、速度与脚步留在画面里。",
+      "approach": "拍摄前先想清楚镜头要跟随什么。让道路、双手或装备进入前景，给辽阔的环境一个身在其中的尺度。",
+      "subjects": [
+        "户外探索",
+        "运动记录",
+        "旅行片段"
+      ],
+      "category": "adventure",
+      "categoryLabel": "户外探索",
+      "image": {
+        "src": "assets/equipment/insta360-ace-pro.png",
+        "alt": "Insta360 Ace Pro 官方产品图",
+        "width": 1280,
+        "height": 1280,
+        "source": "https://store.insta360.com/product/ace-pro",
+        "attribution": "Insta360 影石"
+      }
+    },
+    {
+      "id": "insta360-x3",
+      "brand": "INSTA360",
+      "model": "X3",
+      "name": "Insta360 X3",
+      "number": "04",
+      "type": "全景运动相机",
+      "tagline": "让视角，不止一个。",
+      "intro": "360° 全景拍摄让记录不止一个方向。先收下周围的场景，再在后期决定角度与构图，让一段旅途拥有更自由的观看方式。",
+      "approach": "尝试把相机放在更有空间感的位置。让近处的路径与远处的风景同时进入叙事，剪辑时再决定观众跟随哪一个方向。",
+      "subjects": [
+        "全景记录",
+        "创意视角",
+        "户外旅行"
+      ],
+      "category": "adventure",
+      "categoryLabel": "户外探索",
+      "image": {
+        "src": "assets/equipment/insta360-x3.png",
+        "alt": "Insta360 X3 官方产品图",
+        "width": 1280,
+        "height": 1280,
+        "source": "https://store.insta360.com/product/x3",
+        "attribution": "Insta360 影石"
+      }
+    },
+    {
+      "id": "vivo-x200-pro-mini",
+      "brand": "VIVO",
+      "model": "X200 Pro mini",
+      "name": "vivo X200 Pro mini",
+      "number": "05",
+      "type": "手机摄影",
+      "tagline": "灵感，在手边。",
+      "intro": "路上的植物、窗边的静物，以及忽然出现的好光。让随身的镜头接住那些稍纵即逝的细节。",
+      "approach": "向前一步或退后一步，试着让背景更干净。把日常里的一点颜色、一段影子、一处纹理，变成画面的主角。",
+      "subjects": [
+        "生活细节",
+        "随身记录",
+        "光影片刻"
+      ],
+      "category": "daily",
+      "categoryLabel": "日常片刻",
+      "image": {
+        "src": "assets/equipment/vivo-x200-pro-mini-zhibai.png",
+        "alt": "vivo X200 Pro mini 直白官方产品图",
+        "width": 640,
+        "height": 640,
+        "source": "https://www.vivo.com.cn/vivo/param/x200promini",
+        "attribution": "vivo"
+      },
+      "color": "直白"
+    },
+    {
+      "id": "iphone-13-pro",
+      "brand": "APPLE",
+      "model": "iPhone 13 Pro",
+      "name": "iPhone 13 Pro",
+      "number": "06",
+      "type": "手机摄影",
+      "tagline": "日常，本身就是作品。",
+      "intro": "让记录成为自然的习惯。从早晨第一束光，到夜晚回家的路，给普通的一天留下一点证据。",
+      "approach": "用相似的视角连续记录同一个地方。天气、季节和经过的人会改变画面，时间也会慢慢成为照片的一部分。",
+      "subjects": [
+        "日常观察",
+        "城市片段",
+        "生活日记"
+      ],
+      "category": "daily",
+      "categoryLabel": "日常片刻",
+      "image": {
+        "src": "assets/equipment/apple-iphone-13-pro-silver.jpg",
+        "alt": "iPhone 13 Pro 银色（白色背板）官方产品图",
+        "width": 612,
+        "height": 760,
+        "source": "https://www.apple.com/iphone/compare/",
+        "attribution": "Apple"
+      },
+      "color": "银色（白色背板）"
+    }
+  ]
+}

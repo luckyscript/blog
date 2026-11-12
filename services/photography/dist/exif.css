@@ -1,0 +1,12 @@
+.photo-exif{--exif-muted:#617061;--exif-line:#dce1d5;margin-top:22px;border-top:1px solid var(--exif-line);padding-top:20px;overflow-wrap:anywhere}
+.photo-exif h3{font-family:inherit;font-size:1rem;font-weight:500;line-height:1.5;margin:0 0 16px;letter-spacing:.04em}
+.exif-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 22px;margin:0}
+.exif-fields>div{min-width:0}.exif-fields>[data-exif-field=camera],.exif-fields>[data-exif-field=lens],.exif-fields>[data-exif-field=capturedAt]{grid-column:1/-1}
+.exif-fields dt{font-size:.8125rem;line-height:1.5;color:var(--exif-muted);margin-bottom:3px}.exif-fields dd{margin:0;font-size:.9375rem;line-height:1.6;font-variant-numeric:tabular-nums;letter-spacing:0}
+.photo-exif .exif-missing{color:var(--exif-muted)}.photo-exif .exif-note{font-size:.8125rem;line-height:1.7;color:var(--exif-muted);margin:16px 0 0}
+.lightbox .photo-exif,.nas-preview-dialog .photo-exif{--exif-muted:#b6c3b4;--exif-line:#496150;color:#f1f4ec}
+.lightbox>.photo-exif{margin:0 0 28px;padding-top:18px}.lightbox .exif-fields{grid-template-columns:repeat(4,minmax(0,1fr))}.lightbox .exif-fields>[data-exif-field=camera],.lightbox .exif-fields>[data-exif-field=lens]{grid-column:span 2}.lightbox .exif-fields>[data-exif-field=capturedAt]{grid-column:1/-1}
+.nas-preview-body{display:grid;grid-template-columns:minmax(0,1fr) 275px;min-height:0;overflow:hidden}.nas-preview-body .nas-preview-stage{overflow:hidden}.nas-preview-body .photo-exif{margin:0;padding:24px 20px;border-top:0;border-left:1px solid var(--exif-line);overflow:auto}.nas-preview-body .exif-retry{margin-top:14px;background:#345340;border-color:#70816b;color:#fff;font-size:.875rem}
+@media(max-width:700px){.nas-preview-body{grid-template-columns:1fr;overflow:auto;display:block}.nas-preview-body .nas-preview-stage{height:43dvh;min-height:200px}.nas-preview-body .photo-exif{border-left:0;border-top:1px solid var(--exif-line);overflow:visible;padding:20px 16px}.lightbox .exif-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.lightbox .exif-fields>[data-exif-field=camera],.lightbox .exif-fields>[data-exif-field=lens]{grid-column:1/-1}}
+
+.lightbox-credit .lightbox-camera,.lightbox-credit .lightbox-settings{font-size:.875rem;line-height:1.7;color:#d1dbcd;max-width:400px;overflow-wrap:anywhere}

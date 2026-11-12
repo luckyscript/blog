@@ -5,6 +5,7 @@ import Turnstile, { type TurnstileSettings } from "./Turnstile";
 import { clipboardImages, insertEditorText, replaceImagePlaceholder, mediaMarkdown, stripPendingImages } from '../../lib/admin/editor-media';
 import LocalMoments from './LocalMoments';
 import LinksManager from './LinksManager';
+import PhotographyStudio from './PhotographyStudio';
 
 type User = { id: string; email: string };
 type Notice = { text: string; error?: boolean } | null;
@@ -151,6 +152,7 @@ export default function AdminApp({
     ["", "posts", "文章"],
     ["moments", "moments", "碎碎念"],
     ['links','links','链接'],
+    ['photography','media','摄影'],
     ["media", "media", "媒体库"],
     ["taxonomy", "taxonomy", "分类与标签"],
     ["settings", "settings", "设置与迁移"],
@@ -168,10 +170,10 @@ export default function AdminApp({
         <nav aria-label="后台导航">
           {links.map(([path, key, label]) => (
             <a
-              key={key}
+              key={path}
               href={`/admin${path ? `/${path}` : ""}`}
               className={
-                view === key || (key === "posts" && view === "editor")
+                view === (path || key) || (key === "posts" && view === "editor")
                   ? "active"
                   : ""
               }
@@ -198,7 +200,7 @@ export default function AdminApp({
             下雨就像弹钢琴 <span className="topbar-divider">/</span>{" "}
             {view === "editor"
               ? "写作"
-              : links.find((item) => item[1] === view)?.[2]}
+              : links.find((item) => (item[0] || item[1]) === view)?.[2]}
           </span>
           <div className="account">
             <span className="avatar">
@@ -228,6 +230,7 @@ export default function AdminApp({
           {view === "media" && <MediaLibrary />}
           {view === 'moments' && <LocalMoments request={api} upload={uploadPreparedMedia} mediaPicker={onSelect=><MediaLibrary picker onSelect={onSelect} />} />}
           {view === 'links' && <LinksManager request={api} />}
+          {view === 'photography' && <PhotographyStudio />}
           {view === "taxonomy" && <Taxonomy />}
           {view === "settings" && <Settings />}
         </main>

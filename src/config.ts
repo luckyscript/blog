@@ -27,6 +27,6 @@ export const NAV = {
   笔记: 'https://ink.rainonpiano.com/',
   链接: '/link',
   PPT: '/ppt',
-  摄影: 'https://see.jsjhlk.com/',
+  摄影: '/photography/',
   碎碎念: '/moments',
 }

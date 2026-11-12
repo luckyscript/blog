@@ -1,0 +1,91 @@
+{
+  "purpose": "Manufacturer and credited product-gallery imagery for local editorial equipment showcase.",
+  "rights": "Image ownership retained by respective rights holders. No unrestricted reuse license asserted.",
+  "note": "Canon 100D white, vivo X200 Pro mini white and iPhone 13 Pro silver with a white back reflect the colors confirmed by the user. Lenses and accessories in product pictures do not establish the user's exact configuration.",
+  "assets": [
+    {
+      "equipment_id": "canon-100d",
+      "model": "Canon 100D",
+      "file": "assets/equipment/canon-100d-white.jpg",
+      "width": 800,
+      "height": 600,
+      "image_url": "https://2b.zol-img.com.cn/product/132_800x600/173/ceze6TCbmujBM.jpg",
+      "source_page": "https://detail.zol.com.cn/picture_index_1324/index13235173_0_p377469.shtml",
+      "manufacturer": "Canon 佳能",
+      "verified_on": "2026-09-12",
+      "verified_visually": true,
+      "file_size": 99762,
+      "color": "白色",
+      "publisher": "中关村在线",
+      "source_type": "Product gallery",
+      "verification": "Visually verified EOS 100D label and white housing. Original publisher watermark retained."
+    },
+    {
+      "equipment_id": "nikon-d850",
+      "model": "Nikon D850",
+      "file": "assets/equipment/nikon-d850.jpg",
+      "width": 2064,
+      "height": 1272,
+      "image_url": "https://imaging.nikon.com/imaging/lineup/dslr/d850/img/product_01_01.jpg",
+      "source_page": "https://imaging.nikon.com/imaging/lineup/dslr/d850/index.html",
+      "manufacturer": "Nikon 尼康",
+      "verified_on": "2026-09-12",
+      "verified_visually": true,
+      "file_size": 207946
+    },
+    {
+      "equipment_id": "insta360-ace-pro",
+      "model": "Insta360 Ace Pro",
+      "file": "assets/equipment/insta360-ace-pro.png",
+      "width": 1280,
+      "height": 1280,
+      "image_url": "https://res.insta360.com/dynamic/store/02e18efe59b1560a0bb6d0b91b97315d/2673_7840c8b5-985e-40ae-96da-1a390ed387b3.png",
+      "source_page": "https://store.insta360.com/product/ace-pro",
+      "manufacturer": "Insta360 影石",
+      "verified_on": "2026-09-12",
+      "verified_visually": true,
+      "file_size": 1129365
+    },
+    {
+      "equipment_id": "insta360-x3",
+      "model": "Insta360 X3",
+      "file": "assets/equipment/insta360-x3.png",
+      "width": 1280,
+      "height": 1280,
+      "image_url": "https://res.insta360.com/dynamic/store/627068242daa957483b0a35f989f878c/2673_2e06b6ca-1200-4dbf-aad5-e41ffc165a36.png",
+      "source_page": "https://store.insta360.com/product/x3",
+      "manufacturer": "Insta360 影石",
+      "verified_on": "2026-09-12",
+      "verified_visually": true,
+      "file_size": 872548
+    },
+    {
+      "equipment_id": "vivo-x200-pro-mini",
+      "model": "vivo X200 Pro mini",
+      "file": "assets/equipment/vivo-x200-pro-mini-zhibai.png",
+      "width": 640,
+      "height": 640,
+      "image_url": "https://wwwstatic.vivo.com.cn/vivoportal/files/image/detail/20241008/3a0091cd494e82898907763483a3e755.png",
+      "source_page": "https://www.vivo.com.cn/vivo/param/x200promini",
+      "manufacturer": "vivo",
+      "verified_on": "2026-09-12",
+      "verified_visually": true,
+      "file_size": 86758,
+      "color": "直白"
+    },
+    {
+      "equipment_id": "iphone-13-pro",
+      "model": "iPhone 13 Pro",
+      "file": "assets/equipment/apple-iphone-13-pro-silver.jpg",
+      "width": 612,
+      "height": 760,
+      "image_url": "https://www.apple.com/v/iphone/compare/am/images/overview/compare_iphone13_pro_silver__dzq8ol0di7ee_large_2x.jpg",
+      "source_page": "https://www.apple.com/iphone/compare/",
+      "manufacturer": "Apple",
+      "verified_on": "2026-09-12",
+      "verified_visually": true,
+      "file_size": 42917,
+      "color": "银色（白色背板）"
+    }
+  ]
+}

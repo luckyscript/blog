@@ -1,0 +1,39 @@
+[Unit]
+Description=Rain Blog photography backend
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=rain-blog-photography
+Group=rain-blog-photography
+SupplementaryGroups=rain-blog-code
+WorkingDirectory=/opt/rain-blog-photography/current
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/rain-blog/photography-service.env
+ExecStart=/opt/rain-blog/runtime/bin/node --dns-result-order=ipv4first --no-network-family-autoselection --max-old-space-size=256 server/index.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=120
+UMask=0077
+StateDirectory=rain-blog-photography
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+CapabilityBoundingSet=
+ReadOnlyPaths=/var/lib/rain-blog-photography/sources
+MemoryHigh=384M
+MemoryMax=512M
+TasksMax=128
+
+[Install]
+WantedBy=multi-user.target

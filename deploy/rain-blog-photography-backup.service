@@ -1,0 +1,24 @@
+[Unit]
+Description=Rain Blog photography full backup and offsite verification
+Wants=network-online.target
+After=network-online.target rain-blog-photography.service
+
+[Service]
+Type=oneshot
+User=rain-blog-photography
+Group=rain-blog-photography
+SupplementaryGroups=rain-blog-code
+WorkingDirectory=/opt/rain-blog-photography/current
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/rain-blog/photography-service.env
+ExecStart=/usr/bin/flock --nonblock /var/lib/rain-blog-photography/backup-process.lock /opt/rain-blog/runtime/bin/node --dns-result-order=ipv4first --no-network-family-autoselection --max-old-space-size=128 server/cloud-backup.mjs
+TimeoutStartSec=1800
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/rain-blog-photography
+ReadOnlyPaths=/var/lib/rain-blog-photography/masters /var/lib/rain-blog-photography/derivatives
+MemoryHigh=192M
+MemoryMax=256M
