@@ -123,6 +123,8 @@ journalctl -u rain-blog-moments --since '10 minutes ago'
 
 同步进程固定使用 IPv4，规避当前 ECS 到微博 / R2 的双栈连接超时。持久图片目录须在部署时设置为 `rain-blog-moments:rain-blog-media`、`2750`；运行时不重新设置目录的 setgid 位，因为 `RestrictSUIDSGID=true` 会拒绝这类操作并返回 `EPERM`。新增图片仍设置为 `0640`，继承目录的共享组。
 
+碎碎念列表通过本站 `/media/moments/previews/v1/` 加载 320 / 640 像素 WebP 缩略图，点击大图时才加载 R2 原图。网站 unit 的 `CacheDirectory=rain-blog-previews` 提供 `/var/cache/rain-blog-previews` 持久缓存；首次按需生成，后续复用磁盘与浏览器 / CDN 的一年缓存。缩略图只读取已有、按内容摘要命名的图片，限制尺寸、输入像素和并发；编码失败时回退已有原图。原始文件和数据库内容不变，发布回滚时保留缓存目录即可。
+
 ### 链接健康检查
 
 先备份数据库并运行 `db:setup` 应用 `005_link_health.sql`。创建独立系统用户 `rain-blog-links`，只加入 `rain-blog-code` 只读代码组。`/etc/rain-blog/links.env` 仅保存 `DATABASE_URL`，归 `root:rain-blog-links`、权限 `0640`，不复制其他服务的凭据。

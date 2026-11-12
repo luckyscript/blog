@@ -44,3 +44,15 @@ const platform = post.platform === 'x' ? 'X' : platformLabels[post.platform] || 
     <div class="moment-lightboxes" set:html={lightboxes} />
   </div>
 </article>
+
+<script>
+  document.addEventListener('beforetoggle', event => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || !target.matches('.moment-lightbox') || (event as ToggleEvent).newState !== 'open') return;
+    const image = target.querySelector<HTMLImageElement>('img[data-full-src]');
+    if (image && !image.getAttribute('src')) {
+      if (image.dataset.fullFallback) image.addEventListener('error', () => { image.src = image.dataset.fullFallback!; }, { once: true });
+      image.src = image.dataset.fullSrc!;
+    }
+  }, true);
+</script>

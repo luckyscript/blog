@@ -1,5 +1,6 @@
 import { load } from 'cheerio';
 import { cleanMomentHtml, escapeHtml } from './content';
+import { momentOriginalPath, momentPreviewUrl } from './preview';
 
 /** Enhance saved HTML for reading without changing the stored original. */
 export function presentMoment(html: string, id: string) {
@@ -14,6 +15,8 @@ export function presentMoment(html: string, id: string) {
     const popoverId = `moment-image-${id.replace(/[^a-zA-Z0-9_-]/g, '')}-${index}`;
     pictures.push({ id: popoverId, src, alt });
     image.attr({ loading: 'lazy', decoding: 'async' });
+    const small = momentPreviewUrl(src, 320), large = momentPreviewUrl(src, 640);
+    if (small && large) image.attr({ src: small, srcset: `${small} 320w, ${large} 640w` });
     const figure = $('<figure class="moment-photo"></figure>');
     const button = $('<button type="button" class="moment-photo-button"></button>').attr({ popovertarget: popoverId, 'aria-label': `查看图片 ${pictures.length}${alt ? `：${alt.slice(0, 80)}` : ''}` });
     const parent = image.parent();
@@ -31,6 +34,7 @@ export function presentMoment(html: string, id: string) {
     const gallery = $('<div class="moment-gallery"></div>').attr('data-count', String(group.length));
     figure.before(gallery);
     for (const item of group) gallery.append(item);
+    gallery.find('img[srcset]').attr('sizes', group.length === 1 ? '(max-width: 680px) 220px, 360px' : '(max-width: 680px) calc((100vw - 64px) / 3), 156px');
   });
   const body = $.html();
   const preview = $('.moment-gallery').first().clone();
@@ -40,7 +44,7 @@ export function presentMoment(html: string, id: string) {
   }
   const lightboxes = pictures.map((picture, i) => `<div id="${picture.id}" class="moment-lightbox" popover>
     <button type="button" class="moment-lightbox-close" popovertarget="${picture.id}" popovertargetaction="hide" aria-label="关闭大图">关闭 ×</button>
-    <img src="${escapeHtml(picture.src)}" alt="${escapeHtml(picture.alt)}" loading="lazy" decoding="async">
+    <img data-full-src="${escapeHtml(picture.src)}"${momentOriginalPath(picture.src) ? ` data-full-fallback="${escapeHtml(momentOriginalPath(picture.src)!)}"` : ''} alt="${escapeHtml(picture.alt)}" decoding="async">
     <p class="moment-lightbox-count">${i + 1} / ${pictures.length}</p></div>`).join('');
   return { body, lightboxes, imageCount: pictures.length, previewGallery: preview.length ? preview.toString() : '' };
 }

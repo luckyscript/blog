@@ -11,12 +11,14 @@ User=rain-blog
 Group=rain-blog
 SupplementaryGroups=rain-blog-code rain-blog-media
 WorkingDirectory=/opt/rain-blog/current
-Environment=NODE_ENV=production HOST=127.0.0.1 PORT=3000 MOMENTS_MEDIA_DIRECTORY=/var/lib/rain-blog-media
+Environment=NODE_ENV=production HOST=127.0.0.1 PORT=3000 MOMENTS_MEDIA_DIRECTORY=/var/lib/rain-blog-media MOMENTS_PREVIEW_DIRECTORY=/var/cache/rain-blog-previews
 ExecStart=/opt/rain-blog/runtime/bin/node --env-file=/etc/rain-blog/web.env --max-old-space-size=384 dist/server/entry.mjs
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=30
 UMask=0077
+CacheDirectory=rain-blog-previews
+CacheDirectoryMode=0700
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
