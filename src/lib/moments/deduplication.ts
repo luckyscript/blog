@@ -6,7 +6,7 @@ type Candidate = { id: string; source_id: string; body_text: string; media: unkn
 type Entry = { id: string; sourceId: string; text: string; length: number; prefix: string; mediaKey: string };
 type Duplicate = { id: string; originalId: string; reason: 'exact' | 'prefix' | 'media' };
 const lockName = 'rain_moments_deduplication';
-const minimumTextLengthForPrefix = 100;
+const minimumTextLengthForPrefix = 15;
 const genericCaptions = new Set([
   '转发', '转发微博', '分享图片', '分享照片', '分享视频', '图片分享', '照片分享',
   'sharewithpics', 'repost', 'retweet',
