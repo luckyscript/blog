@@ -13,6 +13,7 @@
     "src/db/**/*.ts",
     "src/lib/server/**/*.ts",
     "src/lib/moments/**/*.ts",
+    "src/lib/analytics/**/*.ts",
     "src/lib/photography/**/*.ts",
     "src/lib/markdoc/render.ts",
     "src/middleware.ts",

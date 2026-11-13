@@ -6,6 +6,7 @@ import { clipboardImages, insertEditorText, replaceImagePlaceholder, mediaMarkdo
 import LocalMoments from './LocalMoments';
 import LinksManager from './LinksManager';
 import PhotographyStudio from './PhotographyStudio';
+import AnalyticsDashboard from './AnalyticsDashboard';
 
 type User = { id: string; email: string };
 type Notice = { text: string; error?: boolean } | null;
@@ -82,6 +83,7 @@ function Spinner() {
 }
 function Icon({ name }: { name: string }) {
   const paths: Record<string, React.ReactNode> = {
+    analytics: <><path d="M4 20V4M4 20h17M8 16v-4M13 16V8M18 16V5" /></>,
     moments: <><path d="M4 4h16v12H9l-5 4z" /><path d="M8 8h8M8 12h5" /></>,
     links: <><path d="m9 15 6-6M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 10a4 4 0 0 0 6 0l4-4a4 4 0 0 0-6-6l-1 1" /></>,
     posts: (
@@ -150,6 +152,7 @@ export default function AdminApp({
   const view = route.startsWith("posts/") ? "editor" : route || "posts";
   const links = [
     ["", "posts", "文章"],
+    ["analytics", "analytics", "访问分析"],
     ["moments", "moments", "碎碎念"],
     ['links','links','链接'],
     ['photography','media','摄影'],
@@ -222,6 +225,7 @@ export default function AdminApp({
           className={`admin-main ${view === "editor" ? "editor-main" : ""}`}
         >
           {view === "posts" && <Posts />}
+          {view === "analytics" && <AnalyticsDashboard request={api} />}
           {view === "editor" && (
             <Editor
               postId={route === "posts/new" ? null : route.split("/")[1]}

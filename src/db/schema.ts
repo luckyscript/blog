@@ -174,3 +174,20 @@ export const momentSyncRuns = mysqlTable("blog_moment_sync_runs", {
   pages: int("pages").notNull().default(0), received: int("received").notNull().default(0), changed: int("changed").notNull().default(0),
   error: varchar("error", { length: 255 }),
 }, table => [index("blog_moment_runs_source").on(table.sourceId, table.startedAt)]);
+
+
+export const analyticsViews = mysqlTable('blog_analytics_views', {
+  id:id(),visitorKey:varchar('visitor_key',{length:64}).notNull(),sessionKey:varchar('session_key',{length:64}).notNull(),
+  path:varchar('path',{length:512}).notNull(),category:varchar('category',{length:24}).notNull(),
+  referrerHost:varchar('referrer_host',{length:255}).notNull().default(''),referrerPath:varchar('referrer_path',{length:512}).notNull().default(''),
+  utmSource:varchar('utm_source',{length:80}).notNull().default(''),utmMedium:varchar('utm_medium',{length:80}).notNull().default(''),utmCampaign:varchar('utm_campaign',{length:80}).notNull().default(''),
+  device:varchar('device',{length:16}).notNull(),browser:varchar('browser',{length:32}).notNull(),os:varchar('os',{length:32}).notNull(),
+  country:varchar('country',{length:2}).notNull().default(''),region:varchar('region',{length:80}).notNull().default(''),city:varchar('city',{length:80}).notNull().default(''),
+  language:varchar('language',{length:20}).notNull().default(''),viewportWidth:int('viewport_width').notNull().default(0),viewportHeight:int('viewport_height').notNull().default(0),
+  startedAt:time('started_at').notNull(),lastSeenAt:time('last_seen_at').notNull(),durationMs:int('duration_ms').notNull().default(0),scrollPercent:int('scroll_percent').notNull().default(0),interactions:int('interactions').notNull().default(0),
+  lcpMs:int('lcp_ms'),inpMs:int('inp_ms'),clsMilli:int('cls_milli'),fcpMs:int('fcp_ms'),ttfbMs:int('ttfb_ms'),
+},table=>[index('blog_analytics_started').on(table.startedAt),index('blog_analytics_active').on(table.lastSeenAt),index('blog_analytics_visitor').on(table.visitorKey,table.startedAt),index('blog_analytics_session').on(table.sessionKey,table.startedAt),index('blog_analytics_category').on(table.category,table.startedAt)]);
+export const analyticsEvents = mysqlTable('blog_analytics_events', {
+  id:id(),viewId:varchar('view_id',{length:36}).notNull().references(()=>analyticsViews.id,{onDelete:'cascade'}),
+  type:varchar('type',{length:32}).notNull(),target:varchar('target',{length:512}).notNull().default(''),label:varchar('label',{length:40}).notNull().default(''),value:int('value').notNull().default(0),createdAt:time('created_at').notNull(),
+},table=>[index('blog_analytics_event_time').on(table.createdAt),index('blog_analytics_event_type').on(table.type,table.createdAt),index('blog_analytics_event_view').on(table.viewId)]);

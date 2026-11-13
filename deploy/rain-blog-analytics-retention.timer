@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily anonymous analytics retention
+
+[Timer]
+OnCalendar=*-*-* 05:10:00 Asia/Shanghai
+RandomizedDelaySec=600
+Persistent=true
+
+[Install]
+WantedBy=timers.target

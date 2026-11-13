@@ -23,6 +23,8 @@ import { momentSources } from "../../../lib/moments/store";
 import { listLocalMoments, saveLocalMoment, changeLocalMomentStatus } from '../../../lib/server/local-moments';
 import { listCuratedLinks, saveCuratedLink, changeCuratedLinkStatus } from '../../../lib/server/links';
 
+import { analyticsDashboard } from '../../../lib/analytics/dashboard';
+
 export const prerender = false;
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -93,6 +95,7 @@ export async function ALL(context: APIContext) {
     }
     const user = context.locals.admin;
     if (!user) throw new AppError(401, "请先登录");
+    if(path==='analytics'&&method==='GET')return json(await analyticsDashboard(context.url.searchParams));
     if (path === "moments/sources" && method === "GET") return json(await momentSources());
     if(path==='links'&&method==='GET')return json(await listCuratedLinks(true));
     if(path==='links'&&method==='POST')return json(await saveCuratedLink(null,await body(context.request)),201);

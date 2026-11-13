@@ -95,7 +95,7 @@ export async function reconcileMomentDuplicates(connection: SqlConnection) {
   const unchanged = new Set<string>();
   const removed = existing.filter(row => {
     const next = desired.get(row.moment_id);
-    if (next?.originalId === row.duplicate_of && next.reason === row.reason) { unchanged.add(row.moment_id); return false; }
+    if (next && next.originalId === row.duplicate_of && next.reason === row.reason) { unchanged.add(row.moment_id); return false; }
     return !next;
   }).map(row => row.moment_id);
   for (let offset = 0; offset < removed.length; offset += 200) {

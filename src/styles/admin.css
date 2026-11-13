@@ -1879,7 +1879,7 @@ code {
   }
 }
 
-/* Keep the seven admin sections inside their own mobile scroll area. */
+/* Keep the admin sections inside their own mobile scroll area. */
 @media (max-width: 700px) {
   .admin-shell > .sidebar > nav {
     min-width: 0;

@@ -1,0 +1,9 @@
+---
+import { usesDatabase } from "../lib/server/env";
+const enabled = usesDatabase() && process.env.ANALYTICS_ENABLED !== "0";
+---
+
+{enabled && <span data-analytics-enabled hidden aria-hidden="true" />}
+<script>
+  import "../lib/analytics/client";
+</script>
