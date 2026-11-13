@@ -3,9 +3,14 @@ import { getPool } from '../../db';
 
 type SqlConnection = Connection | PoolConnection;
 type Candidate = { id: string; source_id: string; body_text: string; media: unknown };
-type Entry = { id: string; sourceId: string; text: string; prefix: string };
+type Entry = { id: string; sourceId: string; text: string; length: number; prefix: string; mediaKey: string };
 type Duplicate = { id: string; originalId: string; reason: 'exact' | 'prefix' | 'media' };
 const lockName = 'rain_moments_deduplication';
+const minimumTextLengthForPrefix = 100;
+const genericCaptions = new Set([
+  '转发', '转发微博', '分享图片', '分享照片', '分享视频', '图片分享', '照片分享',
+  'sharewithpics', 'repost', 'retweet',
+]);
 
 // Compare Unicode characters rather than UTF-16 halves (for example, emoji).
 function comparableText(text: string) {
@@ -22,8 +27,26 @@ function mediaIdentity(value: unknown) {
   }));
 }
 
+/** Generic captions and unavailable reposts do not identify their original content. */
+function hasMeaningfulText(text: string) {
+  const label = text.replace(/[\p{P}\p{S}]/gu, '').toLowerCase();
+  return !!label && !genericCaptions.has(label) && !label.includes('该内容请至手机客户端查看') &&
+    !label.includes('根据作者设置的微博可见时间范围此微博已不可见');
+}
+
+function textDuplicate(previous: Entry, incoming: Entry) {
+  if (previous.mediaKey !== incoming.mediaKey) return false;
+  if (previous.text === incoming.text) return true;
+  // Either side being short disables prefix matching. The common prefix must
+  // cover half of BOTH texts, so use the longer text's halfway point.
+  if (Math.min(previous.length, incoming.length) < minimumTextLengthForPrefix) return false;
+  const longer = previous.length >= incoming.length ? previous : incoming;
+  const shorter = longer === previous ? incoming : previous;
+  return shorter.text.startsWith(longer.prefix);
+}
+
 /** Rows arrive in first-seen order. Only compare against earlier visible records. */
-function duplicateRecords(rows: Candidate[]) {
+export function duplicateRecords(rows: Candidate[]) {
   const textBuckets = new Map<string, Entry[]>();
   const mediaBuckets = new Map<string, Entry[]>();
   const duplicates: Duplicate[] = [];
@@ -31,20 +54,21 @@ function duplicateRecords(rows: Candidate[]) {
     const text = comparableText(row.body_text);
     const characters = Array.from(text);
     const prefix = characters.slice(0, Math.ceil(characters.length / 2)).join('');
-    const entry = { id: row.id, sourceId: row.source_id, text, prefix };
-    if (prefix) {
+    const mediaKey = mediaIdentity(row.media);
+    const entry = { id: row.id, sourceId: row.source_id, text, length: characters.length, prefix, mediaKey };
+    if (hasMeaningfulText(text)) {
       const bucket = textBuckets.get(characters[0]) || [];
-      const original = bucket.find(previous => previous.sourceId !== entry.sourceId &&
-        (previous.prefix.startsWith(prefix) || prefix.startsWith(previous.prefix)));
+      const original = bucket.find(previous => previous.sourceId !== entry.sourceId && textDuplicate(previous, entry));
       if (original) duplicates.push({ id: entry.id, originalId: original.id, reason: original.text === text ? 'exact' : 'prefix' });
       else { bucket.push(entry); textBuckets.set(characters[0], bucket); }
     } else {
-      const identity = mediaIdentity(row.media);
-      if (!identity) continue; // Empty posts must never collapse into one another.
-      const bucket = mediaBuckets.get(identity) || [];
-      const original = bucket.find(previous => previous.sourceId !== entry.sourceId);
+      // Empty/generic captions alone are insufficient. Require the full media
+      // list AND the caption to match; unrelated photos must stay visible.
+      if (!mediaKey) continue;
+      const bucket = mediaBuckets.get(mediaKey) || [];
+      const original = bucket.find(previous => previous.sourceId !== entry.sourceId && previous.text === entry.text);
       if (original) duplicates.push({ id: entry.id, originalId: original.id, reason: 'media' });
-      else { bucket.push(entry); mediaBuckets.set(identity, bucket); }
+      else { bucket.push(entry); mediaBuckets.set(mediaKey, bucket); }
     }
   }
   return duplicates;
