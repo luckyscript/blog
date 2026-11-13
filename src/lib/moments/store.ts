@@ -5,6 +5,7 @@ import { env } from "../server/env";
 import { AppError } from "../server/errors";
 import { normalizeMoment } from "./content";
 import { collectPages } from "./plan";
+import { reconcileMomentDuplicates, withMomentDedupLock } from "./deduplication";
 import { cacheMomentImages, momentImageCache } from './media-cache';
 import { publicMomentImages } from './media-public';
 import { telegramAdapter } from "./telegram";
@@ -35,31 +36,34 @@ export async function ensureMomentSource() {
 export async function saveMomentPage(connection: SqlConnection, sourceId: string, posts: MomentInput[]) {
   let changed = 0;
   const normalized = posts.map(normalizeMoment);
-  await connection.beginTransaction();
-  try {
-    for (const item of normalized) {
-      let [rows] = await connection.query<any[]>('SELECT id, content_hash FROM blog_moments WHERE source_id=? AND external_id=? FOR UPDATE', [sourceId, item.externalId]);
-      if (sourceId.startsWith('weibo:')) {
-        // IDs are global within Weibo. Adopt an unattributed archive row once its author is verified.
-        if (sourceId === 'weibo:archive') {
-          const [existing] = await connection.query<any[]>(`SELECT m.id FROM blog_moments m JOIN blog_moment_sources s ON s.id=m.source_id WHERE s.platform='weibo' AND m.external_id=? LIMIT 1 FOR UPDATE`, [item.externalId]);
-          if (existing.length) continue; // Archive import is insert-only, including trashed rows.
-        } else if (!rows.length) {
-          [rows] = await connection.query<any[]>("SELECT id,content_hash FROM blog_moments WHERE source_id='weibo:archive' AND external_id=? FOR UPDATE", [item.externalId]);
-          if (rows.length) await connection.query('UPDATE blog_moments SET source_id=? WHERE id=?', [sourceId, rows[0].id]);
+  return withMomentDedupLock(connection, async () => {
+    await connection.beginTransaction();
+    try {
+      for (const item of normalized) {
+        let [rows] = await connection.query<any[]>('SELECT id, content_hash FROM blog_moments WHERE source_id=? AND external_id=? FOR UPDATE', [sourceId, item.externalId]);
+        if (sourceId.startsWith('weibo:')) {
+          // IDs are global within Weibo. Adopt an unattributed archive row once its author is verified.
+          if (sourceId === 'weibo:archive') {
+            const [existing] = await connection.query<any[]>(`SELECT m.id FROM blog_moments m JOIN blog_moment_sources s ON s.id=m.source_id WHERE s.platform='weibo' AND m.external_id=? LIMIT 1 FOR UPDATE`, [item.externalId]);
+            if (existing.length) continue; // Archive import is insert-only, including trashed rows.
+          } else if (!rows.length) {
+            [rows] = await connection.query<any[]>("SELECT id,content_hash FROM blog_moments WHERE source_id='weibo:archive' AND external_id=? FOR UPDATE", [item.externalId]);
+            if (rows.length) await connection.query('UPDATE blog_moments SET source_id=? WHERE id=?', [sourceId, rows[0].id]);
+          }
         }
+        const values = [item.sourceUrl, item.title, item.text, item.html, JSON.stringify(item.media), JSON.stringify(item.tags), item.hash, new Date(item.publishedAt)];
+        if (!rows.length) {
+          await connection.query(`INSERT INTO blog_moments (id,source_id,external_id,source_url,title,body_text,body_html,media,tags,content_hash,published_at,first_seen_at,last_seen_at)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,UTC_TIMESTAMP(3),UTC_TIMESTAMP(3))`, [randomUUID(), sourceId, item.externalId, ...values]); changed++;
+        } else if (rows[0].content_hash !== item.hash) {
+          // Keep status and first_seen_at: a remote edit must never resurrect a trashed item.
+          await connection.query(`UPDATE blog_moments SET source_url=?,title=?,body_text=?,body_html=?,media=?,tags=?,content_hash=?,published_at=?,last_seen_at=UTC_TIMESTAMP(3) WHERE id=?`, [...values, rows[0].id]); changed++;
+        } else await connection.query('UPDATE blog_moments SET last_seen_at=UTC_TIMESTAMP(3) WHERE id=?', [rows[0].id]);
       }
-      const values = [item.sourceUrl, item.title, item.text, item.html, JSON.stringify(item.media), JSON.stringify(item.tags), item.hash, new Date(item.publishedAt)];
-      if (!rows.length) {
-        await connection.query(`INSERT INTO blog_moments (id,source_id,external_id,source_url,title,body_text,body_html,media,tags,content_hash,published_at,first_seen_at,last_seen_at)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,UTC_TIMESTAMP(3),UTC_TIMESTAMP(3))`, [randomUUID(), sourceId, item.externalId, ...values]); changed++;
-      } else if (rows[0].content_hash !== item.hash) {
-        // Keep status and first_seen_at: a remote edit must never resurrect a trashed item.
-        await connection.query(`UPDATE blog_moments SET source_url=?,title=?,body_text=?,body_html=?,media=?,tags=?,content_hash=?,published_at=?,last_seen_at=UTC_TIMESTAMP(3) WHERE id=?`, [...values, rows[0].id]); changed++;
-      } else await connection.query('UPDATE blog_moments SET last_seen_at=UTC_TIMESTAMP(3) WHERE id=?', [rows[0].id]);
-    }
-    await connection.commit(); return changed;
-  } catch (error) { await connection.rollback(); throw error; }
+      await reconcileMomentDuplicates(connection);
+      await connection.commit(); return changed;
+    } catch (error) { await connection.rollback(); throw error; }
+  });
 }
 export function syncError(error: unknown): string {
   const e = error as any;
@@ -128,10 +132,11 @@ export async function momentSources() {
     backfillComplete: !!jsonValue(row.sync_state)?.backfillComplete }));
 }
 
-const momentFrom = ' FROM blog_moments m JOIN blog_moment_sources s ON s.id=m.source_id';
+const momentFrom = ' FROM blog_moments m JOIN blog_moment_sources s ON s.id=m.source_id LEFT JOIN blog_moment_duplicates d ON d.moment_id=m.id';
+const publicMomentWhere = "m.status='published' AND s.enabled=TRUE AND m.published_at<=UTC_TIMESTAMP(3) AND d.moment_id IS NULL";
 const selectMoment = 'SELECT m.*,s.platform,s.account' + momentFrom;
 async function findRow(id: string, cursorOnly = false) {
-  const [rows] = await getPool().query<any[]>((cursorOnly ? 'SELECT m.id,m.published_at' + momentFrom : selectMoment) + ` WHERE m.status='published' AND s.enabled=TRUE AND m.published_at<=UTC_TIMESTAMP(3) AND ` +
+  const [rows] = await getPool().query<any[]>((cursorOnly ? 'SELECT m.id,m.published_at' + momentFrom : selectMoment) + ` WHERE ${publicMomentWhere} AND ` +
     (/^[0-9]+$/.test(id) ? 'm.source_id=? AND m.external_id=?' : 'm.id=?') + ' LIMIT 1',
     /^[0-9]+$/.test(id) ? [`telegram:${telegramAccount()}`, id] : [id]);
   return rows[0];
@@ -147,7 +152,7 @@ export async function momentById(id: string) {
 export async function momentChannel(options: { before?: string; after?: string; q?: string; platform?: string; limit?: number } = {}) {
   if (options.platform && !['telegram', 'weibo', 'x', 'local'].includes(options.platform)) throw new AppError(400, '碎碎念来源不存在');
   const limit = Math.min(50, Math.max(1, options.limit ?? 20));
-  const conditions = ["m.status='published'", 's.enabled=TRUE', 'm.published_at<=UTC_TIMESTAMP(3)']; const values: any[] = [];
+  const conditions = [publicMomentWhere]; const values: any[] = [];
   const cursorId = options.before || options.after;
   if (cursorId) {
     const cursor = await findRow(cursorId, true); if (!cursor) throw new AppError(404, '分页位置不存在');
@@ -162,7 +167,7 @@ export async function momentChannel(options: { before?: string; after?: string; 
   if (rows.length && limit > 3) {
     const exists = await Promise.all(['older','newer'].map(async direction => {
       const row = direction === 'older' ? rows[rows.length-1] : rows[0]; const op = direction === 'older' ? '<' : '>';
-      const [found] = await getPool().query<any[]>('SELECT 1' + momentFrom + ` WHERE m.status='published' AND s.enabled=TRUE AND m.published_at<=UTC_TIMESTAMP(3) AND (m.published_at ${op} ? OR (m.published_at=? AND m.id ${op} ?))` + (options.q ? ' AND LOCATE(?,m.body_text)>0' : '') + (options.platform ? ' AND s.platform=?' : '') + ' LIMIT 1', [row.published_at,row.published_at,row.id,...(options.q ? [options.q.slice(0,200)] : []),...(options.platform ? [options.platform] : [])]);
+      const [found] = await getPool().query<any[]>('SELECT 1' + momentFrom + ` WHERE ${publicMomentWhere} AND (m.published_at ${op} ? OR (m.published_at=? AND m.id ${op} ?))` + (options.q ? ' AND LOCATE(?,m.body_text)>0' : '') + (options.platform ? ' AND s.platform=?' : '') + ' LIMIT 1', [row.published_at,row.published_at,row.id,...(options.q ? [options.q.slice(0,200)] : []),...(options.platform ? [options.platform] : [])]);
       return !!found.length;
     }));
     [hasOlder,hasNewer] = exists;

@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { reconcileMomentDuplicates, withMomentDedupLock } from './deduplication';
 import { load } from 'cheerio';
 import type { PoolConnection } from 'mysql2/promise';
 import { cleanMomentHtml, escapeHtml, normalizeMoment } from './content';
@@ -60,22 +61,25 @@ export function parseLocalArchive(records: any[], site = 'https://rainonpiano.co
 export async function saveLocalArchive(connection: PoolConnection, posts: MomentInput[]) {
   const normalized = posts.map(normalizeMoment);
   const insertedIds: string[] = [];
-  await connection.beginTransaction();
-  try {
-    await connection.query(`INSERT INTO blog_moment_sources (id,platform,account,title,sync_state,created_at)
-      VALUES (?,'local','notes','本站随记','{"archive":true,"backfillComplete":true}',UTC_TIMESTAMP(3))
-      ON DUPLICATE KEY UPDATE id=id`, [localArchiveSource]);
-    for (const item of normalized) {
-      const [existing] = await connection.query<any[]>('SELECT id FROM blog_moments WHERE source_id=? AND external_id=? FOR UPDATE', [localArchiveSource, item.externalId]);
-      if (existing.length) continue;
-      const id = randomUUID();
-      await connection.query(`INSERT INTO blog_moments (id,source_id,external_id,source_url,title,body_text,body_html,media,tags,content_hash,published_at,first_seen_at,last_seen_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,UTC_TIMESTAMP(3),UTC_TIMESTAMP(3))`,
-      [id,localArchiveSource,item.externalId,item.sourceUrl,item.title,item.text,item.html,JSON.stringify(item.media),JSON.stringify(item.tags),item.hash,new Date(item.publishedAt)]);
-      insertedIds.push(id);
-    }
-    await connection.query('UPDATE blog_moment_sources SET last_attempt_at=UTC_TIMESTAMP(3),last_success_at=UTC_TIMESTAMP(3),last_error=NULL WHERE id=?', [localArchiveSource]);
-    await connection.commit();
-    return { insertedIds, existing: normalized.length - insertedIds.length };
-  } catch (error) { await connection.rollback(); throw error; }
+  return withMomentDedupLock(connection, async () => {
+    await connection.beginTransaction();
+    try {
+      await connection.query(`INSERT INTO blog_moment_sources (id,platform,account,title,sync_state,created_at)
+        VALUES (?,'local','notes','本站随记','{"archive":true,"backfillComplete":true}',UTC_TIMESTAMP(3))
+        ON DUPLICATE KEY UPDATE id=id`, [localArchiveSource]);
+      for (const item of normalized) {
+        const [existing] = await connection.query<any[]>('SELECT id FROM blog_moments WHERE source_id=? AND external_id=? FOR UPDATE', [localArchiveSource, item.externalId]);
+        if (existing.length) continue;
+        const id = randomUUID();
+        await connection.query(`INSERT INTO blog_moments (id,source_id,external_id,source_url,title,body_text,body_html,media,tags,content_hash,published_at,first_seen_at,last_seen_at)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,UTC_TIMESTAMP(3),UTC_TIMESTAMP(3))`,
+        [id,localArchiveSource,item.externalId,item.sourceUrl,item.title,item.text,item.html,JSON.stringify(item.media),JSON.stringify(item.tags),item.hash,new Date(item.publishedAt)]);
+        insertedIds.push(id);
+      }
+      await connection.query('UPDATE blog_moment_sources SET last_attempt_at=UTC_TIMESTAMP(3),last_success_at=UTC_TIMESTAMP(3),last_error=NULL WHERE id=?', [localArchiveSource]);
+      await reconcileMomentDuplicates(connection);
+      await connection.commit();
+      return { insertedIds, existing: normalized.length - insertedIds.length };
+    } catch (error) { await connection.rollback(); throw error; }
+  });
 }

@@ -1,6 +1,7 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { closeDatabase } from "../src/db";
 import { ensureMomentSource, momentSources, syncMomentSource, syncError } from "../src/lib/moments/store";
+import { refreshMomentDuplicates } from '../src/lib/moments/deduplication';
 import { weiboTransport } from '../src/lib/moments/weibo-web';
 
 const controller = new AbortController();
@@ -18,6 +19,8 @@ async function main() {
   }
   await ensureMomentSource();
   do {
+    const deduplication = await refreshMomentDuplicates();
+    if (deduplication.updated) console.log(JSON.stringify({ event: 'moments_deduplicated', ...deduplication }));
     let failures = 0;
     for (const source of await momentSources()) {
       if (!source.enabled || source.mode === 'archive' || controller.signal.aborted) continue;

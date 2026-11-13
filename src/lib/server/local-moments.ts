@@ -1,7 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../../db";
+import { db, getPool } from "../../db";
+import { drizzle } from "drizzle-orm/mysql2";
+import { reconcileMomentDuplicates, withMomentDedupLock } from "../moments/deduplication";
 import { media, moments, momentSources } from "../../db/schema";
 import { cleanMomentHtml, escapeHtml } from "../moments/content";
 import { AppError } from "./errors";
@@ -102,109 +104,117 @@ export async function saveLocalMoment(
   version = ""
 ) {
   const { input, html } = prepareLocalMoment(value);
-  return db().transaction(async (tx) => {
-    const now = new Date();
-    let existing: typeof moments.$inferSelect | undefined;
-    if (id) {
-      [existing] = await tx
-        .select()
-        .from(moments)
-        .where(eq(moments.id, id))
-        .for("update");
-      if (!existing || existing.sourceId !== manualMomentSource)
-        throw new AppError(404, "这条碎碎念不支持在此编辑");
-      if (existing.contentHash !== version)
-        throw new AppError(409, "内容已在其他窗口修改，请重新打开后编辑");
-      if (existing.status === "trash")
-        throw new AppError(409, "请先从回收站恢复");
-    }
-    const urls = [...new Set(input.images.map((image) => image.url))];
-    if (urls.length) {
-      const available = await tx
-        .select({ url: media.url, mime: media.mime })
-        .from(media)
-        .where(and(inArray(media.url, urls), eq(media.status, "ready")));
-      if (
-        urls.some(
-          (url) =>
-            !available.some(
-              (item) => item.url === url && item.mime.startsWith("image/")
-            )
+  const connection = await getPool().getConnection();
+  try {
+    return await withMomentDedupLock(connection, () => drizzle(connection).transaction(async (tx) => {
+      const now = new Date();
+      let existing: typeof moments.$inferSelect | undefined;
+      if (id) {
+        [existing] = await tx
+          .select()
+          .from(moments)
+          .where(eq(moments.id, id))
+          .for("update");
+        if (!existing || existing.sourceId !== manualMomentSource)
+          throw new AppError(404, "这条碎碎念不支持在此编辑");
+        if (existing.contentHash !== version)
+          throw new AppError(409, "内容已在其他窗口修改，请重新打开后编辑");
+        if (existing.status === "trash")
+          throw new AppError(409, "请先从回收站恢复");
+      }
+      const urls = [...new Set(input.images.map((image) => image.url))];
+      if (urls.length) {
+        const available = await tx
+          .select({ url: media.url, mime: media.mime })
+          .from(media)
+          .where(and(inArray(media.url, urls), eq(media.status, "ready")));
+        if (
+          urls.some(
+            (url) =>
+              !available.some(
+                (item) => item.url === url && item.mime.startsWith("image/")
+              )
+          )
         )
-      )
-        throw new AppError(400, "请先上传图片，或从媒体库选择已上传的图片");
-    }
-    await tx
-      .insert(momentSources)
-      .values({
-        id: manualMomentSource,
-        platform: "local",
-        account: "manual",
-        title: "本站碎碎念",
-        enabled: true,
-        syncState: { archive: true, backfillComplete: true },
-        createdAt: now,
-      })
-      .onDuplicateKeyUpdate({ set: { id: manualMomentSource } });
-    const key = id || randomUUID();
-    const fields = {
-      text: input.text,
-      html,
-      title: input.text.slice(0, 80),
-      media: input.images.map((image) => ({
-        type: "image" as const,
-        ...image,
-      })),
-      tags: [] as string[],
-      status: input.status,
-      publishedAt: new Date(input.publishedAt),
-      lastSeenAt: now,
-      contentHash: createHash("sha256")
-        .update(JSON.stringify({ input, nonce: randomUUID() }))
-        .digest("hex"),
-    };
-    if (existing)
-      await tx.update(moments).set(fields).where(eq(moments.id, key));
-    else
+          throw new AppError(400, "请先上传图片，或从媒体库选择已上传的图片");
+      }
       await tx
-        .insert(moments)
+        .insert(momentSources)
         .values({
-          id: key,
-          sourceId: manualMomentSource,
-          externalId: key,
-          sourceUrl: "",
-          firstSeenAt: now,
-          ...fields,
-        });
-    const [row] = await tx.select().from(moments).where(eq(moments.id, key));
-    return localRecord(row);
-  });
+          id: manualMomentSource,
+          platform: "local",
+          account: "manual",
+          title: "本站碎碎念",
+          enabled: true,
+          syncState: { archive: true, backfillComplete: true },
+          createdAt: now,
+        })
+        .onDuplicateKeyUpdate({ set: { id: manualMomentSource } });
+      const key = id || randomUUID();
+      const fields = {
+        text: input.text,
+        html,
+        title: input.text.slice(0, 80),
+        media: input.images.map((image) => ({
+          type: "image" as const,
+          ...image,
+        })),
+        tags: [] as string[],
+        status: input.status,
+        publishedAt: new Date(input.publishedAt),
+        lastSeenAt: now,
+        contentHash: createHash("sha256")
+          .update(JSON.stringify({ input, nonce: randomUUID() }))
+          .digest("hex"),
+      };
+      if (existing)
+        await tx.update(moments).set(fields).where(eq(moments.id, key));
+      else
+        await tx
+          .insert(moments)
+          .values({
+            id: key,
+            sourceId: manualMomentSource,
+            externalId: key,
+            sourceUrl: "",
+            firstSeenAt: now,
+            ...fields,
+          });
+      const [row] = await tx.select().from(moments).where(eq(moments.id, key));
+      await reconcileMomentDuplicates(connection);
+      return localRecord(row);
+    }));
+  } finally { connection.release(); }
 }
 export async function changeLocalMomentStatus(
   id: string,
   version: string,
   action: "trash" | "restore"
 ) {
-  return db().transaction(async (tx) => {
-    const [row] = await tx
-      .select()
-      .from(moments)
-      .where(eq(moments.id, id))
-      .for("update");
-    if (!row || row.sourceId !== manualMomentSource)
-      throw new AppError(404, "这条碎碎念不支持在此编辑");
-    if (row.contentHash !== version)
-      throw new AppError(409, "内容已在其他窗口修改，请刷新列表");
-    if (action === "restore" && row.status !== "trash")
-      throw new AppError(409, "这条碎碎念不在回收站");
-    await tx
-      .update(moments)
-      .set({
-        status: action === "trash" ? "trash" : "draft",
-        lastSeenAt: new Date(),
-        contentHash: createHash("sha256").update(randomUUID()).digest("hex"),
-      })
-      .where(eq(moments.id, id));
-    return { ok: true };
-  });
+  const connection = await getPool().getConnection();
+  try {
+    return await withMomentDedupLock(connection, () => drizzle(connection).transaction(async (tx) => {
+      const [row] = await tx
+        .select()
+        .from(moments)
+        .where(eq(moments.id, id))
+        .for("update");
+      if (!row || row.sourceId !== manualMomentSource)
+        throw new AppError(404, "这条碎碎念不支持在此编辑");
+      if (row.contentHash !== version)
+        throw new AppError(409, "内容已在其他窗口修改，请刷新列表");
+      if (action === "restore" && row.status !== "trash")
+        throw new AppError(409, "这条碎碎念不在回收站");
+      await tx
+        .update(moments)
+        .set({
+          status: action === "trash" ? "trash" : "draft",
+          lastSeenAt: new Date(),
+          contentHash: createHash("sha256").update(randomUUID()).digest("hex"),
+        })
+        .where(eq(moments.id, id));
+      await reconcileMomentDuplicates(connection);
+      return { ok: true };
+    }));
+  } finally { connection.release(); }
 }

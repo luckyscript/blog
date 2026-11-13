@@ -162,6 +162,12 @@ export const moments = mysqlTable("blog_moments", {
   contentHash: varchar("content_hash", { length: 64 }).notNull(), status: varchar("status", { length: 16 }).notNull().default("published"),
   publishedAt: time("published_at").notNull(), firstSeenAt: time("first_seen_at").notNull(), lastSeenAt: time("last_seen_at").notNull(),
 }, table => [uniqueIndex("blog_moments_external").on(table.sourceId, table.externalId), index("blog_moments_public").on(table.status, table.publishedAt, table.id)]);
+// Separate visibility metadata leaves imported content and publication status intact.
+export const momentDuplicates = mysqlTable("blog_moment_duplicates", {
+  momentId: varchar("moment_id", { length: 36 }).primaryKey().references(() => moments.id, { onDelete: "cascade" }),
+  duplicateOf: varchar("duplicate_of", { length: 36 }).notNull().references(() => moments.id, { onDelete: "cascade" }),
+  reason: varchar("reason", { length: 16 }).notNull(),
+}, table => [index("blog_moment_duplicate_original").on(table.duplicateOf)]);
 export const momentSyncRuns = mysqlTable("blog_moment_sync_runs", {
   id: id(), sourceId: varchar("source_id", { length: 190 }).notNull().references(() => momentSources.id),
   startedAt: time("started_at").notNull(), finishedAt: time("finished_at"), outcome: varchar("outcome", { length: 16 }).notNull(),
