@@ -14,20 +14,26 @@ const uuid =
   /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const rateSecret = randomBytes(32);
 const limits = new Map<string, { count: number; until: number }>();
-export function analyticsAllowed(context: APIContext) {
+type IgnoredCollection = "disabled" | "ignored-privacy" | "ignored-bot";
+export type CollectionStatus =
+  | IgnoredCollection
+  | "ignored-admin"
+  | "ignored-path"
+  | "recorded";
+function ignoredReason(context: APIContext): IgnoredCollection | null {
+  if (process.env.ANALYTICS_ENABLED === "0") return "disabled";
   if (
-    process.env.ANALYTICS_ENABLED === "0" ||
     context.request.headers.get("dnt") === "1" ||
     context.request.headers.get("sec-gpc") === "1"
   )
-    return false;
+    return "ignored-privacy";
   const agent = context.request.headers.get("user-agent") || "";
-  return (
-    !!agent &&
-    !/bot\b|spider|crawler|headless|lighthouse|preview|facebookexternalhit|curl\/|wget\//i.test(
+  return !agent ||
+    /bot\b|spider|crawler|headless|lighthouse|preview|facebookexternalhit|curl\/|wget\//i.test(
       agent
     )
-  );
+    ? "ignored-bot"
+    : null;
 }
 function limitRequest(context: APIContext) {
   let address = "unknown";
@@ -117,22 +123,25 @@ function geography(headers: Headers) {
     city: clean(headers.get("cf-ipcity")),
   };
 }
-export async function collectAnalytics(context: APIContext) {
+export async function collectAnalytics(
+  context: APIContext
+): Promise<CollectionStatus> {
   if (
     context.request.headers.get("origin") !== context.url.origin ||
     context.request.headers.get("sec-fetch-site") === "cross-site"
   )
     throw new AppError(403, "请求来源不正确");
-  if (!analyticsAllowed(context)) return;
+  const ignored = ignoredReason(context);
+  if (ignored) return ignored;
   limitRequest(context);
   const input = normalizedVisit(
     await readPayload(context.request),
     context.url.origin
   );
-  if (!input.path) return;
+  if (!input.path) return "ignored-path";
   // Authenticated owners viewing public pages should not inflate their own dashboard.
   if (context.cookies.has("inkrain_admin") && (await sessionUser(context)))
-    return;
+    return "ignored-admin";
   const visitorKey = hash(identity(context, visitorCookie, 180 * 86400));
   // Heartbeats must not extend a session after the reader stops interacting.
   const sessionKey = hash(
@@ -220,6 +229,7 @@ export async function collectAnalytics(context: APIContext) {
         ])
       );
     await connection.commit();
+    return "recorded";
   } catch (error) {
     await connection.rollback();
     throw error;

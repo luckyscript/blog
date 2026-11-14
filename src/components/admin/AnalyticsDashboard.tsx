@@ -301,6 +301,13 @@ export default function AnalyticsDashboard({
           5 分钟
         </div>
       </header>
+      <aside className="analytics-collection-note" role="note">
+        <strong>当前浏览器已登录站长账号，前台访问不会计入统计。</strong>
+        <span>
+          验证采集时，请用未登录的无痕窗口打开博客，再回到这里刷新。看板数据最多缓存
+          30 秒。
+        </span>
+      </aside>
       <form
         className="analytics-toolbar"
         onSubmit={(event) => {

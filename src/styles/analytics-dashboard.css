@@ -42,6 +42,21 @@
   font-size: 20px;
   font-variant-numeric: tabular-nums;
 }
+.analytics-collection-note {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.analytics-collection-note strong {
+  color: var(--ink);
+  font-weight: 500;
+}
 .analytics-toolbar {
   display: flex;
   align-items: end;

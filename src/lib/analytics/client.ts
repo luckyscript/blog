@@ -125,7 +125,13 @@ if (allowed && !window.__inkrainAnalytics) {
         signal: leaving ? undefined : AbortSignal.timeout(10000),
       });
       if (response.ok) events = events.filter((event) => !sent.has(event.id));
-      if ([403, 429].includes(response.status)) disabled = true;
+      const status = response.headers.get("x-analytics-status") || "";
+      if (
+        [403, 429].includes(response.status) ||
+        status.startsWith("ignored-") ||
+        status === "disabled"
+      )
+        disabled = true;
     } catch {
       /* Analytics must never interrupt reading or navigation. */
     } finally {
