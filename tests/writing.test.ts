@@ -43,3 +43,12 @@ test('异步上传完成后撤销图片不复活占位，重做恢复图片并�
   assert(redo({ state, dispatch }));
   assert.equal(state.doc.toString(), '前文' + image + '上传期间的新文字');
 });
+
+test('碎碎念本机草稿保留格式、配图与冲突版本，拒绝损坏和超限数据', async () => {
+  const { encodeMomentDraft, decodeMomentDraft } = await import('../src/lib/admin/moment-writing');
+  const input = { text: '**此刻**', format: 'markdown' as const, images: [{ url: 'https://example.com/image.jpg', alt: '山' }], publishedAt: '2026-11-15T00:00:00.000Z' };
+  assert.deepEqual(decodeMomentDraft(encodeMomentDraft(input, 'v1')), { input, baseVersion: 'v1' });
+  assert.equal(decodeMomentDraft('{'), null);
+  assert.equal(decodeMomentDraft(encodeMomentDraft({ ...input, text: 'x'.repeat(20001) }, null)), null);
+  assert.equal(decodeMomentDraft(encodeMomentDraft({ ...input, images: Array(10).fill(input.images[0]) }, null)), null);
+});

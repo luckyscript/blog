@@ -2002,3 +2002,22 @@ code {
   .writer-preferences-panel { right: -40px; }
 }
 @media (prefers-reduced-motion: reduce) { .writer-studio * { scroll-behavior: auto !important; transition: none !important; } }
+
+/* The same writing surface in the short-note composer. */
+.local-note-composer { scroll-margin-top: 24px; }
+.local-note-composer .moment-writing-surface { min-height: 0; border-radius: 8px; padding-top: 8px; }
+.moment-writing-surface .ulysses-editor .cm-scroller { height: 340px; min-height: 240px; }
+.moment-writing-surface .ulysses-editor .cm-content { padding-bottom: 110px; }
+.moment-writing-surface .ulysses-editor.writer-typewriter .cm-content { padding-top: 150px; padding-bottom: 160px; }
+.moment-writing-surface .writing-footer { align-items: center; gap: 12px; }
+.moment-writing-surface .writing-footer select { width: auto; padding: 4px 7px; font-size: 11px; background: transparent; color: var(--writer-muted); border-color: var(--writer-line); }
+.moment-writing-surface .markdown-preview iframe { height: 340px; min-height: 240px; }
+.moment-local-state { color: var(--muted); font-size: 11px; margin: 12px 0 20px; }
+.local-note-composer .moment-writing-focus { position: fixed; inset: 0; z-index: 35; overflow: auto; border-radius: 0; padding: 40px 24px 20px; min-height: 100dvh; }
+.moment-writing-focus .ulysses-editor .cm-scroller, .moment-writing-focus .markdown-preview iframe { height: calc(100dvh - 180px); }
+.moment-writing-focus .ulysses-editor.writer-typewriter .cm-content { padding-top: calc((100dvh - 180px) / 2); padding-bottom: calc((100dvh - 180px) / 2); }
+@media (max-width: 600px) {
+  .local-note-composer .moment-writing-focus { padding: 24px 8px; }
+  .moment-writing-surface .writing-footer { font-size: 10px; }
+  .moment-writing-surface .writing-footer > span { max-width: 190px; line-height: 1.8; }
+}

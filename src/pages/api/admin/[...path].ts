@@ -20,7 +20,7 @@ import { parseAndTransform, renderHtml } from "../../../lib/markdoc/render";
 import { db } from "../../../db";
 import { media, revisions } from "../../../db/schema";
 import { momentSources } from "../../../lib/moments/store";
-import { listLocalMoments, saveLocalMoment, changeLocalMomentStatus } from '../../../lib/server/local-moments';
+import { listLocalMoments, saveLocalMoment, changeLocalMomentStatus, prepareLocalMoment } from '../../../lib/server/local-moments';
 import { listCuratedLinks, saveCuratedLink, changeCuratedLinkStatus } from '../../../lib/server/links';
 
 import { analyticsDashboard } from '../../../lib/analytics/dashboard';
@@ -104,6 +104,10 @@ export async function ALL(context: APIContext) {
       const id=z.string().uuid().parse(curatedLink[1]);
       if(!curatedLink[2]&&method==='PUT'){const value=z.object({input:z.unknown(),version:z.number().int().positive()}).parse(await body(context.request));return json(await saveCuratedLink(id,value.input,value.version));}
       if(curatedLink[2]&&method==='POST'){const value=await body(context.request);return json(await changeCuratedLinkStatus(id,versionOf(value),curatedLink[2] as 'trash'|'restore'));}
+    }
+    if (path === 'moments/local/preview' && method === 'POST') {
+      const value = await body(context.request);
+      return json({ html: !value.text?.trim() && !value.images?.length ? '' : prepareLocalMoment({ ...value, status: 'draft' }).html });
     }
     if (path === 'moments/local' && method === 'GET') return json(await listLocalMoments(context.url.searchParams.get('status') || '', Math.min(100000,Math.max(1,Math.floor(Number(context.url.searchParams.get('page')) || 1)))));
     if (path === 'moments/local' && method === 'POST') return json(await saveLocalMoment(null,await body(context.request)),201);

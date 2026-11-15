@@ -1,3 +1,5 @@
+import Markdoc from "@markdoc/markdoc";
+import { transformMarkdown, renderHtml } from "../markdoc/render";
 import { createHash, randomUUID } from "node:crypto";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -23,6 +25,7 @@ const imageSchema = z.object({
 export const localMomentSchema = z
   .object({
     text: z.string().trim().max(20_000, "文字不能超过 20000 字"),
+    format: z.enum(['plain','markdown']).default('plain'),
     images: z.array(imageSchema).max(9, "每条最多添加 9 张图片"),
     publishedAt: z.string().datetime({ offset: true }),
     status: z.enum(["draft", "published"]),
@@ -39,13 +42,25 @@ export function prepareLocalMoment(value: unknown) {
     Date.parse(input.publishedAt) > Date.now() + 5000
   )
     throw new AppError(400, "发布时间不能晚于当前时间");
-  const paragraphs = input.text
+  let paragraphs = input.text
     .split(/\n\s*\n/)
     .filter(Boolean)
     .map(
       (paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, "<br>")}</p>`
     )
     .join("");
+  if (input.format === 'markdown') {
+    const linksForImages = (node: any): any => {
+      if (Array.isArray(node)) return node.map(linksForImages);
+      if (!(node instanceof Markdoc.Tag)) return node;
+      if (node.name === 'img') return new Markdoc.Tag('a', { href: node.attributes.src }, [node.attributes.alt || '查看图片']);
+      node.children = node.children.map(linksForImages);
+      return node;
+    };
+    // The persisted wrapper identifies Markdown records without rewriting legacy text.
+    // Images continue through the existing registered-media path and nine-photo limit.
+    paragraphs = `<div class="local-moment-markdown">${renderHtml(linksForImages(transformMarkdown(input.text)))}</div>`;
+  }
   const photos = input.images
     .map(
       (image) =>
@@ -64,6 +79,7 @@ function localRecord(row: typeof moments.$inferSelect) {
     status: row.status,
     editable: row.sourceId === manualMomentSource,
     text: row.text,
+    format: row.html.startsWith('<div class="local-moment-markdown">') ? 'markdown' as const : 'plain' as const,
     images: row.media
       .filter((item) => item.type === "image")
       .map((item) => ({ url: item.url, alt: item.alt })),

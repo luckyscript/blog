@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { clipboardImages } from "../../lib/admin/editor-media";
+import MomentWritingSurface from "./MomentWritingSurface";
+import { decodeMomentDraft, encodeMomentDraft, type MomentForm } from "../../lib/admin/moment-writing";
 
 type Photo = { url: string; alt: string };
 type Record = {
@@ -8,11 +9,13 @@ type Record = {
   status: string;
   editable: boolean;
   text: string;
+  format: 'plain' | 'markdown';
   images: Photo[];
   publishedAt: string;
 };
-const blank = () => ({
+const blank = (): MomentForm => ({
   text: "",
+  format: 'markdown',
   images: [] as Photo[],
   publishedAt: new Date().toISOString(),
 });
@@ -55,6 +58,41 @@ export default function LocalMoments({
     [form, setForm] = useState(blank);
   const formRef = useRef(form);
   formRef.current = form;
+  const editingRef = useRef(editing);
+  editingRef.current = editing;
+  const baseline = useRef('');
+  const [recover, setRecover] = useState<ReturnType<typeof decodeMomentDraft>>(null);
+  const recoverRef = useRef(recover);
+  recoverRef.current = recover;
+  const [writerSession, setWriterSession] = useState(0);
+  const [localSaved, setLocalSaved] = useState(false), [storageFailed, setStorageFailed] = useState(false);
+  const draftKey = () => `inkrain-moment-unsaved-${editingRef.current?.id || 'new'}`;
+  const persistLocal = () => {
+    if (editingRef.current === undefined || recoverRef.current) return false;
+    try {
+      if (JSON.stringify(formRef.current) === baseline.current) {
+        localStorage.removeItem(draftKey()); setLocalSaved(false);
+      } else {
+        localStorage.setItem(draftKey(), encodeMomentDraft(formRef.current, editingRef.current?.version || null)); setLocalSaved(true);
+      }
+      setStorageFailed(false);
+      return true;
+    } catch { setStorageFailed(true); setLocalSaved(false); return false; }
+  };
+  const persistRef = useRef(persistLocal);
+  persistRef.current = persistLocal;
+  useEffect(() => { persistLocal(); }, [form, editing]);
+  useEffect(() => {
+    const preserve = () => persistRef.current();
+    const warn = (event: BeforeUnloadEvent) => {
+      preserve();
+      if (editingRef.current !== undefined && !recoverRef.current && JSON.stringify(formRef.current) !== baseline.current) { event.preventDefault(); event.returnValue = ''; }
+    };
+    window.addEventListener('pagehide', preserve);
+    window.addEventListener('beforeunload', warn);
+    return () => { preserve(); window.removeEventListener('pagehide', preserve); window.removeEventListener('beforeunload', warn); };
+  }, []);
+  const saveLock = useRef(false);
   const uploadLock = useRef(false),
     active = useRef(true),
     [picker, setPicker] = useState(false);
@@ -81,18 +119,29 @@ export default function LocalMoments({
       current = false;
     };
   }, [filter, page, reload]);
-  const disabled = busy || uploading;
+  const disabled = busy || uploading || !!recover;
   function open(row: Record | null) {
+    persistLocal();
+    const next = row ? { text: row.text, images: row.images, publishedAt: row.publishedAt, format: row.format || 'plain' as const } : blank();
+    editingRef.current = row;
+    formRef.current = next;
+    baseline.current = JSON.stringify(next);
     setEditing(row);
-    setForm(
-      row
-        ? { text: row.text, images: row.images, publishedAt: row.publishedAt }
-        : blank()
-    );
+    setWriterSession(value => value + 1);
+    setForm(next);
+    setLocalSaved(false);
+    let recovery = null;
+    try {
+      const pending = decodeMomentDraft(localStorage.getItem(draftKey()));
+      if (pending && JSON.stringify(pending.input) !== baseline.current) recovery = pending;
+    } catch {}
+    recoverRef.current = recovery;
+    setRecover(recovery);
     setNotice(null);
+    requestAnimationFrame(() => document.querySelector('.local-note-composer')?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
   }
   async function addFiles(files: File[]) {
-    if (uploadLock.current || busy) return;
+    if (uploadLock.current || busy || recoverRef.current) return;
     if (files.length + formRef.current.images.length > 9) {
       setNotice({
         text: "每条最多添加 9 张图片，请减少选择数量。",
@@ -150,21 +199,48 @@ export default function LocalMoments({
     }));
     setPicker(false);
   }
-  async function save(status: "draft" | "published") {
-    if (disabled || uploadLock.current) return;
+  async function save(status: "draft" | "published", close = true) {
+    if (disabled || saveLock.current || uploadLock.current || recoverRef.current) return;
+    if (!close && editingRef.current?.status === 'published') {
+      const saved = persistLocal();
+      setNotice(saved ? { text: '修改已保存在本机，点击「更新发布」后才会更新前台。' } : { text: '本机草稿保存失败，请复制文字备份。', error: true });
+      return;
+    }
+    saveLock.current = true;
     setBusy(true);
     setNotice(null);
     try {
-      const input = { ...formRef.current, status };
-      await request(editing ? `moments/local/${editing.id}` : "moments/local", {
-        method: editing ? "PUT" : "POST",
+      const snapshot = formRef.current;
+      const input = { ...snapshot, status };
+      const previous = editingRef.current;
+      const saved = await request(previous ? `moments/local/${previous.id}` : "moments/local", {
+        method: previous ? "PUT" : "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(
-          editing ? { input, version: editing.version } : input
+          previous ? { input, version: previous.version } : input
         ),
       });
-      setEditing(undefined);
-      setForm(blank());
+      if (close) {
+        try { localStorage.removeItem(draftKey()); } catch {}
+        editingRef.current = undefined;
+        setEditing(undefined);
+        setForm(blank());
+      } else {
+        const oldKey = draftKey();
+        editingRef.current = saved;
+        setEditing(saved);
+        baseline.current = JSON.stringify(snapshot);
+        if (JSON.stringify(formRef.current) === baseline.current) {
+          setLocalSaved(false);
+          try { localStorage.removeItem(oldKey); localStorage.removeItem(draftKey()); } catch {}
+        } else {
+          try {
+            localStorage.setItem(draftKey(), encodeMomentDraft(formRef.current, saved.version));
+            if (oldKey !== draftKey()) localStorage.removeItem(oldKey);
+            setLocalSaved(true);
+          } catch { setStorageFailed(true); }
+        }
+      }
       setFilter(status);
       setPage(1);
       setReload((value) => value + 1);
@@ -177,6 +253,7 @@ export default function LocalMoments({
     } catch (error: any) {
       setNotice({ text: error.message, error: true });
     } finally {
+      saveLock.current = false;
       setBusy(false);
     }
   }
@@ -232,23 +309,14 @@ export default function LocalMoments({
             <h2>{editing ? "编辑碎碎念" : "新的一条"}</h2>
             <span>文字与图片 · 最多 9 张</span>
           </div>
-          <textarea
-            aria-label="碎碎念正文"
-            placeholder="有什么想说的？也可以直接粘贴图片。"
-            maxLength={20000}
-            value={form.text}
-            disabled={busy}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, text: event.target.value }))
-            }
-            onPaste={(event) => {
-              const files = clipboardImages(event.clipboardData);
-              if (files.length) {
-                event.preventDefault();
-                void addFiles(files);
-              }
-            }}
-          />
+          {storageFailed && <div className="notice error" role="alert">本机草稿存储不可用，请及时保存草稿或复制文字备份。</div>}
+          {recover && <div className="notice recovery">
+            {recover.baseVersion && recover.baseVersion !== editing?.version ? '服务器已有较新内容，请核对后恢复本机草稿。' : '发现上次未保存的碎碎念。'}
+            <button onClick={() => { formRef.current = recover.input; setForm(recover.input); recoverRef.current = null; setRecover(null); }}>恢复本地内容</button>
+            <button onClick={() => { try { localStorage.removeItem(draftKey()); } catch {} recoverRef.current = null; setRecover(null); }}>忽略</button>
+          </div>}
+          <MomentWritingSurface key={writerSession} value={form} onChange={value => { formRef.current = value; setForm(value); }} onImages={files => void addFiles(files)} onSave={() => save('draft', false)} readOnly={busy || !!recover} request={request} />
+          <p className="moment-local-state" role="status">{recover ? '选择恢复或忽略后继续写作' : localSaved ? '修改已保存在本机；保存草稿或发布后同步到服务器。' : '输入自动保存在本机，⌘ / Ctrl + S 保存草稿。'}</p>
           {!!form.images.length && (
             <div className="local-note-photos">
               {form.images.map((image, index) => (
@@ -318,7 +386,7 @@ export default function LocalMoments({
             <span>
               {uploading
                 ? "图片上传中…"
-                : `${form.text.length} 字 · ${form.images.length} / 9 张图片`}
+                : '可直接粘贴或拖入图片'}
             </span>
           </div>
           <div className="local-note-footer">
@@ -328,7 +396,7 @@ export default function LocalMoments({
                 type="datetime-local"
                 aria-label="碎碎念发布时间"
                 value={localTime(form.publishedAt)}
-                disabled={busy}
+                disabled={busy || !!recover}
                 onChange={(event) => {
                   if (event.target.value)
                     setForm((current) => ({
@@ -342,9 +410,9 @@ export default function LocalMoments({
               <button
                 className="button"
                 disabled={disabled}
-                onClick={() => setEditing(undefined)}
+                onClick={() => { persistLocal(); editingRef.current = undefined; setEditing(undefined); setRecover(null); recoverRef.current = null; }}
               >
-                取消
+                收起
               </button>
               <button
                 className="button"

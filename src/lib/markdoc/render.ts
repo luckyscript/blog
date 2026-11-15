@@ -35,6 +35,10 @@ function safeTree(node: any): any {
 }
 
 export async function parseAndTransform({ content }: { content: string }) {
+  return transformMarkdown(content);
+}
+
+export function transformMarkdown(content: string) {
   const ast = Markdoc.parse(content);
   const errors = Markdoc.validate(ast, config);
   if (errors.length)

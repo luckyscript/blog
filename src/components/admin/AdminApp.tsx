@@ -7,6 +7,7 @@ import LocalMoments from './LocalMoments';
 import LinksManager from './LinksManager';
 import PhotographyStudio from './PhotographyStudio';
 import AnalyticsDashboard from './AnalyticsDashboard';
+import WritingPreferences, { useWritingPreferences } from './WritingPreferences';
 import UlyssesEditor, { type UlyssesEditorHandle, type WritingPosition } from './UlyssesEditor';
 import { decodeDraft, encodeDraft, writingWords } from '../../lib/admin/writing';
 
@@ -680,11 +681,8 @@ function Editor({ postId }: { postId: string | null }) {
   const [tab, setTab] = useState("edit");
   const [properties, setProperties] = useState(false);
   const [immersive, setImmersive] = useState(false);
-  const [paragraphFocus, setParagraphFocus] = useState(false);
-  const [typewriter, setTypewriter] = useState(false);
-  const [font, setFont] = useState('serif');
-  const [fontSize, setFontSize] = useState(18);
-  const [dark, setDark] = useState(false);
+  const [writingSettings, setWritingSettings] = useWritingPreferences();
+  const { paragraphFocus, typewriter, font, fontSize, dark } = writingSettings;
   const [selected, setSelected] = useState(false);
   const [storageFailed, setStorageFailed] = useState(false);
   const [localSaved, setLocalSaved] = useState(false);
@@ -730,14 +728,6 @@ function Editor({ postId }: { postId: string | null }) {
   const persistRef = useRef(persistLocal);
   persistRef.current = persistLocal;
   useEffect(() => {
-    try {
-      const settings = JSON.parse(localStorage.getItem('inkrain-writing-settings') || '{}');
-      setParagraphFocus(settings.paragraphFocus === true);
-      setTypewriter(settings.typewriter === true);
-      setDark(settings.dark === true);
-      setFont(settings.font === 'sans' ? 'sans' : 'serif');
-      setFontSize([16,18,20,22].includes(settings.fontSize) ? settings.fontSize : 18);
-    } catch {}
     api("taxonomy").then(setTerms).catch(() => {});
     const checkRecovery = (serverInput: PostInput | null) => {
       try {
@@ -759,11 +749,6 @@ function Editor({ postId }: { postId: string | null }) {
     }).catch(error => setNotice({ text: error.message, error: true }));
     else checkRecovery(null);
   }, []);
-  const settingsReady = useRef(false);
-  useEffect(() => {
-    if (!settingsReady.current) { settingsReady.current = true; return; }
-    try { localStorage.setItem('inkrain-writing-settings', JSON.stringify({ paragraphFocus, typewriter, dark, font, fontSize })); } catch {}
-  }, [paragraphFocus, typewriter, dark, font, fontSize]);
   useEffect(() => {
     if (!loaded || recover) return;
     persistLocal();
@@ -1066,18 +1051,7 @@ function Editor({ postId }: { postId: string | null }) {
               </div>
               <div className="writer-tools">
                 <button className="text-button" onClick={() => setPicker(true)} aria-label="插入图片或附件"><Icon name="media" /></button>
-                <details className="writer-preferences">
-                  <summary aria-label="写作偏好">Aa</summary>
-                  <div className="writer-preferences-panel">
-                    <span className="eyebrow">写作偏好</span>
-                    <label>字体<select value={font} onChange={event => setFont(event.target.value)}><option value="serif">宋体</option><option value="sans">无衬线</option></select></label>
-                    <label>字号<select value={fontSize} onChange={event => setFontSize(Number(event.target.value))}>{[16,18,20,22].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
-                    <label className="check-label"><input type="checkbox" checked={typewriter} onChange={event => setTypewriter(event.target.checked)} />打字机模式</label>
-                    <label className="check-label"><input type="checkbox" checked={paragraphFocus} onChange={event => setParagraphFocus(event.target.checked)} />聚焦当前段落</label>
-                    <label className="check-label"><input type="checkbox" checked={dark} onChange={event => setDark(event.target.checked)} />深色纸面</label>
-                    <small>⌘ / Ctrl + S 保存 · ⌘ / Ctrl + B 加粗</small>
-                  </div>
-                </details>
+                <WritingPreferences settings={writingSettings} onChange={setWritingSettings} />
                 <button className="text-button" aria-pressed={immersive} onClick={() => { setImmersive(value => !value); setProperties(false); }}>{immersive ? '退出专注' : '专注'}</button>
               </div>
             </div>

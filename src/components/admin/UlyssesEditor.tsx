@@ -12,6 +12,7 @@ import { cleanUploadHistory } from '../../lib/admin/editor-history';
 export type WritingPosition = { anchor: number; head: number; scrollTop: number };
 export type UlyssesEditorHandle = {
   insert: (text: string) => void;
+  focus: () => void;
   replacePlaceholder: (marker: string, text: string) => boolean;
   position: () => WritingPosition | null;
   restore: (position: WritingPosition) => void;
@@ -26,6 +27,10 @@ type Props = {
   paragraphFocus: boolean;
   typewriter: boolean;
   readOnly: boolean;
+  ariaLabel?: string;
+  placeholderText?: string;
+  maxLength?: number;
+  plainText?: boolean;
 };
 
 const proseHighlight = HighlightStyle.define([
@@ -79,12 +84,17 @@ const UlyssesEditor = forwardRef<UlyssesEditorHandle, Props>(function UlyssesEdi
   const config = useRef(new Compartment());
   const readonly = useRef(new Compartment());
   const external = useRef(false);
+  const pendingFocus = useRef(false);
   const completedMarkers = useRef(new Set<string>());
   const recenter = (editor: EditorView) => {
     if (current.current.typewriter && editor.hasFocus && !editor.composing)
       editor.dispatch({ effects: EditorView.scrollIntoView(editor.state.selection.main.head, { y: 'center' }) });
   };
   useImperativeHandle(ref, () => ({
+    focus() {
+      pendingFocus.current = true;
+      if (view.current && !view.current.state.readOnly) { view.current.focus(); pendingFocus.current = false; }
+    },
     insert(text) {
       const editor = view.current;
       if (!editor || editor.state.readOnly) return;
@@ -129,15 +139,16 @@ const UlyssesEditor = forwardRef<UlyssesEditorHandle, Props>(function UlyssesEdi
         editor.update(transactions.map(transaction => cleanUploadHistory(transaction, completedMarkers.current)));
       },
       state: EditorState.create({ doc: current.current.value, extensions: [
-        markdown(), history(), drawSelection(), EditorView.lineWrapping,
+        ...(current.current.plainText ? [] : [markdown()]), history(), drawSelection(), EditorView.lineWrapping,
+        EditorState.changeFilter.of(transaction => !transaction.docChanged || !current.current.maxLength || transaction.newDoc.length <= current.current.maxLength || transaction.newDoc.length <= transaction.startState.doc.length),
         syntaxHighlighting(proseHighlight), config.current.of(proseDecorations(current.current.paragraphFocus)),
         readonly.current.of([EditorState.readOnly.of(current.current.readOnly), EditorView.editable.of(!current.current.readOnly)]),
-        placeholder('从这里开始，写下你的故事…'),
-        EditorView.contentAttributes.of({ 'aria-label': 'Markdown 正文', spellcheck: 'false', autocapitalize: 'off' }),
+        placeholder(current.current.placeholderText || '从这里开始，写下你的故事…'),
+        EditorView.contentAttributes.of({ 'aria-label': current.current.ariaLabel || 'Markdown 正文', spellcheck: 'false', autocapitalize: 'off' }),
         keymap.of([
           { key: 'Mod-s', run: () => { current.current.onSave(); return true; } },
-          { key: 'Mod-b', run: () => { if (editor.state.readOnly) return true; const { from, to } = editor.state.selection.main; editor.dispatch({ changes: { from, to, insert: '**' + editor.state.sliceDoc(from, to) + '**' }, selection: { anchor: from + 2, head: to + 2 } }); return true; } },
-          ...markdownKeymap, ...defaultKeymap, ...historyKeymap,
+          { key: 'Mod-b', run: () => { if (editor.state.readOnly || current.current.plainText) return true; const { from, to } = editor.state.selection.main; editor.dispatch({ changes: { from, to, insert: '**' + editor.state.sliceDoc(from, to) + '**' }, selection: { anchor: from + 2, head: to + 2 } }); return true; } },
+          ...(current.current.plainText ? [] : markdownKeymap), ...defaultKeymap, ...historyKeymap,
         ]),
         EditorView.domEventHandlers({
           paste(event, editor) {
@@ -179,7 +190,10 @@ const UlyssesEditor = forwardRef<UlyssesEditorHandle, Props>(function UlyssesEdi
     external.current = false;
   }, [props.value]);
   useEffect(() => { view.current?.dispatch({ effects: config.current.reconfigure(proseDecorations(props.paragraphFocus)) }); }, [props.paragraphFocus]);
-  useEffect(() => { view.current?.dispatch({ effects: readonly.current.reconfigure([EditorState.readOnly.of(props.readOnly), EditorView.editable.of(!props.readOnly)]) }); }, [props.readOnly]);
+  useEffect(() => {
+    view.current?.dispatch({ effects: readonly.current.reconfigure([EditorState.readOnly.of(props.readOnly), EditorView.editable.of(!props.readOnly)]) });
+    if (!props.readOnly && pendingFocus.current && view.current) { view.current.focus(); pendingFocus.current = false; }
+  }, [props.readOnly]);
   useEffect(() => { if (view.current) recenter(view.current); }, [props.typewriter]);
   return <div ref={host} className={`ulysses-editor${props.typewriter ? ' writer-typewriter' : ''}`} />;
 });
