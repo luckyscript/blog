@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { sectionLabels, type PostInput } from "../../lib/server/content-input";
 import { platformLabels } from '../../lib/moments/types';
 import Turnstile, { type TurnstileSettings } from "./Turnstile";
-import { clipboardImages, insertEditorText, replaceImagePlaceholder, mediaMarkdown, stripPendingImages } from '../../lib/admin/editor-media';
+import { mediaMarkdown, stripPendingImages } from '../../lib/admin/editor-media';
 import LocalMoments from './LocalMoments';
 import LinksManager from './LinksManager';
 import PhotographyStudio from './PhotographyStudio';
 import AnalyticsDashboard from './AnalyticsDashboard';
+import UlyssesEditor, { type UlyssesEditorHandle, type WritingPosition } from './UlyssesEditor';
+import { decodeDraft, encodeDraft, writingWords } from '../../lib/admin/writing';
 
 type User = { id: string; email: string };
 type Notice = { text: string; error?: boolean } | null;
@@ -161,7 +163,7 @@ export default function AdminApp({
     ["settings", "settings", "设置与迁移"],
   ];
   return (
-    <div className="admin-shell">
+    <div className={`admin-shell ${view === "editor" ? "writing-workspace" : ""}`}>
       <aside className="sidebar">
         <a href="/admin" className="brand">
           <span className="brand-seal">雨</span>
@@ -672,17 +674,32 @@ function Editor({ postId }: { postId: string | null }) {
   const [notice, setNotice] = useState<Notice>(null);
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState(false);
+  const busyRef = useRef(false);
+  busyRef.current = busy;
   const [savedAt, setSavedAt] = useState("");
-  const [tab, setTab] = useState("split");
+  const [tab, setTab] = useState("edit");
+  const [properties, setProperties] = useState(false);
+  const [immersive, setImmersive] = useState(false);
+  const [paragraphFocus, setParagraphFocus] = useState(false);
+  const [typewriter, setTypewriter] = useState(false);
+  const [font, setFont] = useState('serif');
+  const [fontSize, setFontSize] = useState(18);
+  const [dark, setDark] = useState(false);
+  const [selected, setSelected] = useState(false);
+  const [storageFailed, setStorageFailed] = useState(false);
+  const [localSaved, setLocalSaved] = useState(false);
+  const recoverRef = useRef<PostInput | null>(null);
+  const words = writingWords(input.markdown);
   const [html, setHtml] = useState("");
   const [previewError, setPreviewError] = useState("");
   const [terms, setTerms] = useState<any>({ categories: [], tags: [] });
   const [picker, setPicker] = useState(false);
   const [recover, setRecover] = useState<PostInput | null>(null);
+  const [recoveryStale, setRecoveryStale] = useState(false);
   const [revision, setRevision] = useState<any>(null);
-  const lastSaved = useRef("");
+  const lastSaved = useRef(JSON.stringify(input));
   const savingPromise = useRef<Promise<Post | null> | null>(null);
-  const textarea = useRef<HTMLTextAreaElement>(null);
+  const writer = useRef<UlyssesEditorHandle>(null);
   const [imageUploads, setImageUploads] = useState(0);
   const imageUploadCount = useRef(0);
   const pendingImageMarkers = useRef(new Set<string>());
@@ -696,58 +713,107 @@ function Editor({ postId }: { postId: string | null }) {
     recordRef.current = value;
     setRecord(value);
   };
-  useEffect(() => {
-    api("taxonomy")
-      .then(setTerms)
-      .catch(() => {});
-    if (postId)
-      api(`posts/${postId}`)
-        .then((value) => {
-          applyRecord(value);
-          lastSaved.current = JSON.stringify(value.input);
-          setInput(value.input);
-          setLoaded(true);
-          try {
-            const pending = localStorage.getItem(storageKey());
-            if (pending && pending !== lastSaved.current)
-              { const recovery = JSON.parse(pending); setRecover({ ...recovery, markdown: stripPendingImages(recovery.markdown) }); }
-          } catch {
-            /* Optional browser recovery. */
-          }
-        })
-        .catch((error) => setNotice({ text: error.message, error: true }));
-    else {
-      try {
-        const pending = localStorage.getItem(storageKey());
-        if (pending) { const recovery = JSON.parse(pending); setRecover({ ...recovery, markdown: stripPendingImages(recovery.markdown) }); }
-      } catch {}
+  const persistLocal = () => {
+    if (!loaded || recoverRef.current || recordRef.current?.status === 'trash') return;
+    const value = inputRef.current;
+    if (JSON.stringify(value) === lastSaved.current) {
+      try { localStorage.removeItem(storageKey()); } catch {}
+      setLocalSaved(false);
+      return;
     }
-  }, []);
-  useEffect(() => {
-    if (!loaded || !dirty || !input.title.trim()) return;
     try {
-      localStorage.setItem(storageKey(), JSON.stringify({ ...input, markdown: stripPendingImages(input.markdown, pendingImageMarkers.current) }));
+      localStorage.setItem(storageKey(), encodeDraft({ ...value, markdown: stripPendingImages(value.markdown, pendingImageMarkers.current) }, recordRef.current?.version ?? null));
+      setStorageFailed(false);
+      setLocalSaved(true);
+    } catch { setStorageFailed(true); setLocalSaved(false); }
+  };
+  const persistRef = useRef(persistLocal);
+  persistRef.current = persistLocal;
+  useEffect(() => {
+    try {
+      const settings = JSON.parse(localStorage.getItem('inkrain-writing-settings') || '{}');
+      setParagraphFocus(settings.paragraphFocus === true);
+      setTypewriter(settings.typewriter === true);
+      setDark(settings.dark === true);
+      setFont(settings.font === 'sans' ? 'sans' : 'serif');
+      setFontSize([16,18,20,22].includes(settings.fontSize) ? settings.fontSize : 18);
     } catch {}
-    if (notice?.error || busy || imageUploads || record?.status === "trash") return;
+    api("taxonomy").then(setTerms).catch(() => {});
+    const checkRecovery = (serverInput: PostInput | null) => {
+      try {
+        const pending = decodeDraft(localStorage.getItem(storageKey()));
+        if (pending && JSON.stringify(pending.input) !== JSON.stringify(serverInput)) {
+          recoverRef.current = pending.input;
+          setRecover(pending.input);
+          setRecoveryStale(pending.baseVersion !== null && pending.baseVersion !== recordRef.current?.version);
+        }
+      } catch {}
+    };
+    if (postId) api(`posts/${postId}`).then(value => {
+      applyRecord(value);
+      lastSaved.current = JSON.stringify(value.input);
+      inputRef.current = value.input;
+      setInput(value.input);
+      checkRecovery(value.input);
+      setLoaded(true);
+    }).catch(error => setNotice({ text: error.message, error: true }));
+    else checkRecovery(null);
+  }, []);
+  const settingsReady = useRef(false);
+  useEffect(() => {
+    if (!settingsReady.current) { settingsReady.current = true; return; }
+    try { localStorage.setItem('inkrain-writing-settings', JSON.stringify({ paragraphFocus, typewriter, dark, font, fontSize })); } catch {}
+  }, [paragraphFocus, typewriter, dark, font, fontSize]);
+  useEffect(() => {
+    if (!loaded || recover) return;
+    persistLocal();
+    if (!dirty || !input.title.trim() || notice?.error || busy || imageUploads || record?.status === "trash") return;
     const timer = setTimeout(() => {
-      save().catch((error) => setNotice({ text: error.message, error: true }));
+      save().catch(error => setNotice({ text: error.message, error: true }));
     }, 1800);
     return () => clearTimeout(timer);
-  }, [input, loaded, busy, imageUploads]);
+  }, [input, loaded, busy, imageUploads, recover]);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
-      if (
-        JSON.stringify(inputRef.current) !== lastSaved.current &&
-        inputRef.current.title
-      ) {
-        event.preventDefault();
-        event.returnValue = "";
+      persistRef.current();
+      if (JSON.stringify(inputRef.current) !== lastSaved.current && (inputRef.current.title || inputRef.current.markdown)) {
+        event.preventDefault(); event.returnValue = "";
       }
     };
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
+    const preserve = () => {
+      persistRef.current();
+      const position = writer.current?.position();
+      if (position) try { localStorage.setItem(`${storageKey()}-position`, JSON.stringify(position)); } catch {}
+    };
+    const visibility = () => { if (document.visibilityState === 'hidden') preserve(); };
+    const online = () => {
+      if (!busyRef.current && !recoverRef.current && inputRef.current.title.trim() && JSON.stringify(inputRef.current) !== lastSaved.current)
+        save().then(() => setNotice(null)).catch(error => setNotice({ text: error.message, error: true }));
+    };
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { setImmersive(false); setProperties(false); } };
+    window.addEventListener('beforeunload', warn);
+    window.addEventListener('pagehide', preserve);
+    window.addEventListener('online', online);
+    document.addEventListener('visibilitychange', visibility);
+    window.addEventListener('keydown', escape);
+    return () => {
+      preserve();
+      window.removeEventListener('beforeunload', warn);
+      window.removeEventListener('pagehide', preserve);
+      window.removeEventListener('online', online);
+      document.removeEventListener('visibilitychange', visibility);
+      window.removeEventListener('keydown', escape);
+    };
   }, []);
+  const restorePosition = () => {
+    try {
+      const position = JSON.parse(localStorage.getItem(`${storageKey()}-position`) || 'null');
+      if (position && [position.anchor, position.head, position.scrollTop].every(Number.isFinite)) writer.current?.restore(position as WritingPosition);
+    } catch {}
+  };
+  useEffect(() => { if (loaded && !recover) { const frame = requestAnimationFrame(restorePosition); return () => cancelAnimationFrame(frame); } }, [loaded, recover]);
   useEffect(() => {
+    if (tab === 'edit') return;
     const controller = new AbortController();
     const timer = setTimeout(() => {
       api("preview", {
@@ -767,10 +833,11 @@ function Editor({ postId }: { postId: string | null }) {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [input.markdown]);
+  }, [input.markdown, tab]);
   async function save(): Promise<Post | null> {
+    if (recoverRef.current) throw new Error('请先恢复或忽略上次的本地内容');
     if (imageUploadCount.current) throw new Error('图片正在上传，请稍后保存或发布');
-    if (savingPromise.current) {
+    while (savingPromise.current) {
       await savingPromise.current;
     }
     if (imageUploadCount.current) throw new Error('图片正在上传，请稍后保存或发布');
@@ -797,16 +864,22 @@ function Editor({ postId }: { postId: string | null }) {
         })
       );
       if (!current) {
-        history.replaceState(null, "", `/admin/posts/${value.id}`);
+        // A draft can gain its server ID while more text is still being typed.
+        // Move that newer local snapshot before retiring the original recovery key.
+        let moved = false;
         try {
-          localStorage.removeItem("inkrain-unsaved-new");
-        } catch {}
+          localStorage.setItem(storageKey(), encodeDraft({ ...inputRef.current, markdown: stripPendingImages(inputRef.current.markdown, pendingImageMarkers.current) }, value.version));
+          moved = true;
+        } catch { setStorageFailed(true); }
+        history.replaceState(null, "", `/admin/posts/${value.id}`);
+        if (moved || JSON.stringify(inputRef.current) === JSON.stringify(snapshot)) {
+          try { localStorage.removeItem("inkrain-unsaved-new"); } catch {}
+        }
       }
       if (JSON.stringify(inputRef.current) === JSON.stringify(snapshot)) {
-        try {
-          localStorage.removeItem(storageKey());
-        } catch {}
-      }
+        try { localStorage.removeItem(storageKey()); } catch {}
+        setLocalSaved(false);
+      } else persistRef.current();
       return value;
     })();
     savingPromise.current = request;
@@ -817,8 +890,15 @@ function Editor({ postId }: { postId: string | null }) {
       setSaving(false);
     }
   }
-  const field = <K extends keyof PostInput>(key: K, value: PostInput[K]) =>
-    setInput((current) => ({ ...current, [key]: value }));
+  const field = <K extends keyof PostInput>(key: K, value: PostInput[K]) => {
+    inputRef.current = { ...inputRef.current, [key]: value };
+    setInput(inputRef.current);
+  };
+  const saveManually = () => {
+    if (busyRef.current || recordRef.current?.status === 'trash') return;
+    setNotice(null);
+    save().then(() => setNotice({ text: '草稿已保存。' })).catch(error => setNotice({ text: error.message, error: true }));
+  };
   async function action(kind: string) {
     setBusy(true);
     setNotice(null);
@@ -848,69 +928,38 @@ function Editor({ postId }: { postId: string | null }) {
     }
   }
   function insertMedia(item: any) {
-    const element = textarea.current;
-    const current = inputRef.current;
-    const snippet = mediaMarkdown(item);
-    const start = element?.selectionStart ?? current.markdown.length;
-    const end = element?.selectionEnd ?? start;
-    field(
-      "markdown",
-      `${current.markdown.slice(
-        0,
-        start
-      )}\n${snippet}\n${current.markdown.slice(end)}`
-    );
+    writer.current?.insert(`\n${mediaMarkdown(item)}\n`);
     setPicker(false);
   }
-  function pasteImages(event: React.ClipboardEvent<HTMLTextAreaElement>) {
-    const files = clipboardImages(event.clipboardData);
-    if (!files.length) return;
-    event.preventDefault();
-    const element = event.currentTarget;
-    const start = element.selectionStart, end = element.selectionEnd;
+  function uploadImages(files: File[]) {
+    if (busy || recordRef.current?.status === 'trash' || recoverRef.current) return;
     const entries = files.map(file => ({ file, placeholder: `\n[图片上传中（${++uploadSequence.current}）…]\n` }));
     entries.forEach(entry => pendingImageMarkers.current.add(entry.placeholder));
-    const block = entries.map(item => item.placeholder).join('');
-    let stagedMarkdown = '';
-    setInput(current => { stagedMarkdown = insertEditorText(current.markdown, block, start, end).markdown; return { ...current, markdown: stagedMarkdown }; });
+    writer.current?.insert(entries.map(entry => entry.placeholder).join(''));
     imageUploadCount.current += entries.length;
     setImageUploads(count => count + entries.length);
     setNotice({ text: `正在上传 ${entries.length} 张图片…` });
-    requestAnimationFrame(() => { if (document.activeElement === element && element.value === stagedMarkdown) element.setSelectionRange(start + block.length, start + block.length); });
     void (async () => {
       let failed = false;
-      const uploaded: string[] = [];
+      let inserted = 0;
       for (const entry of entries) {
         try {
           const item = await uploadPreparedMedia(entry.file, '');
           if (!editorActive.current) return;
-          uploaded.push(item.url);
-          const snippet = `\n${mediaMarkdown(item)}\n`;
-          const active = textarea.current;
-          const selectionStart = active?.selectionStart ?? 0, selectionEnd = active?.selectionEnd ?? 0;
-          let applied = '', cursorStart = selectionStart, cursorEnd = selectionEnd;
-          setInput(current => {
-            const index = current.markdown.indexOf(entry.placeholder);
-            const replacement = replaceImagePlaceholder(current.markdown, entry.placeholder, snippet);
-            applied = replacement.markdown;
-            if (replacement.inserted) {
-              const adjust = (position: number) => position <= index ? position : position < index + entry.placeholder.length ? index + snippet.length : position + snippet.length - entry.placeholder.length;
-              cursorStart = adjust(selectionStart); cursorEnd = adjust(selectionEnd);
-            }
-            return { ...current, markdown: replacement.markdown };
-          });
-          requestAnimationFrame(() => { if (active && document.activeElement === active && active.value === applied) active.setSelectionRange(cursorStart, cursorEnd); });
+          if (writer.current?.replacePlaceholder(entry.placeholder, `\n${mediaMarkdown(item)}\n`)) inserted++;
         } catch (error: any) {
           failed = true;
           if (editorActive.current) {
-            setInput(current => ({ ...current, markdown: replaceImagePlaceholder(current.markdown, entry.placeholder, '').markdown }));
+            writer.current?.replacePlaceholder(entry.placeholder, '');
             setNotice({ text: `图片上传失败：${error.message}。可以重新粘贴重试。`, error: true });
           }
-        } finally { pendingImageMarkers.current.delete(entry.placeholder); imageUploadCount.current = Math.max(0, imageUploadCount.current - 1); if (editorActive.current) setImageUploads(count => Math.max(0, count - 1)); }
+        } finally {
+          pendingImageMarkers.current.delete(entry.placeholder);
+          imageUploadCount.current = Math.max(0, imageUploadCount.current - 1);
+          if (editorActive.current) setImageUploads(count => Math.max(0, count - 1));
+        }
       }
-      if (!failed && editorActive.current) requestAnimationFrame(() => {
-        if (editorActive.current) setNotice({ text: uploaded.every(url => inputRef.current.markdown.includes(url)) ? `${entries.length} 张图片已上传并插入正文。` : '图片已上传，原占位文字已变动，可在媒体库中插入。' });
-      });
+      if (!failed && editorActive.current) setNotice({ text: inserted === entries.length ? '图片已上传并插入正文。' : '图片已上传，可在媒体库重新插入。' });
     })();
   }
   if (!loaded)
@@ -922,59 +971,55 @@ function Editor({ postId }: { postId: string | null }) {
       </>
     );
   return (
-    <>
+    <div className={`writer-studio ${immersive ? 'writer-immersive' : ''} ${dark ? 'writer-dark' : ''} writer-font-${font}`} style={{ '--writer-size': `${fontSize}px` } as React.CSSProperties}>
       <div className="editor-heading">
         <div>
           <a className="back-link" href="/admin">
             ← 全部文章
           </a>
-          <h1>{record ? "编辑文章" : "写一篇文章"}</h1>
+          <h1>{record ? statusLabel(record.status) : "新文稿"}</h1>
         </div>
         <div className="editor-actions">
-          <span className="save-state">
+          <span className="save-state" role="status" aria-live="polite">
             {saving
               ? "正在保存…"
+              : recover
+              ? "等待恢复本地内容"
               : dirty
-              ? "有未保存修改"
+              ? (localSaved ? "修改已保存在本机" : "有未保存修改")
               : savedAt
               ? `${savedAt} 已保存`
               : "修改自动保存为草稿"}
           </span>
           <button
             className="button"
-            disabled={busy || saving || imageUploads > 0 || record?.status === "trash"}
-            onClick={() => {
-              setNotice(null);
-              save()
-                .then(() => setNotice({ text: "草稿已保存。" }))
-                .catch((error) =>
-                  setNotice({ text: error.message, error: true })
-                );
-            }}
+            disabled={busy || saving || imageUploads > 0 || !!recover || record?.status === "trash"}
+            onClick={saveManually}
           >
             保存草稿
           </button>
           <button
             className="button primary"
-            disabled={busy || saving || imageUploads > 0 || record?.status === "trash"}
-            onClick={() => action("publish")}
+            disabled={busy || saving || imageUploads > 0 || !!recover || record?.status === "trash"}
+            aria-expanded={properties}
+            aria-controls="writer-properties"
+            onClick={() => { setProperties(value => !value); setImmersive(false); }}
           >
-            {busy
-              ? "正在处理…"
-              : record?.status === "published"
-              ? "发布更新"
-              : "发布文章"}
+            发布设置
             <Icon name="arrow" />
           </button>
         </div>
       </div>
       <Message notice={notice} />
+      {storageFailed && <div className="notice error" role="alert">本机草稿存储不可用，请及时保存到服务器或复制正文备份。</div>}
       {recover && (
         <div className="notice recovery">
-          发现上次未保存的编辑。
+          {recoveryStale ? '服务器已有较新版本。恢复本机内容会替换当前草稿，请先核对。' : '发现上次未保存的编辑，选择恢复后继续写作。'}
           <button
             onClick={() => {
+              inputRef.current = recover;
               setInput(recover);
+              recoverRef.current = null;
               setRecover(null);
             }}
           >
@@ -982,7 +1027,8 @@ function Editor({ postId }: { postId: string | null }) {
           </button>
           <button
             onClick={() => {
-              localStorage.removeItem(storageKey());
+              try { localStorage.removeItem(storageKey()); } catch {}
+              recoverRef.current = null;
               setRecover(null);
             }}
           >
@@ -1000,9 +1046,9 @@ function Editor({ postId }: { postId: string | null }) {
       )}
       <fieldset
         className="editor-fieldset"
-        disabled={busy || record?.status === "trash"}
+        disabled={busy || !!recover || record?.status === "trash"}
       >
-        <div className="editor-grid">
+        <div className={`editor-grid ${properties ? 'writer-with-properties' : ''}`}>
           <section className="panel writing-panel">
             <input
               className="title-input"
@@ -1013,41 +1059,38 @@ function Editor({ postId }: { postId: string | null }) {
               placeholder="给故事起个名字…"
             />
             <div className="writing-toolbar">
-              <div className="tabs">
-                {[
-                  ["edit", "编辑"],
-                  ["split", "分屏"],
-                  ["preview", "预览"],
-                ].map(([key, label]) => (
-                  <button
-                    key={key}
-                    className={tab === key ? "selected" : ""}
-                    onClick={() => setTab(key)}
-                  >
-                    {label}
-                  </button>
+              <div className="tabs" aria-label="写作视图">
+                {[["edit", "写作"], ["preview", "阅读预览"]].map(([key, label]) => (
+                  <button key={key} aria-pressed={tab === key} className={tab === key ? 'selected' : ''} onClick={() => setTab(key)}>{label}</button>
                 ))}
               </div>
-              <button className="text-button" onClick={() => setPicker(true)}>
-                <Icon name="media" />
-                插入图片 / 附件
-              </button>
+              <div className="writer-tools">
+                <button className="text-button" onClick={() => setPicker(true)} aria-label="插入图片或附件"><Icon name="media" /></button>
+                <details className="writer-preferences">
+                  <summary aria-label="写作偏好">Aa</summary>
+                  <div className="writer-preferences-panel">
+                    <span className="eyebrow">写作偏好</span>
+                    <label>字体<select value={font} onChange={event => setFont(event.target.value)}><option value="serif">宋体</option><option value="sans">无衬线</option></select></label>
+                    <label>字号<select value={fontSize} onChange={event => setFontSize(Number(event.target.value))}>{[16,18,20,22].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
+                    <label className="check-label"><input type="checkbox" checked={typewriter} onChange={event => setTypewriter(event.target.checked)} />打字机模式</label>
+                    <label className="check-label"><input type="checkbox" checked={paragraphFocus} onChange={event => setParagraphFocus(event.target.checked)} />聚焦当前段落</label>
+                    <label className="check-label"><input type="checkbox" checked={dark} onChange={event => setDark(event.target.checked)} />深色纸面</label>
+                    <small>⌘ / Ctrl + S 保存 · ⌘ / Ctrl + B 加粗</small>
+                  </div>
+                </details>
+                <button className="text-button" aria-pressed={immersive} onClick={() => { setImmersive(value => !value); setProperties(false); }}>{immersive ? '退出专注' : '专注'}</button>
+              </div>
             </div>
             <div className={`writing-body mode-${tab}`}>
-              {tab !== "preview" && (
-                <textarea
-                  ref={textarea}
-                  className="markdown-editor"
-                  aria-label="Markdown 正文"
-                  value={input.markdown}
-                  onChange={(event) => field("markdown", event.target.value)}
-                  onPaste={pasteImages}
-                  placeholder={
-                    "从这里开始写作…\n\n支持 Markdown，可直接粘贴图片，上传后自动插入正文。"
-                  }
-                  spellCheck={false}
-                />
-              )}
+              <div className="writer-pane" hidden={tab === 'preview'}>
+                <UlyssesEditor ref={writer} value={input.markdown} onChange={value => field('markdown', value)} onImages={uploadImages} onSave={saveManually} onSelection={setSelected} paragraphFocus={paragraphFocus} typewriter={typewriter} readOnly={busy || !!recover || record?.status === 'trash'} />
+                {selected && <div className="writer-formatbar" role="toolbar" aria-label="文字格式" onMouseDown={event => event.preventDefault()}>
+                  <button onClick={() => writer.current?.format('**', '**')} aria-label="加粗">B</button>
+                  <button onClick={() => writer.current?.format('*', '*')} aria-label="斜体"><i>I</i></button>
+                  <button onClick={() => writer.current?.format('[', '](https://)')} aria-label="插入链接">链接</button>
+                  <button onClick={() => writer.current?.format('`', '`')} aria-label="行内代码">代码</button>
+                </div>}
+              </div>
               {tab !== "edit" && (
                 <div className="markdown-preview">
                   <span className="preview-label">阅读预览</span>
@@ -1070,7 +1113,7 @@ function Editor({ postId }: { postId: string | null }) {
             </div>
             <div className="writing-footer">
               <span>
-                {imageUploads ? `${imageUploads} 张图片上传中…` : `${input.markdown.length.toLocaleString()} 字符 · Markdown · 可直接粘贴图片`}
+                {imageUploads ? `${imageUploads} 张图片上传中…` : `${words.toLocaleString()} 字 · 约 ${Math.max(1, Math.ceil(words / 400))} 分钟阅读`}
               </span>
               {record && (
                 <a
@@ -1083,7 +1126,12 @@ function Editor({ postId }: { postId: string | null }) {
               )}
             </div>
           </section>
-          <aside className="editor-properties">
+          <aside className="editor-properties" id="writer-properties" hidden={!properties}>
+            <section className="panel property-panel writer-publish-panel">
+              <div className="writer-inspector-heading"><h2>发布与文章信息</h2><button className="text-button" onClick={() => setProperties(false)} aria-label="关闭发布设置">关闭</button></div>
+              <p className="muted">{record?.status === 'published' ? '草稿修改在发布更新后才会公开。' : '准备好了，再把文字分享出去。'}</p>
+              <button className="button primary" disabled={busy || saving || imageUploads > 0 || !!recover || record?.status === 'trash'} onClick={() => action('publish')}>{busy ? '正在发布…' : record?.status === 'published' ? '发布更新' : '发布文章'}</button>
+            </section>
             <section className="panel property-panel">
               <h2>文章设置</h2>
               <label>
@@ -1212,7 +1260,7 @@ function Editor({ postId }: { postId: string | null }) {
           </aside>
         </div>
       </fieldset>
-      {record && (
+      {record && properties && (
         <section className="panel history-panel">
           <div>
             <h2>版本与管理</h2>
@@ -1347,14 +1395,14 @@ function Editor({ postId }: { postId: string | null }) {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
 async function prepareFile(file: File): Promise<File> {
   if (!["image/jpeg", "image/png", "image/webp"].includes(file.type))
     return file;
-  const bitmap = await createImageBitmap(file);
+  const bitmap = await createImageBitmap(file).catch(() => { throw new Error('无法读取这张图片，请重新选择图片'); });
   const ratio = Math.min(1, 2560 / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(bitmap.width * ratio);

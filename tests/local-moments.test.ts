@@ -52,6 +52,7 @@ test('重复导入不覆盖已有编辑或恢复回收站记录，写入失败�
     commit: async () => {},
     rollback: async () => { records.clear(); for (const [key, value] of snapshot) records.set(key, value); },
     query: async (sql: string, values: any[]) => {
+      if (sql.startsWith('SELECT GET_LOCK')) return [[{ acquired: 1 }]];
       if (sql.startsWith('SELECT id FROM blog_moments')) return [records.has(values[1]) ? [records.get(values[1])] : []];
       if (sql.startsWith('INSERT INTO blog_moments ')) records.set(values[2], { id: values[0], text: values[5], status: 'published' });
       return [[]];
