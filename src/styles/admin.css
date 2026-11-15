@@ -2021,3 +2021,8 @@ code {
   .moment-writing-surface .writing-footer { font-size: 10px; }
   .moment-writing-surface .writing-footer > span { max-width: 190px; line-height: 1.8; }
 }
+.local-note-row-actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+.local-note-excerpt { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.moment-sync-error { color: #a4523b; }.moment-local-state .text-button { margin-left: 12px; font-size: 11px; }
+.moment-delete-dialog { width: min(440px, 94vw); }
+@media (max-width: 600px) { .local-note-row-actions { width: 100%; margin: 6px 0 0; }.local-note-heading > .button-row { flex-wrap: wrap; } }

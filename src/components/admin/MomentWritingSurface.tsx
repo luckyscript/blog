@@ -5,7 +5,7 @@ import { writingWords } from '../../lib/admin/writing';
 import type { MomentForm } from '../../lib/admin/moment-writing';
 
 export default function MomentWritingSurface({ value, onChange, onImages, onSave, readOnly, request }: {
-  value: MomentForm; onChange: (value: MomentForm) => void; onImages: (files: File[]) => void;
+  value: MomentForm; onChange: (value: Partial<MomentForm>) => void; onImages: (files: File[]) => void;
   onSave: () => Promise<void>; readOnly: boolean; request: (path: string, options?: RequestInit) => Promise<any>;
 }) {
   const [settings, setSettings] = useWritingPreferences();
@@ -40,7 +40,7 @@ export default function MomentWritingSurface({ value, onChange, onImages, onSave
     </div>
     <div className="writing-body">
       <div className="writer-pane" hidden={preview}>
-        <UlyssesEditor key={value.format} ref={editor} value={value.text} ariaLabel="碎碎念正文" placeholderText="记下此刻的想法，也可以直接粘贴图片…" maxLength={20000} plainText={value.format === 'plain'} onChange={text => onChange({ ...value, text })} onImages={onImages} onSave={() => { void onSave().then(() => requestAnimationFrame(() => editor.current?.focus())); }} onSelection={setSelected} paragraphFocus={settings.paragraphFocus} typewriter={settings.typewriter} readOnly={readOnly} />
+        <UlyssesEditor key={value.format} ref={editor} value={value.text} ariaLabel="碎碎念正文" placeholderText="记下此刻的想法，也可以直接粘贴图片…" maxLength={20000} plainText={value.format === 'plain'} onChange={text => onChange({ text })} onImages={onImages} onSave={() => { void onSave().then(() => requestAnimationFrame(() => editor.current?.focus())); }} onSelection={setSelected} paragraphFocus={settings.paragraphFocus} typewriter={settings.typewriter} readOnly={readOnly} />
         {selected && value.format === 'markdown' && <div className="writer-formatbar" role="toolbar" aria-label="碎碎念文字格式" onMouseDown={event => event.preventDefault()}>
           <button disabled={readOnly} onClick={() => editor.current?.format('**','**')} aria-label="加粗">B</button>
           <button disabled={readOnly} onClick={() => editor.current?.format('*','*')} aria-label="斜体"><i>I</i></button>
@@ -54,7 +54,7 @@ export default function MomentWritingSurface({ value, onChange, onImages, onSave
     </div>
     <div className="writing-footer">
       <span>{writingWords(value.text)} 字 · {value.images.length} / 9 张配图 · {value.text.length} / 20000 字符</span>
-      <select aria-label="碎碎念正文格式" value={value.format} disabled={readOnly} onChange={event => onChange({ ...value, format: event.target.value as MomentForm['format'] })}>
+      <select aria-label="碎碎念正文格式" value={value.format} disabled={readOnly} onChange={event => onChange({ format: event.target.value as MomentForm['format'] })}>
         <option value="markdown">轻量 Markdown</option><option value="plain">纯文本</option>
       </select>
     </div>

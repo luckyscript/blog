@@ -20,7 +20,7 @@ import { parseAndTransform, renderHtml } from "../../../lib/markdoc/render";
 import { db } from "../../../db";
 import { media, revisions } from "../../../db/schema";
 import { momentSources } from "../../../lib/moments/store";
-import { listLocalMoments, saveLocalMoment, changeLocalMomentStatus, prepareLocalMoment } from '../../../lib/server/local-moments';
+import { listLocalMoments, saveLocalMoment, changeLocalMomentStatus, prepareLocalMoment, getLocalMoment, saveLocalMomentDraft } from '../../../lib/server/local-moments';
 import { listCuratedLinks, saveCuratedLink, changeCuratedLinkStatus } from '../../../lib/server/links';
 
 import { analyticsDashboard } from '../../../lib/analytics/dashboard';
@@ -111,9 +111,16 @@ export async function ALL(context: APIContext) {
     }
     if (path === 'moments/local' && method === 'GET') return json(await listLocalMoments(context.url.searchParams.get('status') || '', Math.min(100000,Math.max(1,Math.floor(Number(context.url.searchParams.get('page')) || 1)))));
     if (path === 'moments/local' && method === 'POST') return json(await saveLocalMoment(null,await body(context.request)),201);
+    const momentDraft = path.match(/^moments\/local\/([a-f0-9-]{36})\/draft$/);
+    if (momentDraft && method === 'PUT') {
+      const id = z.string().uuid().parse(momentDraft[1]);
+      const value = z.object({ input: z.unknown(), version: z.string().regex(/^[a-f0-9]{64}$/).nullable() }).parse(await body(context.request));
+      return json(await saveLocalMomentDraft(id, value.input, value.version));
+    }
     const localMoment = path.match(/^moments\/local\/([a-f0-9-]{36})(?:\/(trash|restore))?$/);
     if (localMoment) {
       const id=z.string().uuid().parse(localMoment[1]);
+      if (!localMoment[2] && method === 'GET') return json(await getLocalMoment(id));
       if (!localMoment[2] && method === 'PUT') {
         const value=z.object({input:z.unknown(),version:z.string().regex(/^[a-f0-9]{64}$/)}).parse(await body(context.request));
         return json(await saveLocalMoment(id,value.input,value.version));

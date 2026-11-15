@@ -41,8 +41,9 @@ async function api(path: string, options: RequestInit = {}) {
         (data.errors?.length
           ? `导入预检发现 ${data.errors.length} 个错误`
           : "操作未完成")
-    ) as Error & { details?: unknown };
+    ) as Error & { details?: unknown; status?: number };
     error.details = data;
+    error.status = response.status;
     throw error;
   }
   return data;

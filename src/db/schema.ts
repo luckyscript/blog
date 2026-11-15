@@ -11,6 +11,7 @@ import {
   uniqueIndex,
   index,
 } from "drizzle-orm/mysql-core";
+import type { MomentForm } from "../lib/admin/moment-writing";
 import type { PostInput } from "../lib/server/content-input";
 import type { Platform, SyncState, MomentMedia } from "../lib/moments/types";
 
@@ -162,6 +163,11 @@ export const moments = mysqlTable("blog_moments", {
   contentHash: varchar("content_hash", { length: 64 }).notNull(), status: varchar("status", { length: 16 }).notNull().default("published"),
   publishedAt: time("published_at").notNull(), firstSeenAt: time("first_seen_at").notNull(), lastSeenAt: time("last_seen_at").notNull(),
 }, table => [uniqueIndex("blog_moments_external").on(table.sourceId, table.externalId), index("blog_moments_public").on(table.status, table.publishedAt, table.id)]);
+export const momentDrafts = mysqlTable('blog_moment_drafts', {
+  momentId: varchar('moment_id', { length: 36 }).primaryKey().references(() => moments.id, { onDelete: 'cascade' }),
+  content: json('content').$type<MomentForm>().notNull(),
+  updatedAt: time('updated_at').notNull(),
+}, table => [index('blog_moment_draft_updated').on(table.updatedAt)]);
 // Separate visibility metadata leaves imported content and publication status intact.
 export const momentDuplicates = mysqlTable("blog_moment_duplicates", {
   momentId: varchar("moment_id", { length: 36 }).primaryKey().references(() => moments.id, { onDelete: "cascade" }),

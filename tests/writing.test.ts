@@ -52,3 +52,12 @@ test('碎碎念本机草稿保留格式、配图与冲突版本，拒绝损坏�
   assert.equal(decodeMomentDraft(encodeMomentDraft({ ...input, text: 'x'.repeat(20001) }, null)), null);
   assert.equal(decodeMomentDraft(encodeMomentDraft({ ...input, images: Array(10).fill(input.images[0]) }, null)), null);
 });
+
+test('云端草稿恢复保持稳定标识，并可恢复历史随记的缓存配图', async () => {
+  const { encodeMomentDraft, decodeMomentDraft } = await import('../src/lib/admin/moment-writing');
+  const id='00000000-0000-4000-8000-000000000001';
+  const input={text:'跨设备继续写',format:'plain' as const,images:[{url:'/media/moments/'+'a'.repeat(64)+'.jpg',alt:'历史图片'}],publishedAt:'2026-11-15T00:00:00.000Z'};
+  const restored=decodeMomentDraft(encodeMomentDraft(input,null,id));
+  assert.equal(restored?.id,id);assert.deepEqual(restored?.input,input);
+  assert.equal(decodeMomentDraft(encodeMomentDraft({...input,images:[{url:'javascript:alert(1)',alt:''}]},null,id)),null);
+});

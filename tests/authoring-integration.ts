@@ -397,3 +397,64 @@ test("链接健康检查缓存结果、忽略草稿与过期响应，PPT 保留�
     await closeDatabase();
   }
 });
+
+test('碎碎念云端草稿跨设备读取、并发保护、重试幂等与历史随记编辑回收', async () => {
+  const origin = process.env.TEST_BASE_URL!, uri = new URL(process.env.DATABASE_URL!);
+  assert(['127.0.0.1','localhost'].includes(uri.hostname) && /^blog_integration_[a-f0-9]{32}$/.test(uri.pathname.slice(1)));
+  const id = randomUUID(), source = `local:fixture-${id}`, email = `draft-${id}@example.test`, password = randomUUID();
+  const oldText = '历史随记，保留排版', oldHtml = '<p><strong>历史随记</strong>，<a href="https://example.com">保留排版</a></p><img src="https://legacy.example.com/old.jpg" alt="旧图">';
+  const input = { text: oldText, format: 'plain', images: [{ url: 'https://legacy.example.com/old.jpg', alt: '旧图' }], publishedAt: new Date(Date.now()-60000).toISOString() };
+  try {
+    await createAdmin(email,password);
+    const login = async () => {
+      const response = await fetch(origin+'/api/admin/auth/login',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify({email,password,turnstileToken:'XXXX.DUMMY.TOKEN.XXXX'})});
+      assert.equal(response.status,200);return response.headers.get('set-cookie')!.split(';')[0];
+    };
+    const first = await login(), second = await login();
+    const call = (path:string, method='GET', value?:unknown, cookie=first) => fetch(origin+'/api/admin/'+path,{method,headers:{origin,'content-type':'application/json',cookie},body:value===undefined?undefined:JSON.stringify(value)});
+    await db().insert(momentSources).values({id:source,platform:'local',account:id,title:'历史随记测试',enabled:true,syncState:{archive:true},createdAt:new Date()});
+    await db().insert(moments).values({id,sourceId:source,externalId:id,sourceUrl:'https://example.com/original',title:'历史标题',text:oldText,html:oldHtml,media:input.images.map(image=>({type:'image' as const,...image})),tags:['保留标签'],contentHash:'a'.repeat(64),status:'published',publishedAt:new Date(input.publishedAt),firstSeenAt:new Date(),lastSeenAt:new Date()});
+    let row = await (await call(`moments/local/${id}`)).json();
+    assert(row.editable && row.historical && !row.hasDraft);
+    let response = await call(`moments/local/${id}/draft`,'PUT',{input:{...input,text:'**设备一的草稿**',format:'markdown'},version:row.version});
+    assert.equal(response.status,200);row=await response.json();
+    assert.equal(row.status,'published');assert(row.hasDraft);
+    const [live] = await db().select().from(moments).where(eq(moments.id,id));
+    assert.equal(live.text,oldText);assert.equal(live.html,oldHtml);assert.equal(live.status,'published');
+    const page = await (await fetch(`${origin}/moments/posts/${id}`)).text();
+    assert(page.includes('历史随记'));assert(!page.includes('设备一的草稿'));
+    const remote = await (await call(`moments/local/${id}`,'GET',undefined,second)).json();
+    assert.equal(remote.text,'**设备一的草稿**');assert.equal(remote.version,row.version);
+    const next = {...input,text:'设备二继续写作',format:'markdown'};
+    response = await call(`moments/local/${id}/draft`,'PUT',{input:next,version:remote.version},second);
+    assert.equal(response.status,200);const updated=await response.json();
+    assert.equal((await call(`moments/local/${id}/draft`,'PUT',{input:{...next,text:'旧设备不能覆盖'},version:row.version})).status,409);
+    response = await call(`moments/local/${id}/draft`,'PUT',{input:next,version:row.version});
+    assert.equal(response.status,200);assert.equal((await response.json()).version,updated.version);
+    const drafts = await (await call('moments/local?status=draft')).json();
+    assert(drafts.items.some((item:any)=>item.id===id && item.status==='published' && item.hasDraft));
+    assert.equal((await call(`moments/local/${id}/draft`,'PUT',{input:{...input,images:[{url:'https://unregistered.example.com/new.jpg',alt:''}]},version:updated.version})).status,400);
+    response = await call(`moments/local/${id}/draft`,'PUT',{input,version:updated.version});
+    assert.equal(response.status,200);row=await response.json();
+    response = await call(`moments/local/${id}`,'PUT',{input:{...input,status:'published'},version:row.version});
+    assert.equal(response.status,200);row=await response.json();assert(!row.hasDraft);
+    const [preserved] = await db().select().from(moments).where(eq(moments.id,id));
+    assert.equal(preserved.html,oldHtml);assert.equal(preserved.sourceId,source);assert.deepEqual(preserved.tags,['保留标签']);
+    assert.equal((await call(`moments/local/${id}/trash`,'POST',{version:row.version})).status,200);
+    row=await (await call(`moments/local/${id}`)).json();assert.equal(row.status,'trash');
+    assert.equal((await fetch(`${origin}/moments/posts/${id}`)).status,404);
+    assert.equal((await call(`moments/local/${id}/restore`,'POST',{version:row.version})).status,200);
+    const clientId=randomUUID(), unfinished={text:'{% unknown /%}',format:'markdown',images:[],publishedAt:new Date().toISOString()};
+    response=await call(`moments/local/${clientId}/draft`,'PUT',{input:unfinished,version:null});assert.equal(response.status,200);row=await response.json();
+    response=await call(`moments/local/${clientId}/draft`,'PUT',{input:unfinished,version:null});assert.equal(response.status,200);assert.equal((await response.json()).version,row.version);
+    assert.equal((await db().select().from(moments).where(eq(moments.id,clientId))).length,1);
+    assert.equal((await fetch(`${origin}/moments/posts/${clientId}`)).status,404);
+    assert.equal((await call(`moments/local/${clientId}`,'PUT',{input:{...unfinished,status:'published'},version:row.version})).status,400);
+    assert.equal((await (await call(`moments/local/${clientId}`,'GET',undefined,second)).json()).text,unfinished.text);
+    const ready={...unfinished,text:'**准备好了**'};
+    row=await (await call(`moments/local/${clientId}/draft`,'PUT',{input:ready,version:row.version})).json();
+    response=await call(`moments/local/${clientId}`,'PUT',{input:{...ready,status:'published'},version:row.version});assert.equal(response.status,200);
+    const published=await response.json();assert(!published.hasDraft);
+    assert((await (await fetch(`${origin}/moments/posts/${clientId}`)).text()).includes('<strong>准备好了</strong>'));
+  } finally { await closeDatabase(); }
+});
