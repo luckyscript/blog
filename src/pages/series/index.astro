@@ -14,16 +14,18 @@ const collections = (await listPublicSeries()).filter(
     slot="main"
     class="series-landing"
   >
-    <h1>系列手记</h1><p class="series-introduction">
-      把同一个主题，慢慢写下去。
-    </p><ul class="series-index-list">
+    <div class="series-index-heading">
+      <h1>系列</h1><a href="/series/rss.xml">订阅系列 RSS</a>
+    </div><p class="series-introduction">把同一个主题，慢慢写下去。</p><ul
+      class="series-index-list"
+    >
       {
         collections.map((item) => (
           <li>
             <a class="unset" href={item.path}>
+              <h2>{item.title}</h2>
               <p>{item.description}</p>
               <>
-                <h2>{item.title}</h2>
                 <span>
                   {item.publishedCount} 则 ·{" "}
                   {item.state === "completed" ? "已完结" : "持续更新"}

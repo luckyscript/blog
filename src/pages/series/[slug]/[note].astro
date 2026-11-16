@@ -1,0 +1,54 @@
+---
+import PageLayout from "../../../layouts/PageLayout.astro";
+import BlogPostMeta from "../../../components/BlogPostMeta.astro";
+import Renderer from "../../../components/Renderer.astro";
+import SeriesNavigation from "../../../components/series/SeriesNavigation.astro";
+import { publicSeriesBySlug } from "../../../lib/server/series";
+import { publicSeriesNote } from "../../../lib/server/series-notes";
+import { renderedBody } from "../../../lib/markdoc/render-cache";
+import { estimateReadingMinutes } from "../../../lib/reading-time";
+import "../../../styles/reading.css";
+import "../../../styles/series.css";
+const series = await publicSeriesBySlug(Astro.params.slug || "");
+const note = await publicSeriesNote(
+  Astro.params.slug || "",
+  Astro.params.note || ""
+);
+const body = await renderedBody(note.markdown);
+const index = series.entries.findIndex((entry) => entry.id === note.id);
+const date = new Date(note.publishedAt).toLocaleDateString("zh-CN", {
+  timeZone: "Asia/Shanghai",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<PageLayout>
+  <BlogPostMeta
+    slot="meta"
+    title={`${note.title} · ${series.title}`}
+    description={note.description}
+    publishDate={note.publishedAt}
+    pagePath={`/series/${series.slug}/${note.slug}`}
+  />
+  <article slot="main" class="series-note-page">
+    <nav class="series-breadcrumbs">
+      <a href="/series">系列</a><span>/</span><a href={series.path}
+        >{series.title}</a>
+    </nav>
+    <header class="series-note-heading">
+      <p>
+        第 {series.entries.length - index} 则 · 共 {series.entries.length} 则
+      </p><h1>{note.title}</h1><div>
+        <time datetime={note.publishedAt}>{date}</time><span
+          >约 {estimateReadingMinutes(body.content)} 分钟</span
+        >{note.context && <span>{note.context}</span>}
+      </div>
+    </header>
+    <div class="reading-content prose max-w-none">
+      <Renderer content={body.content} />
+    </div>
+    <SeriesNavigation series={series} index={index} />
+  </article>
+</PageLayout>

@@ -275,3 +275,4 @@
 .series-landing > h1 {
   color: var(--ink);
 }
+.series-index-heading{display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap}.series-index-heading h1{font:400 2.4rem/1.5 var(--font-kai);color:var(--ink);margin:1rem 0}.series-index-heading>a{color:var(--ink-muted);font-size:.8rem}.series-note-page{width:min(100%,760px);margin:0 auto;padding:2rem 0 3rem;min-width:0}.series-breadcrumbs{display:flex;gap:.7rem;flex-wrap:wrap;color:var(--ink-muted);font-size:.85rem}.series-note-heading{padding:2rem 0}.series-note-heading>p{color:var(--stamp);font-size:.8rem}.series-note-heading h1{font:400 clamp(28px,4vw,42px)/1.5 var(--font-serif);color:var(--ink);margin:.7rem 0 1rem}.series-note-heading>div{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;color:var(--ink-muted);font-size:.8rem}

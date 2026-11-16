@@ -4,14 +4,12 @@ import type {
   SeriesInput,
   SeriesSummary,
 } from "../../lib/server/series";
-import { sectionLabels } from "../../lib/server/content-input";
 import "../../styles/admin-series.css";
 type Requester = (path: string, options?: RequestInit) => Promise<any>;
 const empty: SeriesInput = {
   title: "",
   slug: "",
   description: "",
-  section: "blog",
   status: "published",
   state: "ongoing",
 };
@@ -19,7 +17,6 @@ const inputOf = (record: SeriesSummary): SeriesInput => ({
   title: record.title,
   slug: record.slug,
   description: record.description,
-  section: record.section,
   status: record.status,
   state: record.state,
 });
@@ -117,7 +114,7 @@ export default function SeriesManager({
         method: "POST",
         body: "{}",
       });
-      location.assign("/admin/posts/" + record.id);
+      location.assign("/admin/series/notes/" + record.id);
     } catch (error) {
       setError((error as Error).message);
       setBusy(false);
@@ -207,7 +204,6 @@ export default function SeriesManager({
                 />
                 <small className="field-hint">
                   /series/{form.slug || "series-name"}
-                  {detail?.rootPostId ? " · 旧文章地址继续作为主要入口" : ""}
                 </small>
               </label>
               <label className="series-description-field">
@@ -220,24 +216,6 @@ export default function SeriesManager({
                     setForm({ ...form, description: event.target.value })
                   }
                 />
-              </label>
-              <label>
-                栏目
-                <select
-                  value={form.section}
-                  onChange={(event) =>
-                    setForm({
-                      ...form,
-                      section: event.target.value as SeriesInput["section"],
-                    })
-                  }
-                >
-                  {["blog", "tech", "sight", "life", "card"].map((section) => (
-                    <option value={section} key={section}>
-                      {sectionLabels[section]}
-                    </option>
-                  ))}
-                </select>
               </label>
               <label>
                 入口可见性
@@ -303,20 +281,24 @@ export default function SeriesManager({
                       {detail.entries.map((entry) => (
                         <tr key={entry.id}>
                           <td>
-                            <a href={"/admin/posts/" + entry.id}>
+                            <a href={"/admin/series/notes/" + entry.id}>
                               {entry.title || "未命名手记"}
                             </a>
                             {entry.context && <small>{entry.context}</small>}
                           </td>
                           <td>
-                            {entry.status === "published" ? "已发布" : "草稿"}
+                            {entry.status === "published"
+                              ? "已发布"
+                              : entry.status === "trash"
+                              ? "回收站"
+                              : "草稿"}
                             {entry.hasDraft && entry.status === "published"
                               ? " · 待更新"
                               : ""}
                           </td>
                           <td>{day(entry.publishedAt)}</td>
                           <td>
-                            <a href={"/admin/posts/" + entry.id}>编辑</a>
+                            <a href={"/admin/series/notes/" + entry.id}>编辑</a>
                             {entry.status === "published" && (
                               <a
                                 href={entry.path}
@@ -347,9 +329,8 @@ export default function SeriesManager({
                   <h2>{item.title}</h2>
                   <p>{item.description || "尚未填写简介"}</p>
                   <small>
-                    {sectionLabels[item.section]} · {item.publishedCount}{" "}
-                    则已发布 · {item.draftCount} 则草稿 / 待更新 ·{" "}
-                    {item.status === "published" ? "公开" : "草稿"} ·{" "}
+                    {item.publishedCount} 则已发布 · {item.draftCount} 则草稿 /
+                    待更新 · {item.status === "published" ? "公开" : "草稿"} ·{" "}
                     {item.state === "completed" ? "已完结" : "持续更新"}
                   </small>
                 </div>

@@ -1,3 +1,4 @@
+import { seriesRedirect } from './lib/server/series';
 import { defineMiddleware } from "astro:middleware";
 import { and, eq, lte } from "drizzle-orm";
 import { sessionUser } from "./lib/server/auth";
@@ -34,6 +35,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
           throw new AppError(401, "登录已过期，请重新登录");
         }
       }
+    }
+    if (!adminPage && !adminApi && ['GET','HEAD'].includes(context.request.method)) {
+      const destination = await seriesRedirect(path.replace(/\/$/,''));
+      if (destination && destination !== path) return context.redirect(destination,301);
     }
     const response = await next();
     if (adminPage || adminApi) {

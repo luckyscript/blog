@@ -5,9 +5,8 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { load } from "cheerio";
 import { getPool, closeDatabase } from "../src/db";
-
 const run = promisify(execFile);
-test("系列：旧文保真迁移、权限、写新篇、草稿隔离、发布归属与前台阅读导航", async () => {
+test("系列独立栏目、独立存储与编辑发布：保真迁移、旧址跳转、普通文章隔离、草稿并发及历史恢复", async () => {
   const url = new URL(process.env.DATABASE_URL!),
     origin = process.env.TEST_BASE_URL!;
   assert(
@@ -28,7 +27,7 @@ test("系列：旧文保真迁移、权限、写新篇、草稿隔离、发布�
     path: string,
     method = "GET",
     body?: unknown,
-    authenticated = true,
+    auth = true,
     source = origin
   ) =>
     fetch(origin + "/api/admin/" + path, {
@@ -36,189 +35,241 @@ test("系列：旧文保真迁移、权限、写新篇、草稿隔离、发布�
       headers: {
         "content-type": "application/json",
         origin: source,
-        ...(authenticated ? { cookie } : {}),
+        ...(auth ? { cookie } : {}),
       },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   try {
+    const [[before]] = await getPool().query<any[]>(
+      "SELECT * FROM blog_posts WHERE path='/blog/2023/passenger-and-drivers'"
+    );
+    const legacyMigration = await run(
+      process.execPath,
+      ["--import", "tsx", "scripts/migrate-driver-series.ts", "--apply"],
+      { env: process.env }
+    );
+    const legacy = JSON.parse(legacyMigration.stdout.trim());
+    const baseEntry = await (
+      await call("posts/" + legacy.chapterIds[0])
+    ).json();
+    const oldDraft = await (
+      await call("posts", "POST", {
+        ...baseEntry.input,
+        title: "旧版未发布草稿",
+        slug: "legacy-unpublished-draft",
+        markdown: "这段文字还没有公开",
+        metadata: { seriesId: legacy.seriesId, seriesContext: "草稿场景" },
+      })
+    ).json();
+    assert.equal(oldDraft.status, "draft");
+    const migration = await run(
+      process.execPath,
+      ["--import", "tsx", "scripts/separate-series-storage.ts", "--apply"],
+      { env: process.env }
+    );
+    assert.equal(JSON.parse(migration.stdout.trim()).migratedNotes, 4);
+    const again = await run(
+      process.execPath,
+      ["--import", "tsx", "scripts/separate-series-storage.ts", "--apply"],
+      { env: process.env }
+    );
+    assert.equal(JSON.parse(again.stdout.trim()).migratedNotes, 0);
+    const [[after]] = await getPool().query<any[]>(
+      "SELECT * FROM blog_posts WHERE id=?",
+      [before.id]
+    );
+    assert.equal(after.markdown, before.markdown);
+    assert.equal(after.status, "series");
+    const [copied] = await getPool().query<any[]>(
+      "SELECT n.*,p.markdown AS original FROM blog_series_notes n JOIN blog_posts p ON p.id=n.id"
+    );
+    assert.equal(copied.length, 4);
+    const restoredDraft = await (
+      await call("series/notes/" + oldDraft.id)
+    ).json();
+    assert.equal(restoredDraft.input.markdown, "这段文字还没有公开");
+    assert.equal(restoredDraft.status, "draft");
+    assert.equal((await fetch(origin + restoredDraft.path)).status, 404);
+    for (const n of copied) assert.equal(n.markdown, n.original);
+    let response = await fetch(origin + before.path, { redirect: "manual" });
+    assert.equal(response.status, 301);
+    assert.equal(
+      new URL(response.headers.get("location")!, origin).pathname,
+      "/series/passenger-and-drivers"
+    );
+    response = await fetch(origin + "/series/passenger-and-drivers");
+    assert.equal(response.status, 200);
+    let page = load(await response.text());
+    assert.equal(page(".series-story-link").length, 3);
+    assert.equal(
+      page(".desktop-nav a[aria-current=page]").attr("href"),
+      "/series"
+    );
+    assert(!page(".series-collection").text().includes("读最新"));
+    assert(!page.text().includes(String.fromCodePoint(0x2197)));
+    response = await fetch(origin + "/blog/2024/rear-end-collision", {
+      redirect: "manual",
+    });
+    assert.equal(response.status, 301);
+    assert.equal(
+      new URL(response.headers.get("location")!, origin).pathname,
+      "/series/passenger-and-drivers/rear-end-collision"
+    );
+    page = load(await (await fetch(origin + "/blog")).text());
+    assert.equal(page(".series-shelf").length, 0);
+    assert.equal(page('a.post-link[href*="rear-end-collision"]').length, 0);
+    assert.equal((await call("posts/" + copied[0].id)).status, 404);
+    const articles = await (await call("posts?search=被追尾了")).json();
+    assert(!articles.items.some((p: any) => p.id === copied[0].id));
     assert.equal((await call("series", "GET", undefined, false)).status, 401);
     assert.equal(
       (await call("series", "POST", {}, true, "https://elsewhere.invalid"))
         .status,
       403
     );
-    const [[before]] = await getPool().query<any[]>(
-      "SELECT id,markdown FROM blog_posts WHERE path='/blog/2023/passenger-and-drivers'"
-    );
-    assert(before);
-    const { stdout } = await run(
-      process.execPath,
-      ["--import", "tsx", "scripts/migrate-driver-series.ts", "--apply"],
-      { env: process.env }
-    );
-    assert.equal(JSON.parse(stdout.trim()).chapters, 3);
-    const [[after]] = await getPool().query<any[]>(
-      "SELECT markdown FROM blog_posts WHERE id=?",
-      [before.id]
-    );
-    assert.equal(after.markdown, before.markdown);
-    let response = await fetch(origin + "/blog/2023/passenger-and-drivers");
-    assert.equal(response.status, 200);
-    let page = load(await response.text());
-    assert.equal(page(".series-story-link").length, 3);
-    assert.equal(page("h1").text(), "乘客与司机");
-    assert.equal(page('[id="被追尾了"]').length, 1);
-    assert(!page(".series-collection").text().includes("读最新"));
-    assert(!page(".series-collection").text().includes("从头读"));
-    response = await fetch(origin + "/series/passenger-and-drivers", {
-      redirect: "manual",
-    });
-    assert.equal(response.status, 301);
-    assert.equal(
-      new URL(response.headers.get("location")!, origin).pathname,
-      "/blog/2023/passenger-and-drivers"
-    );
     const suffix = randomUUID().slice(0, 8),
-      input = {
+      form = {
         title: "独立系列 " + suffix,
         slug: "series-" + suffix,
-        description: "系列介绍",
-        section: "blog",
+        description: "测试介绍",
         status: "published",
         state: "ongoing",
       };
-    response = await call("series", "POST", input);
+    response = await call("series", "POST", form);
     assert.equal(response.status, 201);
     let series = await response.json();
-    response = await call("series/" + series.id, "PUT", {
-      input: { ...input, title: "不应保存" },
-      version: series.version + 1,
-    });
-    assert.equal(response.status, 409);
     response = await call("series/" + series.id + "/entries", "POST", {});
     assert.equal(response.status, 201);
-    let entry = await response.json();
-    assert.equal(entry.input.metadata.seriesId, series.id);
-    assert.equal(entry.status, "draft");
-    assert.equal((await fetch(origin + entry.path)).status, 404);
-    const title = "第一则 " + suffix;
-    entry = await (
-      await call("posts/" + entry.id, "PUT", {
-        input: {
-          ...entry.input,
-          title,
-          markdown: "这是第一则公开手记。",
-          description: "第一则的摘要。",
-          metadata: { ...entry.input.metadata, seriesContext: "杭州 · 车上" },
-        },
-        version: entry.version,
+    let note = await response.json();
+    assert(!("section" in note.input));
+    assert.equal((await call("posts/" + note.id)).status, 404);
+    assert.equal((await fetch(origin + note.path)).status, 404);
+    const edited = {
+      ...note.input,
+      title: "第一则 " + suffix,
+      markdown: "独立系列正文",
+      context: "杭州 · 车上",
+    };
+    let saved = await (
+      await call("series/notes/" + note.id, "PUT", {
+        input: edited,
+        version: note.version,
       })
     ).json();
-    response = await call("posts/" + entry.id + "/publish", "POST", {
-      version: entry.version,
+    response = await call("series/notes/" + note.id, "PUT", {
+      input: edited,
+      version: note.version,
     });
     assert.equal(response.status, 200);
-    entry = await response.json();
-    response = await fetch(origin + "/series/" + series.slug);
-    assert.equal(response.status, 200);
-    page = load(await response.text());
-    assert.equal(page(".series-story-link").length, 1);
-    assert(page("h3").text().includes(title));
-    assert(page(".series-collection").text().includes("杭州 · 车上"));
-    response = await fetch(origin + entry.path);
-    assert.equal(response.status, 200);
-    page = load(await response.text());
-    assert.equal(page(".series-reading-directory").length, 1);
-    assert.equal(page(".series-reading-context").length, 1);
-    response = await call("series/" + series.id, "PUT", {
-      input: { ...input, slug: "changed-" + suffix },
-      version: series.version,
+    assert.equal(
+      (await response.json()).version,
+      saved.version,
+      "相同草稿重试不重复写入"
+    );
+    assert.equal(
+      (
+        await call("series/notes/" + note.id, "PUT", {
+          input: { ...edited, title: "旧版本" },
+          version: note.version,
+        })
+      ).status,
+      409
+    );
+    response = await call("series/notes/" + note.id + "/publish", "POST", {
+      version: saved.version,
     });
-    assert.equal(response.status, 400, "公开篇目的系列网址必须保留");
-    let original = await (await call("posts/" + before.id)).json();
-    original = await (
-      await call("posts/" + before.id, "PUT", {
-        input: { ...original.input, metadata: { seriesId: series.id } },
-        version: original.version,
+    assert.equal(response.status, 200);
+    note = await response.json();
+    response = await fetch(origin + note.path);
+    assert.equal(response.status, 200);
+    page = load(await response.text());
+    assert.equal(page("h1").text(), edited.title);
+    assert.equal(page(".series-breadcrumbs a").first().attr("href"), "/series");
+    let draft = await (
+      await call("series/notes/" + note.id, "PUT", {
+        input: { ...note.input, markdown: "未发布的私密修改" },
+        version: note.version,
+      })
+    ).json();
+    assert(
+      !(await (await fetch(origin + note.path)).text()).includes(
+        "未发布的私密修改"
+      )
+    );
+    const originalPath = note.path;
+    draft = await (
+      await call("series/notes/" + note.id, "PUT", {
+        input: { ...draft.input, slug: "改名手记" },
+        version: draft.version,
+      })
+    ).json();
+    note = await (
+      await call("series/notes/" + note.id + "/publish", "POST", {
+        version: draft.version,
       })
     ).json();
     assert.equal(
-      (
-        await call("posts/" + before.id + "/publish", "POST", {
-          version: original.version,
-        })
-      ).status,
-      400,
-      "系列入口不能嵌入另一个系列"
+      (await fetch(origin + originalPath, { redirect: "manual" })).status,
+      301
     );
-
-    let second = await (
-      await call("series/" + series.id + "/entries", "POST", {})
-    ).json();
-    second = await (
-      await call("posts/" + second.id, "PUT", {
-        input: {
-          ...second.input,
-          title: "尚未公开 " + suffix,
-          markdown: "保密的系列草稿内容",
-        },
-        version: second.version,
+    const unicodeFeed = await fetch(origin + "/series/rss.xml");
+    assert.equal(unicodeFeed.status, 200);
+    assert((await unicodeFeed.text()).includes(note.path));
+    const oldRevision = note.revisions.find(
+      (r: any) => r.action === "publish" && r.id !== note.revisions[0].id
+    );
+    assert(oldRevision);
+    draft = await (
+      await call("series/notes/" + note.id + "/revision", "POST", {
+        version: note.version,
+        revisionId: oldRevision.id,
       })
     ).json();
+    assert(draft.hasDraft);
+    assert.equal(draft.input.markdown, "独立系列正文");
+    assert(
+      (await (await fetch(origin + note.path)).text()).includes(
+        "未发布的私密修改"
+      ),
+      "恢复历史只创建草稿，不直接覆盖前台"
+    );
+    note = await (
+      await call("series/notes/" + note.id + "/trash", "POST", {
+        version: draft.version,
+      })
+    ).json();
+    assert.equal((await fetch(origin + note.path)).status, 404);
+    note = await (
+      await call("series/notes/" + note.id + "/restore", "POST", {
+        version: note.version,
+      })
+    ).json();
+    assert.equal(note.status, "draft");
+    assert.equal((await fetch(origin + note.path)).status, 404);
     series = await (await call("series/" + series.id)).json();
-    assert.equal(series.publishedCount, 1);
-    assert.equal(series.draftCount, 1);
-    assert.equal(series.entries.length, 2);
-    assert(
-      !(await (await fetch(origin + "/series/" + series.slug)).text()).includes(
-        "保密的系列草稿内容"
-      )
-    );
-    const invalid = randomUUID();
-    entry = await (
-      await call("posts/" + entry.id, "PUT", {
-        input: { ...entry.input, metadata: { seriesId: invalid } },
-        version: entry.version,
-      })
-    ).json();
+    assert.equal(series.publishedCount, 0);
+    assert.equal(series.entries.length, 1);
     assert.equal(
       (
-        await call("posts/" + entry.id + "/publish", "POST", {
-          version: entry.version,
+        await call("series/" + series.id, "PUT", {
+          input: { ...form, title: "不能覆盖" },
+          version: series.version + 1,
         })
       ).status,
-      400
+      409
     );
+    const feed = await (await fetch(origin + "/series/rss.xml")).text();
+    assert(feed.includes("/series/passenger-and-drivers/rear-end-collision"));
     assert(
-      (await (await fetch(origin + "/series/" + series.slug)).text()).includes(
-        title
+      !(await (await fetch(origin + "/rss.xml")).text()).includes(
+        "rear-end-collision"
       )
     );
-    entry = await (
-      await call("posts/" + entry.id, "PUT", {
-        input: { ...entry.input, metadata: {} },
-        version: entry.version,
-      })
-    ).json();
     assert(
-      (await (await fetch(origin + "/series/" + series.slug)).text()).includes(
-        title
+      (await (await fetch(origin + "/sitemap.xml")).text()).includes(
+        "/series/passenger-and-drivers/rear-end-collision"
       )
     );
-    entry = await (
-      await call("posts/" + entry.id + "/publish", "POST", {
-        version: entry.version,
-      })
-    ).json();
-    assert(
-      !(await (await fetch(origin + "/series/" + series.slug)).text()).includes(
-        title
-      )
-    );
-    assert.equal((await fetch(origin + entry.path)).status, 200);
-    const sitemap = await (await fetch(origin + "/sitemap.xml")).text();
-    assert(sitemap.includes("/blog/2023/passenger-and-drivers"));
-    assert(sitemap.includes("/blog/2024/rear-end-collision"));
   } finally {
     await getPool().query("DELETE FROM blog_sessions WHERE token_hash=?", [
       hash,

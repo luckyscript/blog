@@ -1,4 +1,5 @@
-import {listAdminSeries,getAdminSeries,saveSeries,newSeriesEntryInput} from '../../../lib/server/series';
+import {getSeriesNote,createSeriesNote,saveSeriesNote,seriesNoteAction} from '../../../lib/server/series-notes';
+import {listAdminSeries,getAdminSeries,saveSeries} from '../../../lib/server/series';
 import type { APIContext } from "astro";
 import { z, ZodError } from "zod";
 import { and, eq } from "drizzle-orm";
@@ -99,10 +100,18 @@ export async function ALL(context: APIContext) {
     if(path==='analytics'&&method==='GET')return json(await analyticsDashboard(context.url.searchParams));
     if(path==='series'&&method==='GET')return json(await listAdminSeries());
     if(path==='series'&&method==='POST')return json(await saveSeries(null,await body(context.request),null),201);
+    const noteRoute=path.match(/^series\/notes\/([a-f0-9-]{36})(?:\/(publish|unpublish|trash|restore|revision|preview))?$/);
+    if(noteRoute){
+      const id=z.string().uuid().parse(noteRoute[1]),action=noteRoute[2];
+      if(!action&&method==='GET')return json(await getSeriesNote(id));
+      if(!action&&method==='PUT'){const v=await body(context.request);return json(await saveSeriesNote(id,v.input,versionOf(v)));}
+      if(action==='preview'&&method==='POST'){const v=await body(context.request);return json({html:renderHtml(await parseAndTransform({content:z.string().max(2000000).parse(v.markdown)}))});}
+      if(action&&method==='POST'){const v=await body(context.request);return json(await seriesNoteAction(id,versionOf(v),action==='revision'?'restore':action as any,action==='revision'?z.string().uuid().parse(v.revisionId):undefined));}
+    }
     const seriesRoute=path.match(/^series\/([a-f0-9-]{36})(?:\/(entries))?$/);
     if(seriesRoute){
       const id=z.string().uuid().parse(seriesRoute[1]);
-      if(seriesRoute[2]==='entries'&&method==='POST')return json(await saveDraft(null,await newSeriesEntryInput(id),1,user.id),201);
+      if(seriesRoute[2]==='entries'&&method==='POST')return json(await createSeriesNote(id),201);
       if(!seriesRoute[2]&&method==='GET')return json(await getAdminSeries(id));
       if(!seriesRoute[2]&&method==='PUT'){const value=await body(context.request);return json(await saveSeries(id,value.input,versionOf(value)));}
     }

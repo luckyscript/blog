@@ -1,7 +1,6 @@
 ---
 import { readBlog } from "../lib/markdoc/read";
 import { blog } from "../lib/markdoc/frontmatter.schema";
-import SeriesShelf from '../components/series/SeriesShelf.astro';
 import PageLayout from "../layouts/PageLayout.astro";
 import PageMeta from "../components/PageMeta.astro";
 import { SITE_TITLE } from "../config";
@@ -30,7 +29,6 @@ const sortedPosts = posts
     <header class="listing-head">
       <h2 class="listing-heading">生活 <span class="listing-subtitle">Blog · Personal essays</span></h2>
     </header>
-    <SeriesShelf section="blog"/>
     <ul class="unset">
       {
         sortedPosts.map((post) => {

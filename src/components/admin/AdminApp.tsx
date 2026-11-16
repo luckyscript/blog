@@ -7,7 +7,7 @@ import LocalMoments from './LocalMoments';
 import LinksManager from './LinksManager';
 import PhotographyStudio from './PhotographyStudio';
 import SeriesManager from './SeriesManager';
-import SeriesFields from './SeriesFields';
+import SeriesNoteEditor from './SeriesNoteEditor';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import WritingPreferences, { useWritingPreferences } from './WritingPreferences';
 import UlyssesEditor, { type UlyssesEditorHandle, type WritingPosition } from './UlyssesEditor';
@@ -156,7 +156,7 @@ export default function AdminApp({
 }) {
   if (route === "login")
     return <Login configured={configured} turnstile={turnstile} />;
-  const view = route.startsWith("posts/") ? "editor" : route.startsWith("series/") ? "series" : route || "posts";
+  const view = route.startsWith("posts/") ? "editor" : route.startsWith("series/notes/") ? "series-note" : route.startsWith("series/") ? "series" : route || "posts";
   const links = [
     ["", "posts", "文章"],
     ["series", "series", "系列手记"],
@@ -184,7 +184,7 @@ export default function AdminApp({
               key={path}
               href={`/admin${path ? `/${path}` : ""}`}
               className={
-                view === (path || key) || (key === "posts" && view === "editor")
+                (view === "series-note" ? "series" : view) === (path || key) || (key === "posts" && view === "editor")
                   ? "active"
                   : ""
               }
@@ -211,7 +211,7 @@ export default function AdminApp({
             下雨就像弹钢琴 <span className="topbar-divider">/</span>{" "}
             {view === "editor"
               ? "写作"
-              : links.find((item) => (item[0] || item[1]) === view)?.[2]}
+              : links.find((item) => (item[0] || item[1]) === (view === "series-note" ? "series" : view))?.[2]}
           </span>
           <div className="account">
             <span className="avatar">
@@ -233,6 +233,7 @@ export default function AdminApp({
           className={`admin-main ${view === "editor" ? "editor-main" : ""}`}
         >
           {view === "posts" && <Posts />}
+          {view === "series-note" && <SeriesNoteEditor noteId={route.split("/")[2]} request={api} upload={uploadPreparedMedia} />}
           {view === "series" && <SeriesManager request={api} initialId={route.split("/")[1]} />}
           {view === "analytics" && <AnalyticsDashboard request={api} />}
           {view === "editor" && (
@@ -1196,7 +1197,6 @@ function Editor({ postId }: { postId: string | null }) {
                 精选文章
               </label>
             </section>
-            <SeriesFields input={input} postId={record?.id || postId} request={api} onChange={value=>field("metadata",value)} />
             <section className="panel property-panel">
               <h2>摘要与分享</h2>
               <label>

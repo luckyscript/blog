@@ -13,7 +13,6 @@ import {
 import { AppError } from "./errors";
 import { parsePost, postPath, type PostInput } from "./content-input";
 
-import { syncSeriesMembership } from './series';
 
 type Store = ReturnType<typeof db>;
 type Tx = Parameters<Parameters<Store["transaction"]>[0]>[0];
@@ -66,7 +65,6 @@ export async function publicPosts(section?: string, year?: string) {
   const conditions = [
     eq(posts.status, "published"),
     lte(posts.publishedAt, new Date()),
-    sql`NOT EXISTS (SELECT 1 FROM blog_series WHERE root_post_id=${posts.id})`,
   ];
   if (section) conditions.push(eq(posts.section, section));
   if (year) conditions.push(eq(posts.year, year));
@@ -81,7 +79,7 @@ export async function publicPosts(section?: string, year?: string) {
 
 export async function recentPublicPosts(section: string, limit = 3) {
   return db().select({ year: posts.year, slug: posts.slug, title: posts.title, publishedAt: posts.publishedAt, externalUrl: posts.externalUrl })
-    .from(posts).where(and(eq(posts.status, 'published'), eq(posts.section, section), lte(posts.publishedAt, new Date()), sql`NOT EXISTS (SELECT 1 FROM blog_series WHERE root_post_id=${posts.id})`))
+    .from(posts).where(and(eq(posts.status, 'published'), eq(posts.section, section), lte(posts.publishedAt, new Date())))
     .orderBy(desc(posts.publishedAt)).limit(Math.min(20, Math.max(1, limit)));
 }
 
@@ -102,7 +100,7 @@ export async function publicPost(path: string) {
 
 export async function getPost(id: string) {
   const [row] = await db().select().from(posts).where(eq(posts.id, id));
-  if (!row) throw new AppError(404, "文章不存在");
+  if (!row || row.status === "series") throw new AppError(404, "文章不存在或已迁入系列工作台");
   const [draft] = await db().select().from(drafts).where(eq(drafts.postId, id));
   const live = (await hydrate([row]))[0];
   const history = await db()
@@ -133,7 +131,7 @@ export async function listPosts(
   status = "",
   page = 1
 ) {
-  const rows = await db().select().from(posts).orderBy(desc(posts.updatedAt));
+  const rows = await db().select().from(posts).where(sql`${posts.status} <> 'series'`).orderBy(desc(posts.updatedAt));
   const draftRows = await db().select().from(drafts);
   const items = rows.map((row) => {
     const draft = draftRows.find((item) => item.postId === row.id);
@@ -176,7 +174,7 @@ async function lockPost(tx: Tx, id: string, version: number) {
     .from(posts)
     .where(eq(posts.id, id))
     .for("update");
-  if (!row) throw new AppError(404, "文章不存在");
+  if (!row || row.status === "series") throw new AppError(404, "文章不存在或已迁入系列工作台");
   if (row.version !== version)
     throw new AppError(
       409,
@@ -317,7 +315,6 @@ export async function publishPost(id: string, version: number) {
       contentUpdatedAt:
         row.status === "published" ? now.toISOString() : input.contentUpdatedAt,
     };
-    await syncSeriesMembership(tx, id, published);
     const categoryId = await applyTaxonomy(tx, id, published);
     await tx
       .update(posts)
@@ -415,7 +412,6 @@ export async function importPost(
       sourcePath,
       version: 1,
     });
-    if (!isDraft) await syncSeriesMembership(tx, id, parsed);
     const categoryId = await applyTaxonomy(tx, id, parsed);
     await tx.update(posts).set({ categoryId }).where(eq(posts.id, id));
     if (isDraft)
@@ -434,7 +430,7 @@ export async function importPost(
 }
 
 export async function exportPosts() {
-  const rows = await hydrate(await db().select().from(posts));
+  const rows = await hydrate(await db().select().from(posts).where(sql`${posts.status} <> 'series'`));
   const draftRows = await db().select().from(drafts);
   return {
     exportedAt: new Date().toISOString(),

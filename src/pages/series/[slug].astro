@@ -5,7 +5,6 @@ import SeriesCollection from "../../components/series/SeriesCollection.astro";
 import { publicSeriesBySlug } from "../../lib/server/series";
 import { SITE_TITLE } from "../../config";
 const series = await publicSeriesBySlug(Astro.params.slug || "");
-if (series.rootPostId) return Astro.redirect(series.path, 301);
 ---
 
 <PageLayout>

@@ -90,7 +90,7 @@ export function pageCategory(path: string): PageCategory {
     (/^\/card\/[^/]+$/.test(path) && !path.startsWith("/card/tag/"))
   )
     return "article";
-  if (path.startsWith("/series")) return "listing";
+  if (path.startsWith("/series")) return /^\/series\/[^/]+\/[^/]+$/.test(path) ? "article" : "listing";
   if (path.startsWith("/moments")) return "moments";
   if (path.startsWith("/photography")) return "photography";
   if (path.startsWith("/link")) return "links";

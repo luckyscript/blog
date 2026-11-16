@@ -1,7 +1,4 @@
 ---
-import { publicSeriesContext } from '../lib/server/series';
-import SeriesCollection from '../components/series/SeriesCollection.astro';
-import SeriesNavigation from '../components/series/SeriesNavigation.astro';
 import Analytics from '../components/Analytics.astro';
 /*
   This layout is used in pages that render markdoc content
@@ -30,8 +27,7 @@ export interface Props {
 }
 
 const { title, date, update, category, readingMinutes } = Astro.props;
-const seriesContext = await publicSeriesContext(Astro.url.pathname.replace(/\/$/, ""));
-const displayTitle = seriesContext.root?.title || title || "札记";
+const displayTitle = title || "札记";
 const formattedDate = new Date(date).toLocaleDateString("zh-CN", {
   year: "numeric",
   month: "short",
@@ -93,24 +89,22 @@ const section = sections[Astro.url.pathname.split("/")[1]] || { href: "/blog", n
                 <span class="reading-author-name">墨雨</span>
                 <div class="reading-details">
                   <time datetime={new Date(date).toISOString()}>{formattedDate}</time>
-                  {!seriesContext.root && readingMinutes && <><span aria-hidden="true">·</span><span>约 {readingMinutes} 分钟</span></>}
+                  {readingMinutes && <><span aria-hidden="true">·</span><span>约 {readingMinutes} 分钟</span></>}
                 </div>
               </div>
             </div>
           </header>
-          {seriesContext.chapter && <SeriesNavigation {...seriesContext.chapter} position="header" />}
-          {!seriesContext.root && isShowoutDays && (
+          {isShowoutDays && (
             <aside class="reading-notice">
               <span>旧文重读</span>
               最后更新于 {updatedAt!.toLocaleDateString("zh-CN")}，部分信息可能已有变化。
             </aside>
           )}
-          {seriesContext.root ? <SeriesCollection series={seriesContext.root}/> : <div class="reading-content prose max-w-none">
+          <div class="reading-content prose max-w-none">
             <slot name="content" />
-          </div>}
-          {seriesContext.chapter && <SeriesNavigation {...seriesContext.chapter} />}
+          </div>
           <div class="reading-endmark" aria-hidden="true"><span>雨</span></div>
-          {!seriesContext.root && <slot name="frontmatter" />}
+          <slot name="frontmatter" />
           <nav class="reading-navigation" aria-label="文章导航">
             <a class="unset" href={section.href}>← 返回{section.name}</a>
             <a class="unset" href="#main">回到篇首 ↑</a>

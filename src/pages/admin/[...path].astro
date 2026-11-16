@@ -2,7 +2,7 @@
 import AdminApp from '../../components/admin/AdminApp';
 import '../../styles/admin.css';
 const route = Astro.params.path ?? '';
-const known = ['', 'analytics', 'series', 'moments', 'links', 'photography', 'media', 'taxonomy', 'settings', 'posts/new'].includes(route) || /^series\/[a-f0-9-]{36}$/.test(route) || /^posts\/[a-f0-9-]{36}$/.test(route);
+const known = ['', 'analytics', 'series', 'moments', 'links', 'photography', 'media', 'taxonomy', 'settings', 'posts/new'].includes(route) || /^series\/notes\/[a-f0-9-]{36}$/.test(route) || /^series\/[a-f0-9-]{36}$/.test(route) || /^posts\/[a-f0-9-]{36}$/.test(route);
 if (!known) return new Response('页面不存在', { status: 404 });
 export const prerender = false;
 ---
