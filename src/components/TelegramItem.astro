@@ -1,5 +1,6 @@
 ---
 import 'src/styles/telegramItem.css';
+import 'src/styles/comments.css';
 import 'prismjs/themes/prism.css';
 import dayjs from 'src/lib/dayjs';
 import { getEnv } from 'src/lib/env';
@@ -42,6 +43,7 @@ const platform = post.platform === 'x' ? 'X' : platformLabels[post.platform] || 
       </div>
     ) : <div class="text-box telegram-content" set:html={body} />}
     <div class="moment-lightboxes" set:html={lightboxes} />
+    {!detailed && <a class="unset moment-comment-link" href={`/moments/posts/${post.id}#comments`}>留言 →</a>}
   </div>
 </article>
 

@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
 import { and, desc, eq, inArray, lte, sql } from "drizzle-orm";
 import { db } from "../../db";
 import {
@@ -11,7 +12,7 @@ import {
   redirects,
 } from "../../db/schema";
 import { AppError } from "./errors";
-import { parsePost, postPath, type PostInput } from "./content-input";
+import { parsePost, postDraftInput, postPath, type PostInput } from "./content-input";
 
 import { syncSeriesMembership } from './series';
 
@@ -100,12 +101,12 @@ export async function publicPost(path: string) {
   return (await hydrate([row]))[0];
 }
 
-export async function getPost(id: string) {
-  const [row] = await db().select().from(posts).where(eq(posts.id, id));
+export async function getPost(id: string, store: QueryStore = db()) {
+  const [row] = await store.select().from(posts).where(eq(posts.id, id));
   if (!row) throw new AppError(404, "文章不存在");
-  const [draft] = await db().select().from(drafts).where(eq(drafts.postId, id));
-  const live = (await hydrate([row]))[0];
-  const history = await db()
+  const [draft] = await store.select().from(drafts).where(eq(drafts.postId, id));
+  const live = (await hydrate([row], store))[0];
+  const history = await store
     .select({
       id: revisions.id,
       action: revisions.action,
@@ -152,14 +153,14 @@ export async function listPosts(
   const counts = {
     all: items.filter((item) => item.status !== "trash").length,
     published: items.filter((item) => item.status === "published").length,
-    draft: items.filter((item) => item.status === "draft").length,
+    draft: items.filter((item) => item.status !== "trash" && (item.status === "draft" || item.hasDraft)).length,
     trash: items.filter((item) => item.status === "trash").length,
   };
   const filtered = items.filter(
     (item) =>
       (!search || item.title.toLowerCase().includes(search.toLowerCase())) &&
       (!section || item.section === section) &&
-      (status ? item.status === status : item.status !== "trash")
+      (status === "draft" ? item.status !== "trash" && (item.status === "draft" || item.hasDraft) : status ? item.status === status : item.status !== "trash")
   );
   return {
     items: filtered.slice((page - 1) * 20, page * 20),
@@ -204,6 +205,32 @@ function liveFields(input: PostInput) {
     metadata: input.metadata,
     featured: input.featured,
   };
+}
+
+/** Stable client IDs and exact-content retries make lost autosave replies safe. */
+export async function saveCloudDraft(id: string, value: unknown, version: number | null, authorId: string) {
+  const input = postDraftInput.parse(value);
+  return db().transaction(async tx => {
+    const now = new Date();
+    if (version === null) {
+      // INSERT locks even a concurrently-created ID; it never changes that row.
+      const placeholder: PostInput = { ...input, title: '未命名文章', year: String(now.getUTCFullYear()), slug: `draft-${id}`, markdown: '', description: '', category: '', tags: [], externalUrl: '', coverUrl: '', canonicalUrl: '', metadata: {}, featured: false };
+      await tx.insert(posts).values({ id, ...liveFields(placeholder), authorId, categoryId: null, status: 'draft', version: 1, createdAt: now, updatedAt: now })
+        .onDuplicateKeyUpdate({ set: { id: sql`${posts.id}` } });
+    }
+    const [row] = await tx.select().from(posts).where(eq(posts.id, id)).for('update');
+    if (!row) throw new AppError(409, '草稿不存在，请重新打开');
+    if (row.status === 'trash') throw new AppError(409, '请先从回收站恢复文章');
+    const [draft] = await tx.select().from(drafts).where(eq(drafts.postId, id));
+    if (draft && isDeepStrictEqual(postDraftInput.parse(draft.content), input)) return getPost(id, tx);
+    if (version === null ? Boolean(draft) || row.version !== 1 || row.status !== 'draft' : row.version !== version)
+      throw new AppError(409, '草稿已在其他设备修改，请重新打开服务器草稿。本机内容仍保留。');
+    await tx.update(posts).set({ version: row.version + 1, updatedAt: now }).where(eq(posts.id, id));
+    await tx.insert(drafts).values({ postId: id, content: input, updatedAt: now })
+      .onDuplicateKeyUpdate({ set: { content: input, updatedAt: now } });
+    // Read the acknowledgement while the row is still locked.
+    return getPost(id, tx);
+  });
 }
 
 export async function saveDraft(

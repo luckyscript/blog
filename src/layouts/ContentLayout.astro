@@ -20,6 +20,7 @@ import Favicon from "./Favicon.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import ReadingMaterial from '../components/ReadingMaterial.astro';
+import CommentSection from '../components/CommentSection.astro';
 
 export interface Props {
   title?: string;
@@ -115,6 +116,7 @@ const section = sections[Astro.url.pathname.split("/")[1]] || { href: "/blog", n
             <a class="unset" href={section.href}>← 返回{section.name}</a>
             <a class="unset" href="#main">回到篇首 ↑</a>
           </nav>
+          <CommentSection />
         </article>
       </main>
       <Footer />

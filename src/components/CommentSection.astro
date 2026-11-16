@@ -1,0 +1,13 @@
+---
+import CommentThread from './CommentThread';
+import { usesDatabase } from '../lib/server/env';
+import { commentTargetForPath, publicComments } from '../lib/server/comments';
+import { publicTurnstileSettings } from '../lib/server/turnstile';
+import type { CommentTarget } from '../lib/comments/input';
+interface Props { target?: CommentTarget }
+const active = usesDatabase() && !Astro.url.pathname.startsWith('/admin/');
+const target = active ? Astro.props.target || await commentTargetForPath(Astro.url.pathname) : null;
+const initial = target ? await publicComments(target) : null;
+const turnstile = publicTurnstileSettings(Astro.url.hostname);
+---
+{target && initial && <CommentThread client:visible target={target} initial={initial} turnstile={turnstile} />}

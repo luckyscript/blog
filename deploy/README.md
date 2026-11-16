@@ -174,3 +174,9 @@ X 按独立原始推文 ID 保存；保留转推外层 ID、原作者署名和�
 ### 碎碎念云端草稿
 
 上线云端草稿前，先对数据库生成并校验备份，再执行 `npm run db:setup` 应用 `008_moment_drafts.sql`，最后切换网站 release。新增表保存原始写作内容；自动保存只更新草稿及版本标记，不修改已发布正文或状态。本站历史随记开放编辑、删除，外部同步来源仍不能通过本站写作接口修改。回滚时保留 `blog_moment_drafts` 表和数据，旧版本不会读取它；重新升级后可继续访问草稿。
+
+### 文章云端草稿与评论
+
+文章草稿保存到现有 `blog_post_drafts` 表，无标题或未填完的发布设置也能同步；新接口 `PUT /api/admin/posts/:uuid/draft` 使用稳定标识和精确重试，不会重复建稿，已发布正文仅在显式发布时更新。
+
+启用文章及碎碎念评论前，先完成并校验数据库备份，再运行 `npm run db:setup` 应用 `009_comments.sql`。评论复用现有 Turnstile 密钥和绑定域名，使用 `comment-submit` action，无需新增账号或第三方评论服务。访客评论必须经 `/admin/comments` 审核后公开。回滚时保留 `blog_comments`、`blog_comment_limits` 及草稿数据。

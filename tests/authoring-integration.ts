@@ -458,3 +458,46 @@ test('碎碎念云端草稿跨设备读取、并发保护、重试幂等与历�
     assert((await (await fetch(`${origin}/moments/posts/${clientId}`)).text()).includes('<strong>准备好了</strong>'));
   } finally { await closeDatabase(); }
 });
+
+test('文章云端草稿：无标题续写、独立会话、并发重试、发布隔离与草稿箱', async () => {
+  const origin = process.env.TEST_BASE_URL!, uri = new URL(process.env.DATABASE_URL!);
+  assert(['localhost', '127.0.0.1'].includes(uri.hostname) && /^blog_integration_[a-f0-9]{32}$/.test(uri.pathname.slice(1)));
+  assert(['localhost', '127.0.0.1'].includes(new URL(origin).hostname));
+  const { posts } = await import('../src/db/schema');
+  const id = randomUUID(), email = `article-cloud-${id}@example.test`, password = randomUUID();
+  const call = (path: string, method = 'GET', body?: unknown, cookie = '', requestOrigin = origin) => fetch(`${origin}/api/admin/${path}`, { method, headers: { origin: requestOrigin, 'content-type': 'application/json', cookie }, body: body === undefined ? undefined : JSON.stringify(body) });
+  try {
+    await createAdmin(email, password);
+    const login = async () => (await call('auth/login', 'POST', { email, password, turnstileToken: 'XXXX.DUMMY.TOKEN.XXXX' })).headers.get('set-cookie')!.split(';')[0];
+    const first = await login(), second = await login();
+    const input = { title: '', section: 'blog', year: '20', slug: '', markdown: '未命名也可以从另一台设备继续写', description: '', category: '', tags: [], publishedAt: new Date(Date.now() - 60000).toISOString(), contentUpdatedAt: null, externalUrl: 'https://', coverUrl: '', canonicalUrl: '', featured: false, metadata: { z: 1, a: 2 } };
+    const path = `posts/${id}/draft`, body = { input, version: null };
+    assert.equal((await call(path, 'PUT', body)).status, 401);
+    assert.equal((await call(path, 'PUT', body, first, 'https://elsewhere.invalid')).status, 403);
+    const concurrent = await Promise.all([call(path, 'PUT', body, first), call(path, 'PUT', body, first)]);
+    for (const response of concurrent) assert.equal(response.status, 200, await response.clone().text());
+    let row = await concurrent[0].json();
+    assert.equal((await concurrent[1].json()).version, row.version);
+    assert.equal((await db().select().from(posts).where(eq(posts.id, id))).length, 1);
+    let remote = await (await call(`posts/${id}`, 'GET', undefined, second)).json();
+    assert.deepEqual(remote.input, input);
+    assert.equal((await fetch(`${origin}${row.path}`)).status, 404);
+    assert.equal((await call(`posts/${id}/publish`, 'POST', { version: row.version }, first)).status, 400);
+    const next = { ...input, title: `云端文章 ${id}`, year: '2026', slug: `cloud-${id}`, externalUrl: '', markdown: '第二设备继续写作' };
+    let response = await call(path, 'PUT', { input: next, version: row.version }, second); assert.equal(response.status, 200); remote = await response.json();
+    assert.equal((await call(path, 'PUT', { input: { ...input, markdown: '过期设备覆盖' }, version: row.version }, first)).status, 409);
+    response = await call(path, 'PUT', { input: next, version: row.version }, first); assert.equal(response.status, 200); assert.equal((await response.json()).version, remote.version);
+    row = await (await call(`posts/${id}/publish`, 'POST', { version: remote.version }, first)).json(); assert.equal(row.status, 'published');
+    const live = (await db().select().from(posts).where(eq(posts.id, id)))[0];
+    response = await call(path, 'PUT', { input: { ...next, title: '', markdown: '未公开的新正文' }, version: row.version }, second); assert.equal(response.status, 200); row = await response.json();
+    const after = (await db().select().from(posts).where(eq(posts.id, id)))[0];
+    for (const field of ['title', 'markdown', 'path', 'status'] as const) assert.deepEqual(after[field], live[field]);
+    const list = await (await call('posts?status=draft', 'GET', undefined, second)).json();
+    assert(list.items.some((item: any) => item.id === id && item.status === 'published' && item.hasDraft));
+    assert(!(await (await fetch(`${origin}${row.path}`)).text()).includes('未公开的新正文'));
+    assert.equal((await call(`posts/${id}/trash`, 'POST', { version: row.version }, first)).status, 200);
+    assert.equal((await call(path, 'PUT', { input: next, version: row.version }, second)).status, 409);
+    row = await (await call(`posts/${id}`, 'GET', undefined, first)).json();
+    response = await call(`posts/${id}/restore`, 'POST', { version: row.version }, first); assert.equal(response.status, 200); assert.equal((await response.json()).input.markdown, '未公开的新正文');
+  } finally { await closeDatabase(); }
+});

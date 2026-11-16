@@ -9,6 +9,7 @@ import PhotographyStudio from './PhotographyStudio';
 import SeriesManager from './SeriesManager';
 import SeriesFields from './SeriesFields';
 import AnalyticsDashboard from './AnalyticsDashboard';
+import CommentsManager from './CommentsManager';
 import WritingPreferences, { useWritingPreferences } from './WritingPreferences';
 import UlyssesEditor, { type UlyssesEditorHandle, type WritingPosition } from './UlyssesEditor';
 import { decodeDraft, encodeDraft, writingWords } from '../../lib/admin/writing';
@@ -91,6 +92,7 @@ function Icon({ name }: { name: string }) {
   const paths: Record<string, React.ReactNode> = {
     series: <><path d="M4 4h6a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H4zM13 7a3 3 0 0 1 3-3h5v14h-5a3 3 0 0 0-3 3" /></>,
     analytics: <><path d="M4 20V4M4 20h17M8 16v-4M13 16V8M18 16V5" /></>,
+    comments: <><path d="M4 4h16v12H9l-5 4V4Z" /><path d="M8 8h8M8 12h5" /></>,
     moments: <><path d="M4 4h16v12H9l-5 4z" /><path d="M8 8h8M8 12h5" /></>,
     links: <><path d="m9 15 6-6M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 10a4 4 0 0 0 6 0l4-4a4 4 0 0 0-6-6l-1 1" /></>,
     posts: (
@@ -162,6 +164,7 @@ export default function AdminApp({
     ["series", "series", "系列手记"],
     ["analytics", "analytics", "访问分析"],
     ["moments", "moments", "碎碎念"],
+    ['comments', 'comments', '评论'],
     ['links','links','链接'],
     ['photography','media','摄影'],
     ["media", "media", "媒体库"],
@@ -235,6 +238,7 @@ export default function AdminApp({
           {view === "posts" && <Posts />}
           {view === "series" && <SeriesManager request={api} initialId={route.split("/")[1]} />}
           {view === "analytics" && <AnalyticsDashboard request={api} />}
+          {view === 'comments' && <CommentsManager request={api} />}
           {view === "editor" && (
             <Editor
               postId={route === "posts/new" ? null : route.split("/")[1]}
@@ -562,7 +566,7 @@ function Posts() {
                           className="post-name"
                           href={`/admin/posts/${post.id}`}
                         >
-                          {post.title}
+                          {post.title || '未命名文章'}
                         </a>
                         <small className="post-path">{post.path}</small>
                       </td>
@@ -677,13 +681,21 @@ function Editor({ postId }: { postId: string | null }) {
   inputRef.current = input;
   const [record, setRecord] = useState<Post | null>(null);
   const recordRef = useRef<Post | null>(null);
-  const [loaded, setLoaded] = useState(!postId);
+  const [loaded, setLoaded] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
   busyRef.current = busy;
   const [savedAt, setSavedAt] = useState("");
+  const [syncError, setSyncError] = useState('');
+  const syncErrorRef = useRef('');
+  syncErrorRef.current = syncError;
+  const loadedRef = useRef(loaded);
+  loadedRef.current = loaded;
+  const draftId = useRef(postId || '');
+  const unacknowledged = useRef<{ id: string; input: PostInput; version: number | null } | null>(null);
+  const saveRef = useRef<(keepalive?: boolean) => Promise<Post | null>>(async () => null);
   const [tab, setTab] = useState("edit");
   const [properties, setProperties] = useState(false);
   const [immersive, setImmersive] = useState(false);
@@ -726,7 +738,7 @@ function Editor({ postId }: { postId: string | null }) {
       return;
     }
     try {
-      localStorage.setItem(storageKey(), encodeDraft({ ...value, markdown: stripPendingImages(value.markdown, pendingImageMarkers.current) }, recordRef.current?.version ?? null));
+      localStorage.setItem(storageKey(), encodeDraft({ ...value, markdown: stripPendingImages(value.markdown, pendingImageMarkers.current) }, recordRef.current?.version ?? null, draftId.current));
       setStorageFailed(false);
       setLocalSaved(true);
     } catch { setStorageFailed(true); setLocalSaved(false); }
@@ -735,39 +747,53 @@ function Editor({ postId }: { postId: string | null }) {
   persistRef.current = persistLocal;
   useEffect(() => {
     api("taxonomy").then(setTerms).catch(() => {});
-    const checkRecovery = (serverInput: PostInput | null) => {
+    const initialize = async () => {
       try {
-        const pending = decodeDraft(localStorage.getItem(storageKey()));
-        if (pending && JSON.stringify(pending.input) !== JSON.stringify(serverInput)) {
+        let pending = null;
+        try { pending = decodeDraft(localStorage.getItem(storageKey())); } catch { setStorageFailed(true); }
+        draftId.current = postId || pending?.id || crypto.randomUUID();
+        let value: Post | null = null;
+        if (postId || pending?.id) {
+          try { value = await api(`posts/${draftId.current}`); }
+          catch (error: any) { if (postId || error.status !== 404) throw error; }
+        }
+        if (!editorActive.current) return;
+        if (value) {
+          applyRecord(value);
+          lastSaved.current = JSON.stringify(value.input);
+          inputRef.current = value.input;
+          setInput(value.input);
+          if (!postId) history.replaceState(null, '', `/admin/posts/${value.id}`);
+        }
+        if (pending && JSON.stringify(pending.input) !== JSON.stringify(value?.input)) {
           recoverRef.current = pending.input;
           setRecover(pending.input);
-          setRecoveryStale(pending.baseVersion !== null && pending.baseVersion !== recordRef.current?.version);
+          setRecoveryStale(Boolean(value && pending.baseVersion !== value.version));
+          if (value && !postId) {
+            try {
+              localStorage.setItem(storageKey(), encodeDraft(pending.input, pending.baseVersion, value.id));
+              localStorage.removeItem('inkrain-unsaved-new');
+            } catch { setStorageFailed(true); }
+          }
         }
-      } catch {}
+        setLoaded(true);
+      } catch (error: any) { setNotice({ text: error.message, error: true }); }
     };
-    if (postId) api(`posts/${postId}`).then(value => {
-      applyRecord(value);
-      lastSaved.current = JSON.stringify(value.input);
-      inputRef.current = value.input;
-      setInput(value.input);
-      checkRecovery(value.input);
-      setLoaded(true);
-    }).catch(error => setNotice({ text: error.message, error: true }));
-    else checkRecovery(null);
+    void initialize();
   }, []);
   useEffect(() => {
     if (!loaded || recover) return;
     persistLocal();
-    if (!dirty || !input.title.trim() || notice?.error || busy || imageUploads || record?.status === "trash") return;
+    if (!dirty || syncError || saving || busy || imageUploads || record?.status === "trash") return;
     const timer = setTimeout(() => {
-      save().catch(error => setNotice({ text: error.message, error: true }));
-    }, 1800);
+      void saveRef.current().catch(() => {});
+    }, 1200);
     return () => clearTimeout(timer);
-  }, [input, loaded, busy, imageUploads, recover]);
+  }, [input, loaded, busy, imageUploads, recover, saving, syncError]);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
       persistRef.current();
-      if (JSON.stringify(inputRef.current) !== lastSaved.current && (inputRef.current.title || inputRef.current.markdown)) {
+      if (imageUploadCount.current || unacknowledged.current || JSON.stringify(inputRef.current) !== lastSaved.current) {
         event.preventDefault(); event.returnValue = "";
       }
     };
@@ -775,11 +801,12 @@ function Editor({ postId }: { postId: string | null }) {
       persistRef.current();
       const position = writer.current?.position();
       if (position) try { localStorage.setItem(`${storageKey()}-position`, JSON.stringify(position)); } catch {}
+      if (!busyRef.current && !syncErrorRef.current) void saveRef.current(true).catch(() => {});
     };
     const visibility = () => { if (document.visibilityState === 'hidden') preserve(); };
     const online = () => {
-      if (!busyRef.current && !recoverRef.current && inputRef.current.title.trim() && JSON.stringify(inputRef.current) !== lastSaved.current)
-        save().then(() => setNotice(null)).catch(error => setNotice({ text: error.message, error: true }));
+      if (!busyRef.current && !recoverRef.current && JSON.stringify(inputRef.current) !== lastSaved.current)
+        void saveRef.current().catch(() => {});
     };
     const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') { setImmersive(false); setProperties(false); } };
     window.addEventListener('beforeunload', warn);
@@ -825,62 +852,72 @@ function Editor({ postId }: { postId: string | null }) {
       controller.abort();
     };
   }, [input.markdown, tab]);
-  async function save(): Promise<Post | null> {
+  async function save(keepalive = false): Promise<Post | null> {
+    if (!loadedRef.current || !draftId.current || !editorActive.current) return null;
     if (recoverRef.current) throw new Error('请先恢复或忽略上次的本地内容');
     if (imageUploadCount.current) throw new Error('图片正在上传，请稍后保存或发布');
     while (savingPromise.current) {
       await savingPromise.current;
     }
     if (imageUploadCount.current) throw new Error('图片正在上传，请稍后保存或发布');
-    const snapshot = inputRef.current;
-    if (!snapshot.title.trim()) throw new Error("请先填写文章标题");
-    if (JSON.stringify(snapshot) === lastSaved.current && recordRef.current)
+    if (!unacknowledged.current && JSON.stringify(inputRef.current) === lastSaved.current)
       return recordRef.current;
     setSaving(true);
-    const current = recordRef.current;
+    setSyncError('');
+    persistRef.current();
     const request = (async () => {
-      const value = await (current
-        ? send(
-            `posts/${current.id}`,
-            { input: snapshot, version: current.version },
-            "PUT"
-          )
-        : send("posts", snapshot));
-      applyRecord(value);
-      lastSaved.current = JSON.stringify(snapshot);
-      setSavedAt(
-        new Date().toLocaleTimeString("zh-CN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      );
-      if (!current) {
-        // A draft can gain its server ID while more text is still being typed.
-        // Move that newer local snapshot before retiring the original recovery key.
-        let moved = false;
-        try {
-          localStorage.setItem(storageKey(), encodeDraft({ ...inputRef.current, markdown: stripPendingImages(inputRef.current.markdown, pendingImageMarkers.current) }, value.version));
-          moved = true;
-        } catch { setStorageFailed(true); }
-        history.replaceState(null, "", `/admin/posts/${value.id}`);
-        if (moved || JSON.stringify(inputRef.current) === JSON.stringify(snapshot)) {
-          try { localStorage.removeItem("inkrain-unsaved-new"); } catch {}
+      let replay = unacknowledged.current;
+      for (;;) {
+        const pending = replay || { id: draftId.current, input: inputRef.current, version: recordRef.current?.version ?? null };
+        unacknowledged.current = pending;
+        const body = JSON.stringify({ input: pending.input, version: pending.version });
+        const value: Post = await api(`posts/${pending.id}/draft`, { method: 'PUT', body, keepalive: keepalive && new TextEncoder().encode(body).length < 60000 });
+        unacknowledged.current = null;
+        if (!editorActive.current) return value;
+        const oldKey = storageKey();
+        const current = recordRef.current;
+        applyRecord(value);
+        lastSaved.current = JSON.stringify(pending.input);
+        setSavedAt(
+          new Date().toLocaleTimeString("zh-CN", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        );
+        if (!current) {
+          // A draft can gain its server ID while more text is still being typed.
+          // Move that newer local snapshot before retiring the original recovery key.
+          let moved = false;
+          try {
+            localStorage.setItem(storageKey(), encodeDraft({ ...inputRef.current, markdown: stripPendingImages(inputRef.current.markdown, pendingImageMarkers.current) }, value.version, value.id));
+            moved = true;
+          } catch { setStorageFailed(true); }
+          history.replaceState(null, "", `/admin/posts/${value.id}`);
+          if (moved || JSON.stringify(inputRef.current) === JSON.stringify(pending.input)) {
+            try { localStorage.removeItem(oldKey); } catch {}
+          }
         }
+        if (JSON.stringify(inputRef.current) === lastSaved.current) {
+          try { localStorage.removeItem(storageKey()); } catch {}
+          setLocalSaved(false);
+        } else persistRef.current();
+        if (!replay || JSON.stringify(inputRef.current) === lastSaved.current) return value;
+        replay = null;
       }
-      if (JSON.stringify(inputRef.current) === JSON.stringify(snapshot)) {
-        try { localStorage.removeItem(storageKey()); } catch {}
-        setLocalSaved(false);
-      } else persistRef.current();
-      return value;
     })();
     savingPromise.current = request;
     try {
       return await request;
+    } catch (error: any) {
+      if (error.status && error.status < 500) unacknowledged.current = null;
+      if (editorActive.current) { persistRef.current(); setSyncError(error.message); }
+      throw error;
     } finally {
       savingPromise.current = null;
-      setSaving(false);
+      if (editorActive.current) setSaving(false);
     }
   }
+  saveRef.current = save;
   const field = <K extends keyof PostInput>(key: K, value: PostInput[K]) => {
     inputRef.current = { ...inputRef.current, [key]: value };
     setInput(inputRef.current);
@@ -888,8 +925,28 @@ function Editor({ postId }: { postId: string | null }) {
   const saveManually = () => {
     if (busyRef.current || recordRef.current?.status === 'trash') return;
     setNotice(null);
-    save().then(() => setNotice({ text: '草稿已保存。' })).catch(error => setNotice({ text: error.message, error: true }));
+    save().then(() => setNotice({ text: '草稿已保存到服务器，可换设备继续写作。' })).catch(() => {});
   };
+  async function reopenServerDraft() {
+    setBusy(true);
+    persistRef.current();
+    try {
+      const local = inputRef.current;
+      const value: Post = await api(`posts/${draftId.current}`);
+      applyRecord(value);
+      lastSaved.current = JSON.stringify(value.input);
+      inputRef.current = value.input;
+      setInput(value.input);
+      unacknowledged.current = null;
+      setSyncError('');
+      if (JSON.stringify(local) !== JSON.stringify(value.input)) {
+        recoverRef.current = local;
+        setRecover(local);
+        setRecoveryStale(true);
+      }
+    } catch (error: any) { setNotice({ text: error.message, error: true }); }
+    finally { setBusy(false); }
+  }
   async function action(kind: string) {
     setBusy(true);
     setNotice(null);
@@ -973,14 +1030,16 @@ function Editor({ postId }: { postId: string | null }) {
         <div className="editor-actions">
           <span className="save-state" role="status" aria-live="polite">
             {saving
-              ? "正在保存…"
+              ? "正在保存到服务器…"
               : recover
               ? "等待恢复本地内容"
+              : syncError
+              ? (localSaved ? "同步失败，本机内容已保留" : "同步失败，请复制正文备份")
               : dirty
-              ? (localSaved ? "修改已保存在本机" : "有未保存修改")
-              : savedAt
-              ? `${savedAt} 已保存`
-              : "修改自动保存为草稿"}
+              ? "等待保存到服务器…"
+              : savedAt || record
+              ? `${savedAt ? savedAt + ' ' : ''}已保存到服务器，可换设备继续写作。`
+              : "输入后自动保存到服务器草稿箱"}
           </span>
           <button
             className="button"
@@ -1002,10 +1061,15 @@ function Editor({ postId }: { postId: string | null }) {
         </div>
       </div>
       <Message notice={notice} />
+      {syncError && <div className="notice error" role="alert">
+        同步失败：{syncError}
+        <button className="text-button" disabled={busy || saving || !!recover || imageUploads > 0} onClick={saveManually}>重试保存</button>
+        <button className="text-button" disabled={busy || saving || !!recover} onClick={() => void reopenServerDraft()}>重新打开服务器草稿</button>
+      </div>}
       {storageFailed && <div className="notice error" role="alert">本机草稿存储不可用，请及时保存到服务器或复制正文备份。</div>}
       {recover && (
         <div className="notice recovery">
-          {recoveryStale ? '服务器已有较新版本。恢复本机内容会替换当前草稿，请先核对。' : '发现上次未保存的编辑，选择恢复后继续写作。'}
+          {recoveryStale ? '服务器已有较新版本。恢复本机内容后会保存为服务器草稿，请先核对。' : '发现上次未同步的编辑，选择恢复后继续写作。'}
           <button
             onClick={() => {
               inputRef.current = recover;

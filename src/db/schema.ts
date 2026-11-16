@@ -10,6 +10,7 @@ import {
   primaryKey,
   uniqueIndex,
   index,
+  type AnyMySqlColumn,
 } from "drizzle-orm/mysql-core";
 import type { MomentForm } from "../lib/admin/moment-writing";
 import type { PostInput } from "../lib/server/content-input";
@@ -174,6 +175,24 @@ export const momentDuplicates = mysqlTable("blog_moment_duplicates", {
   duplicateOf: varchar("duplicate_of", { length: 36 }).notNull().references(() => moments.id, { onDelete: "cascade" }),
   reason: varchar("reason", { length: 16 }).notNull(),
 }, table => [index("blog_moment_duplicate_original").on(table.duplicateOf)]);
+export const comments = mysqlTable('blog_comments', {
+  id: id(),
+  postId: varchar('post_id', { length: 36 }).references(() => posts.id, { onDelete: 'cascade' }),
+  momentId: varchar('moment_id', { length: 36 }).references(() => moments.id, { onDelete: 'cascade' }),
+  parentId: varchar('parent_id', { length: 36 }).references((): AnyMySqlColumn => comments.id, { onDelete: 'cascade' }),
+  authorId: varchar('author_id', { length: 36 }).references(() => users.id, { onDelete: 'set null' }),
+  name: varchar('author_name', { length: 60 }).notNull(),
+  email: varchar('author_email', { length: 254 }).notNull().default(''),
+  body: text('body').notNull(),
+  status: varchar('status', { length: 16 }).$type<'pending' | 'approved' | 'trash'>().notNull().default('pending'),
+  version: int('version').notNull().default(1),
+  createdAt: time('created_at').notNull(), updatedAt: time('updated_at').notNull(),
+}, table => [index('blog_comments_post').on(table.postId, table.status, table.createdAt), index('blog_comments_moment').on(table.momentId, table.status, table.createdAt), index('blog_comments_review').on(table.status, table.createdAt), index('blog_comments_parent').on(table.parentId)]);
+export const commentLimits = mysqlTable('blog_comment_limits', {
+  key: varchar('rate_key', { length: 64 }).primaryKey(),
+  attempts: int('attempts').notNull(), resetsAt: time('resets_at').notNull(),
+}, table => [index('blog_comment_limit_expiry').on(table.resetsAt)]);
+
 export const momentSyncRuns = mysqlTable("blog_moment_sync_runs", {
   id: id(), sourceId: varchar("source_id", { length: 190 }).notNull().references(() => momentSources.id),
   startedAt: time("started_at").notNull(), finishedAt: time("finished_at"), outcome: varchar("outcome", { length: 16 }).notNull(),

@@ -4,6 +4,7 @@ import PageMeta from '../../../components/PageMeta.astro'
 import TelegramItem from '../../../components/TelegramItem.astro'
 import { SITE_TITLE } from '../../../config'
 import { momentById } from '../../../lib/moments/store'
+import CommentSection from '../../../components/CommentSection.astro'
 
 const post = await momentById(Astro.params.id || '')
 
@@ -16,6 +17,7 @@ export const prerender = false
     <section class="moments-detail">
       <a class="unset moment-back" href="/moments">← 回到碎碎念</a>
       {post ? <TelegramItem post={post} detailed={true} /> : <p>这条碎碎念没有找到。</p>}
+      {post && <CommentSection target={{ kind: 'moment', id: post.id }} />}
     </section>
   </Fragment>
 </PageLayout>
