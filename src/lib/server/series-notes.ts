@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 import { z } from "zod";
+import type { PoolConnection } from "mysql2/promise";
 import { getPool } from "../../db";
 import { AppError } from "./errors";
 import { getAdminSeries, notePath, seriesIso, seriesJson } from "./series";
@@ -36,13 +37,13 @@ export function noteInput(r: any): SeriesNoteInput {
     publishedAt: seriesIso(r.published_at)!,
   };
 }
-export async function getSeriesNote(id: string): Promise<SeriesNoteRecord> {
-  const [[r]] = await getPool().query<any[]>(
+export async function getSeriesNote(id: string, store: Pick<PoolConnection, 'query'> = getPool()): Promise<SeriesNoteRecord> {
+  const [[r]] = await store.query<any[]>(
     `SELECT n.*,s.title AS series_title,s.slug AS series_slug,d.content AS draft_content FROM blog_series_notes n JOIN blog_series s ON s.id=n.series_id LEFT JOIN blog_series_note_drafts d ON d.note_id=n.id WHERE n.id=?`,
     [id]
   );
   if (!r) throw new AppError(404, "系列篇目不存在");
-  const [history] = await getPool().query<any[]>(
+  const [history] = await store.query<any[]>(
     "SELECT id,action,created_at FROM blog_series_note_revisions WHERE note_id=? ORDER BY created_at DESC,id DESC",
     [id]
   );
@@ -88,14 +89,15 @@ export async function createSeriesNote(seriesId: string) {
       "INSERT INTO blog_series_note_drafts(note_id,content,updated_at) VALUES(?,?,UTC_TIMESTAMP(3))",
       [id, JSON.stringify(input)]
     );
+    const record = await getSeriesNote(id, db);
     await db.commit();
+    return record;
   } catch (e) {
     await db.rollback();
     throw e;
   } finally {
     db.release();
   }
-  return getSeriesNote(id);
 }
 export async function saveSeriesNote(
   id: string,
@@ -120,8 +122,9 @@ export async function saveSeriesNote(
       draft &&
       isDeepStrictEqual(seriesNoteInput.parse(seriesJson(draft.content)), input)
     ) {
+      const record = await getSeriesNote(id, db);
       await db.rollback();
-      return getSeriesNote(id);
+      return record;
     }
     if (row.version !== version)
       throw new AppError(
@@ -136,14 +139,15 @@ export async function saveSeriesNote(
       "UPDATE blog_series_notes SET version=version+1,updated_at=UTC_TIMESTAMP(3) WHERE id=?",
       [id]
     );
+    const record = await getSeriesNote(id, db);
     await db.commit();
+    return record;
   } catch (e) {
     await db.rollback();
     throw e;
   } finally {
     db.release();
   }
-  return getSeriesNote(id);
 }
 export async function seriesNoteAction(
   id: string,
@@ -245,7 +249,9 @@ export async function seriesNoteAction(
         revisionId ? "restore-version" : action,
       ]
     );
+    const record = await getSeriesNote(id, db);
     await db.commit();
+    return record;
   } catch (e) {
     await db.rollback();
     if ((e as any)?.code === "ER_DUP_ENTRY")
@@ -254,7 +260,6 @@ export async function seriesNoteAction(
   } finally {
     db.release();
   }
-  return getSeriesNote(id);
 }
 export async function publicSeriesNote(seriesSlug: string, slug: string) {
   const [[row]] = await getPool().query<any[]>(

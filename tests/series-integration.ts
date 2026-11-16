@@ -145,7 +145,7 @@ test("系列独立栏目、独立存储与编辑发布：保真迁移、旧址�
     assert.equal(page(".series-shelf").length, 0);
     assert.equal(page('a.post-link[href*="rear-end-collision"]').length, 0);
     assert.equal((await call("posts/" + copied[0].id)).status, 404);
-    const articles = await (await call("posts?search=被追尾了")).json();
+    const articles = await (await call("posts?q=被追尾了")).json();
     assert(!articles.items.some((p: any) => p.id === copied[0].id));
     assert.equal((await call("series", "GET", undefined, false)).status, 401);
     assert.equal(
@@ -170,6 +170,12 @@ test("系列独立栏目、独立存储与编辑发布：保真迁移、旧址�
     assert(!("section" in note.input));
     assert.equal((await call("posts/" + note.id)).status, 404);
     assert.equal((await fetch(origin + note.path)).status, 404);
+    const concurrent = await Promise.all(['设备一的草稿', '设备二的草稿'].map(markdown => call('series/notes/' + note.id, 'PUT', { input: {...note.input, markdown}, version: note.version })));
+    assert.deepEqual(concurrent.map(r => r.status).sort(), [200, 409]);
+    note = await concurrent.find(r => r.status === 200)!.json();
+    const stored = await (await call('series/notes/' + note.id)).json();
+    assert.equal(note.version, stored.version);
+    assert.equal(note.input.markdown, stored.input.markdown);
     const edited = {
       ...note.input,
       title: "第一则 " + suffix,
