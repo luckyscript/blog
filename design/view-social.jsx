@@ -88,7 +88,7 @@ const SocialView = ({ theme, fontFamily }) => {
                   <span style={{ cursor: 'pointer' }}>↺ {p.replies}</span>
                   <span style={{ cursor: 'pointer' }}>♡ {p.likes.toLocaleString()}</span>
                   <span style={{ cursor: 'pointer' }}>★</span>
-                  <span style={{ cursor: 'pointer', marginLeft: 'auto' }}>↗ original</span>
+                  <span style={{ cursor: 'pointer', marginLeft: 'auto' }}>original</span>
                 </div>
               </div>
             </article>

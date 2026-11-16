@@ -114,7 +114,7 @@ const BoldReader = ({ theme, fontFamily }) => {
             { k: '★', a: 'star', on: starred.has(current.id) },
             { k: '⧖', a: 'later' },
             { k: '✎', a: 'note' },
-            { k: '↗', a: 'open' },
+            { k: '打开', a: 'open' },
             { k: '⊕', a: 'ai' },
           ].map((b) => (
             <button key={b.a} onClick={() => b.a === 'star' && toggleStar(current.id)} title={b.a} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${b.on ? palette.stamp : palette.borderSoft}`, background: 'transparent', color: b.on ? palette.stamp : palette.inkSoft, fontSize: 14, cursor: 'pointer', fontFamily: typeStack }}>{b.k}</button>

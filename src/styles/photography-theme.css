@@ -31,7 +31,7 @@
 .photography-workspace .photo-entry-image:hover img{opacity:.9}
 .photography-workspace .photo-entry-caption{display:flex;gap:12px;justify-content:space-between;align-items:start;margin-top:12px;font-size:15px}
 .photography-workspace .photo-entry-caption time{display:block;margin-top:3px;color:var(--ink-muted);font:11px/1.8 var(--font-mono)}
-.photography-workspace .photo-entry-caption button{border:0;background:transparent;padding:0 4px;color:var(--ink-muted);font-size:21px;line-height:1.5}
+.photography-workspace .photo-entry-caption button{border:0;background:transparent;padding:4px 6px;min-height:32px;min-width:36px;color:var(--ink-muted);font-size:12px;line-height:1.8;white-space:nowrap}
 .photography-workspace .photo-albums{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 30px}
 .photography-workspace .photo-album-image{display:block;background:var(--paper-deep)}
 .photography-workspace .photo-album-image img{aspect-ratio:3/2;object-fit:contain}

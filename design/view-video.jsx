@@ -64,7 +64,7 @@ const VideoView = ({ theme, fontFamily }) => {
               <div style={{ fontSize: 11.5, color: palette.inkMuted, fontFamily: '"JetBrains Mono", monospace', letterSpacing: '0.08em' }}>1.4M subscribers · 142K views</div>
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              {['★ Save', '⧖ Later', '↗ YouTube'].map((b) => (
+              {['★ Save', '⧖ Later', 'YouTube'].map((b) => (
                 <button key={b} style={{ padding: '7px 14px', border: `1px solid ${palette.borderSoft}`, background: 'transparent', color: palette.ink, fontFamily: 'inherit', fontSize: 12, cursor: 'pointer' }}>{b}</button>
               ))}
             </div>

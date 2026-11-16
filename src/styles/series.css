@@ -75,17 +75,8 @@
   color: var(--stamp);
 }
 .series-story-link h3 {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
   font: 400 1.45rem/1.6 var(--font-serif);
   margin: 0.4rem 0;
-}
-.series-story-link h3 > span {
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  color: var(--ink-muted);
 }
 .series-story-link:hover h3 {
   color: var(--stamp);

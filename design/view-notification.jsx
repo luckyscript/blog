@@ -53,7 +53,7 @@ const NotifView = ({ theme, fontFamily }) => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 11, color: palette.inkMuted, flexShrink: 0, paddingTop: 2 }}>
                 <span style={{ cursor: 'pointer' }}>✓</span>
                 <span style={{ cursor: 'pointer' }}>★</span>
-                <span style={{ cursor: 'pointer' }}>↗</span>
+                <span style={{ cursor: 'pointer' }}>打开</span>
               </div>
             </div>
           ))}
