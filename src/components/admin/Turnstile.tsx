@@ -49,10 +49,12 @@ export default function Turnstile({
   siteKey,
   resetKey,
   onToken,
+  action = 'admin-login',
 }: {
   siteKey: string;
   resetKey: number;
   onToken: (token: string) => void;
+  action?: 'admin-login' | 'comment-submit';
 }) {
   const container = useRef<HTMLDivElement>(null);
   const widget = useRef<string>();
@@ -83,7 +85,7 @@ export default function Turnstile({
           if (widget.current !== undefined) loaded.remove(widget.current);
           widget.current = loaded.render(container.current, {
             sitekey: siteKey,
-            action: "admin-login",
+            action,
             theme: "light",
             size,
             "response-field": false,
@@ -135,7 +137,7 @@ export default function Turnstile({
       if (widget.current !== undefined) api?.remove(widget.current);
       widget.current = undefined;
     };
-  }, [siteKey, resetKey, retry]);
+  }, [siteKey, resetKey, retry, action]);
   return (
     <div className="login-verification">
       <div ref={container} className="turnstile-widget" />

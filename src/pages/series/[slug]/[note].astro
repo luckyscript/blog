@@ -3,6 +3,7 @@ import PageLayout from "../../../layouts/PageLayout.astro";
 import BlogPostMeta from "../../../components/BlogPostMeta.astro";
 import Renderer from "../../../components/Renderer.astro";
 import SeriesNavigation from "../../../components/series/SeriesNavigation.astro";
+import CommentSection from "../../../components/CommentSection.astro";
 import { publicSeriesBySlug } from "../../../lib/server/series";
 import { publicSeriesNote } from "../../../lib/server/series-notes";
 import { renderedBody } from "../../../lib/markdoc/render-cache";
@@ -50,5 +51,6 @@ const date = new Date(note.publishedAt).toLocaleDateString("zh-CN", {
       <Renderer content={body.content} />
     </div>
     <SeriesNavigation series={series} index={index} />
+    <CommentSection target={{ kind: 'series', id: note.id }} />
   </article>
 </PageLayout>

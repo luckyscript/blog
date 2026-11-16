@@ -49,6 +49,11 @@ test("系列独立栏目、独立存储与编辑发布：保真迁移、旧址�
       { env: process.env }
     );
     const legacy = JSON.parse(legacyMigration.stdout.trim());
+    const legacyComment = randomUUID();
+    await getPool().query(
+      "INSERT INTO blog_comments(id,post_id,author_name,author_email,body,status,created_at,updated_at) VALUES(?,?,?,?,?,'approved',UTC_TIMESTAMP(3),UTC_TIMESTAMP(3))",
+      [legacyComment, legacy.chapterIds[0], '原系列读者', 'private@example.invalid', '这条留言需要随篇目迁移']
+    );
     const baseEntry = await (
       await call("posts/" + legacy.chapterIds[0])
     ).json();
@@ -84,12 +89,33 @@ test("系列独立栏目、独立存储与编辑发布：保真迁移、旧址�
       "SELECT n.*,p.markdown AS original FROM blog_series_notes n JOIN blog_posts p ON p.id=n.id"
     );
     assert.equal(copied.length, 4);
+    const [[comment]] = await getPool().query<any[]>(
+      "SELECT post_id,series_note_id FROM blog_comments WHERE id=?", [legacyComment]
+    );
+    assert.equal(comment.post_id, null);
+    assert.equal(comment.series_note_id, legacy.chapterIds[0]);
+    let commentsResponse = await fetch(`${origin}/api/comments/series/${legacy.chapterIds[0]}`);
+    assert.equal(commentsResponse.status, 200);
+    let commentsPage = await commentsResponse.json();
+    assert.equal(commentsPage.total, 1);
+    assert.equal(commentsPage.items[0].body, '这条留言需要随篇目迁移');
+    assert(!JSON.stringify(commentsPage).includes('private@example.invalid'));
+    assert.equal((await fetch(`${origin}/api/comments/post/${legacy.chapterIds[0]}`)).status, 404);
+    const seriesComments = await (await call('comments?kind=series&status=approved')).json();
+    assert.equal(seriesComments.items[0].target.kind, 'series');
+    assert(seriesComments.items[0].targetPath.startsWith('/series/'));
+    const reply = await call(`comments/${legacyComment}/replies`, 'POST', {id:randomUUID(),body:'博主继续回应',version:1});
+    assert.equal(reply.status, 201);
+    commentsPage = await (await fetch(`${origin}/api/comments/series/${legacy.chapterIds[0]}`)).json();
+    assert.equal(commentsPage.total, 2);
+    assert(commentsPage.items.some((item: any)=>item.isAuthor && item.body==='博主继续回应'));
     const restoredDraft = await (
       await call("series/notes/" + oldDraft.id)
     ).json();
     assert.equal(restoredDraft.input.markdown, "这段文字还没有公开");
     assert.equal(restoredDraft.status, "draft");
     assert.equal((await fetch(origin + restoredDraft.path)).status, 404);
+    assert.equal((await fetch(`${origin}/api/comments/series/${oldDraft.id}`)).status, 404);
     for (const n of copied) assert.equal(n.markdown, n.original);
     let response = await fetch(origin + before.path, { redirect: "manual" });
     assert.equal(response.status, 301);

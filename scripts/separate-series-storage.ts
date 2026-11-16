@@ -1,4 +1,4 @@
-import { randomUUID, createHash } from "node:crypto";
+import { createHash } from "node:crypto";
 import { getPool, closeDatabase } from "../src/db";
 import { seriesJson } from "../src/lib/server/series";
 const toNote = (v: any) => ({
@@ -130,7 +130,10 @@ async function main() {
         );
       }
     }
-    if (apply) await db.commit();
+    if (apply) {
+      await db.query("UPDATE blog_comments c JOIN blog_series_notes n ON n.id=c.post_id SET c.series_note_id=n.id,c.post_id=NULL");
+      await db.commit();
+    }
     else await db.rollback();
     console.log(
       JSON.stringify({

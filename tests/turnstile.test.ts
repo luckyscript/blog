@@ -392,3 +392,10 @@ test("认证入口在查询密码或创建会话之前强制验证，不能只�
   );
   assert.equal(cookies, 0);
 });
+
+test('评论验证使用独立 action，登录和评论令牌不能互换', async () => {
+  const comment = { ...success, action: 'comment-submit' };
+  await verifyTurnstile('comment-token', hostname, { environment, fetch: response(comment), action: 'comment-submit' });
+  await rejects(verifyTurnstile('login-token', hostname, { environment, fetch: response(success), action: 'comment-submit' }), 403);
+  await rejects(verifyTurnstile('comment-token', hostname, { environment, fetch: response(comment) }), 403);
+});

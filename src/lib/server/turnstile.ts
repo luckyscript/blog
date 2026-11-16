@@ -156,6 +156,7 @@ export async function verifyTurnstile(
   options: {
     fetch?: typeof fetch;
     environment?: NodeJS.ProcessEnv;
+    action?: 'admin-login' | 'comment-submit';
   } = {}
 ) {
   const config = settings(hostname, options.environment);
@@ -245,7 +246,7 @@ export async function verifyTurnstile(
   if (
     !config.testing &&
     (result.metadata?.result_with_testing_key ||
-      result.action !== TURNSTILE_ACTION ||
+      result.action !== (options.action ?? TURNSTILE_ACTION) ||
       !result.hostname ||
       normalizeHost(result.hostname) !== normalizeHost(hostname) ||
       !config.hostnames.includes(normalizeHost(result.hostname)))

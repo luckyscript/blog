@@ -9,6 +9,7 @@ import {
   listPosts,
   getPost,
   saveDraft,
+  saveCloudDraft,
   publishPost,
   changeStatus,
   restoreRevision,
@@ -26,6 +27,8 @@ import { listLocalMoments, saveLocalMoment, changeLocalMomentStatus, prepareLoca
 import { listCuratedLinks, saveCuratedLink, changeCuratedLinkStatus } from '../../../lib/server/links';
 
 import { analyticsDashboard } from '../../../lib/analytics/dashboard';
+import { listComments, moderateComment, replyToComment } from '../../../lib/server/comments';
+import { commentBody } from '../../../lib/comments/input';
 
 export const prerender = false;
 const json = (data: unknown, status = 200) =>
@@ -97,6 +100,22 @@ export async function ALL(context: APIContext) {
     }
     const user = context.locals.admin;
     if (!user) throw new AppError(401, "请先登录");
+    if (path === 'comments' && method === 'GET') {
+      const query = z.object({ status: z.enum(['', 'pending', 'approved', 'trash']).default('pending'), kind: z.enum(['', 'post', 'moment', 'series']).default(''), page: z.coerce.number().int().min(1).max(10000).default(1) }).parse(Object.fromEntries(context.url.searchParams));
+      return json(await listComments(query.status, query.kind, query.page));
+    }
+    const comment = path.match(/^comments\/([a-f0-9-]{36})(?:\/(replies))?$/);
+    if (comment) {
+      const id = z.string().uuid().parse(comment[1]);
+      if (comment[2] === 'replies' && method === 'POST') {
+        const value = z.object({ id: z.string().uuid(), body: commentBody, version: z.number().int().positive() }).parse(await body(context.request));
+        return json(await replyToComment(id, value.version, value.id, value.body, user.id), 201);
+      }
+      if (!comment[2] && method === 'PUT') {
+        const value = z.object({ action: z.enum(['approve', 'pending', 'trash', 'restore']), version: z.number().int().positive() }).parse(await body(context.request));
+        return json(await moderateComment(id, value.version, value.action));
+      }
+    }
     if(path==='analytics'&&method==='GET')return json(await analyticsDashboard(context.url.searchParams));
     if(path==='series'&&method==='GET')return json(await listAdminSeries());
     if(path==='series'&&method==='POST')return json(await saveSeries(null,await body(context.request),null),201);
@@ -181,6 +200,12 @@ export async function ALL(context: APIContext) {
         await saveDraft(null, await body(context.request), 0, user.id),
         201
       );
+    const articleDraft = path.match(/^posts\/([a-f0-9-]{36})\/draft$/);
+    if (articleDraft && method === 'PUT') {
+      const id = z.string().uuid().parse(articleDraft[1]);
+      const value = z.object({ input: z.unknown(), version: z.number().int().positive().nullable() }).parse(await body(context.request));
+      return json(await saveCloudDraft(id, value.input, value.version, user.id));
+    }
     const post = path.match(
       /^posts\/([a-f0-9-]{36})(?:\/(publish|unpublish|trash|restore|revisions|export))?$/
     );

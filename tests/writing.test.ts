@@ -8,6 +8,13 @@ test('本地恢复允许无标题正文、兼容旧格式，拒绝损坏或不�
   assert.deepEqual(decodeDraft(JSON.stringify(input))?.input, input);
   for (const raw of [null, '', '{', '{}', JSON.stringify({ format: 1, input: { markdown: 'bad' } })]) assert.equal(decodeDraft(raw), null);
 });
+test('文章云端草稿保留稳定标识与尚未填写完整的发布信息', () => {
+  const id = '00000000-0000-4000-8000-000000000001';
+  const unfinished = { ...input, year: '20', slug: '', externalUrl: 'https://', coverUrl: '/尚未写完 ', canonicalUrl: 'h' };
+  const recovered = decodeDraft(encodeDraft(unfinished, null, id));
+  assert.equal(recovered?.id, id);
+  assert.deepEqual(recovered?.input, unfinished);
+});
 test('段落聚焦覆盖多行并在空行停止，兼容中文、文首和文末', () => {
   const text = '第一行\n换行继续\n\n第二段\n\n末尾';
   assert.deepEqual(paragraphRange(text, 0), { from: 0, to: 8 });

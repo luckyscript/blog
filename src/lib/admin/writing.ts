@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { postInput, type PostInput } from '../server/content-input';
+import { postDraftInput, type PostInput } from '../server/content-input';
 
 /** A paragraph is a run of nonblank lines; positions use the editor's UTF-16 offsets. */
 export function paragraphRange(text: string, position: number) {
@@ -27,16 +27,15 @@ export function writingWords(markdown: string) {
   return (text.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]|(?:(?![\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}])[\p{L}\p{N}])+/gu) || []).length;
 }
 
-const recoverableInput = postInput.extend({ title: z.string().max(255) });
-export type LocalDraft = { input: PostInput; baseVersion: number | null; savedAt: string };
-export function encodeDraft(input: PostInput, baseVersion: number | null) {
-  return JSON.stringify({ format: 1, input, baseVersion, savedAt: new Date().toISOString() });
+export type LocalDraft = { input: PostInput; baseVersion: number | null; savedAt: string; id?: string };
+export function encodeDraft(input: PostInput, baseVersion: number | null, id?: string) {
+  return JSON.stringify({ format: 1, input, baseVersion, id, savedAt: new Date().toISOString() });
 }
 export function decodeDraft(raw: string | null): LocalDraft | null {
   if (!raw) return null;
   try {
     const value = JSON.parse(raw);
-    const input = recoverableInput.parse(value.format === 1 ? value.input : value);
-    return { input, baseVersion: Number.isInteger(value.baseVersion) ? value.baseVersion : null, savedAt: typeof value.savedAt === 'string' ? value.savedAt : '' };
+    const input = postDraftInput.parse(value.format === 1 ? value.input : value);
+    return { input, baseVersion: Number.isInteger(value.baseVersion) ? value.baseVersion : null, savedAt: typeof value.savedAt === 'string' ? value.savedAt : '', ...(z.string().uuid().safeParse(value.id).success ? { id: value.id } : {}) };
   } catch { return null; }
 }

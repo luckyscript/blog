@@ -77,6 +77,17 @@ export const postInput = z.object({
 });
 export type PostInput = z.infer<typeof postInput>;
 
+// A writing draft can contain unfinished publishing settings. Validate those
+// settings with postInput only when publishing, so typing never loses a draft.
+export const postDraftInput = postInput.extend({
+  title: z.string().max(255),
+  year: z.string().max(4),
+  slug: z.string().max(180),
+  externalUrl: z.string().max(2000).default(""),
+  coverUrl: z.string().max(2000).default(""),
+  canonicalUrl: z.string().max(2000).default(""),
+});
+
 export function postPath(input: Pick<PostInput, "section" | "year" | "slug">) {
   const prefix = ["blog", "tech", "sight"].includes(input.section)
     ? `/${input.section}/${input.year}`
