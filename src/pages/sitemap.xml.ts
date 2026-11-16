@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { listPublicSeries } from '../lib/server/series';
 import { publicPosts } from '../lib/server/posts';
 import { usesDatabase } from '../lib/server/env';
 import { readBlog, readTech, readSight, readAll } from '../lib/markdoc/read';
@@ -7,8 +8,9 @@ import { SITE_URL } from '../config';
 const escape = (value: string) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 export const prerender = false;
 export const GET: APIRoute = async () => {
-  const urls = ['/', '/blog', '/tech', '/sight', '/link', '/ppt', '/moments'].map(path => ({ path, updated: '' }));
+  const urls = ['/', '/blog', '/tech', '/sight', '/link', '/ppt', '/moments', '/series'].map(path => ({ path, updated: '' }));
   if (usesDatabase()) {
+    for (const series of await listPublicSeries()) if(series.publishedCount) urls.push({path:series.path, updated:series.latestAt||''});
     for (const post of await publicPosts()) if (!post.externalUrl && post.section !== 'projects' && !post.metadata.hideFromListing) urls.push({ path: post.path, updated: (post.contentUpdatedAt ?? post.publishedAt).toISOString() });
   } else {
     for (const [section, reader] of [['blog', readBlog], ['tech', readTech], ['sight', readSight]] as const) {

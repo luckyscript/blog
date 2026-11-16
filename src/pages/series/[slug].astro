@@ -1,0 +1,25 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import PageMeta from "../../components/PageMeta.astro";
+import SeriesCollection from "../../components/series/SeriesCollection.astro";
+import { publicSeriesBySlug } from "../../lib/server/series";
+import { SITE_TITLE } from "../../config";
+const series = await publicSeriesBySlug(Astro.params.slug || "");
+if (series.rootPostId) return Astro.redirect(series.path, 301);
+---
+
+<PageLayout>
+  <PageMeta
+    title={`${series.title} | ${SITE_TITLE}`}
+    description={series.description}
+    slot="meta"
+  /><link
+    rel="canonical"
+    href={new URL(series.path, Astro.url.origin).href}
+    slot="meta"
+  /><section slot="main" class="series-landing">
+    <nav><a href="/series">← 系列手记</a></nav><h1>
+      {series.title}
+    </h1><SeriesCollection series={series} />
+  </section>
+</PageLayout>

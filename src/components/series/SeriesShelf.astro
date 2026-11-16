@@ -1,0 +1,40 @@
+---
+import { listPublicSeries } from "../../lib/server/series";
+import "../../styles/series.css";
+interface Props {
+  section?: string;
+}
+const { section } = Astro.props;
+const collections = (await listPublicSeries(section)).filter(
+  (item) => item.publishedCount > 0
+);
+---
+
+{
+  collections.length > 0 && (
+    <section class="series-shelf" aria-label="系列手记">
+      <header>
+        <>
+          <h2>系列手记</h2>
+          <a href="/series">全部系列 →</a>
+        </>
+      </header>
+      <ul>
+        {collections.map((item) => (
+          <li>
+            <a class="unset" href={item.path}>
+              <div>
+                <h3>{item.title}</h3>
+                {item.description && <p>{item.description}</p>}
+              </div>
+              <span>
+                {item.publishedCount} 则 ·{" "}
+                {item.state === "completed" ? "已完结" : "持续更新"}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

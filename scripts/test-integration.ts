@@ -108,7 +108,7 @@ async function main() {
   if (!ready) throw new Error(`独立测试服务未能启动\n${serverOutput}`);
   console.log(`集成测试使用临时数据库 ${schema} 与独立本机服务`);
   try {
-    await run([...nodeArgs, "--test", '--test-concurrency=1', "tests/integration.ts", 'tests/authoring-integration.ts'], {
+    await run([...nodeArgs, "--test", '--test-concurrency=1', "tests/integration.ts", 'tests/authoring-integration.ts', 'tests/series-integration.ts'], {
       ...environment,
       TEST_BASE_URL: origin,
     });

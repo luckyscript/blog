@@ -1,0 +1,146 @@
+.series-manager {
+  min-width: 0;
+}
+.series-manager .page-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.series-manager .eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+.series-manager h1 {
+  font: 36px/1.5 var(--serif);
+  margin: 8px 0;
+}
+.series-admin-list {
+  display: grid;
+  gap: 18px;
+}
+.series-admin-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+}
+.series-admin-item h2 {
+  font: 24px/1.6 var(--serif);
+  margin: 0;
+}
+.series-admin-item p {
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-line;
+  color: var(--muted);
+  margin: 8px 0;
+}
+.series-admin-item small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.series-admin-item > div:last-child {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.series-manager-back {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 0 0 18px;
+}
+.series-manager-back > div {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.series-editor {
+  margin-bottom: 24px;
+}
+.series-editor-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.series-description-field {
+  grid-column: 1/-1;
+}
+.series-editor label {
+  min-width: 0;
+  margin: 0;
+}
+.series-editor input,
+.series-editor select,
+.series-editor textarea {
+  width: 100%;
+  min-width: 0;
+}
+.series-editor-save {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding-top: 20px;
+}
+.series-editor-save > p {
+  max-width: 38em;
+  font-size: 12px;
+}
+.series-editor-save button {
+  flex-shrink: 0;
+}
+.series-entry-manager header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.series-entry-manager h2 {
+  margin: 0;
+  font: 24px/1.5 var(--serif);
+}
+.series-entry-manager small {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.series-entry-manager td:last-child > a + a {
+  margin-left: 14px;
+}
+.series-entry-manager table {
+  min-width: 560px;
+}
+.series-entry-manager .table-wrap {
+  overflow-x: auto;
+}
+@media (max-width: 700px) {
+  .series-manager .page-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .series-admin-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .series-editor-fields {
+    grid-template-columns: 1fr;
+  }
+  .series-description-field {
+    grid-column: auto;
+  }
+  .series-editor-save {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .series-manager h1 {
+    font-size: 30px;
+  }
+}

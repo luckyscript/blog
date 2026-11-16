@@ -1,0 +1,71 @@
+---
+import slugify from "slugify";
+import type { SeriesDetail } from "../../lib/server/series";
+import "../../styles/series.css";
+interface Props {
+  series: SeriesDetail;
+}
+const { series } = Astro.props;
+const date = (value: string) =>
+  new Date(value).toLocaleDateString("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+---
+
+<section class="series-collection" aria-label={`${series.title}全部篇目`}>
+  {
+    series.description && (
+      <p class="series-introduction">{series.description}</p>
+    )
+  }
+  <div class="series-overview">
+    <span>{series.state === "completed" ? "已完结" : "持续更新"}</span><span
+      >{series.entries.length} 则手记</span
+    >{
+      series.latestAt && (
+        <span>
+          最近更新{" "}
+          <time datetime={series.latestAt}>{date(series.latestAt)}</time>
+        </span>
+      )
+    }
+  </div>
+  <div class="series-list-title">
+    <h2>全部手记</h2><span>按时间由近到远</span>
+  </div>
+  <ol class="series-story-list">
+    {
+      series.entries.map((entry, index) => (
+        <li
+          id={
+            slugify(entry.title.toLowerCase()) ||
+            entry.title.trim().replace(/\s+/g, "-")
+          }
+        >
+          <a href={entry.path} class="series-story-link unset">
+            <div class="series-story-meta">
+              <time datetime={entry.publishedAt}>
+                {date(entry.publishedAt)}
+              </time>
+              {index === 0 && <span>最近一则</span>}
+            </div>
+            <h3>
+              {entry.title}
+              <span aria-hidden="true">↗</span>
+            </h3>
+            {entry.context && (
+              <p class="series-story-context">{entry.context}</p>
+            )}
+            {entry.description && (
+              <p class="series-story-excerpt">{entry.description}</p>
+            )}
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+  {!series.entries.length && <p class="series-empty">第一则手记还在整理中。</p>}
+</section>

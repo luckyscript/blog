@@ -1,0 +1,38 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import PageMeta from "../../components/PageMeta.astro";
+import { listPublicSeries } from "../../lib/server/series";
+import { SITE_TITLE } from "../../config";
+import "../../styles/series.css";
+const collections = (await listPublicSeries()).filter(
+  (item) => item.publishedCount > 0
+);
+---
+
+<PageLayout>
+  <PageMeta title={`系列手记 | ${SITE_TITLE}`} slot="meta" /><section
+    slot="main"
+    class="series-landing"
+  >
+    <h1>系列手记</h1><p class="series-introduction">
+      把同一个主题，慢慢写下去。
+    </p><ul class="series-index-list">
+      {
+        collections.map((item) => (
+          <li>
+            <a class="unset" href={item.path}>
+              <p>{item.description}</p>
+              <>
+                <h2>{item.title}</h2>
+                <span>
+                  {item.publishedCount} 则 ·{" "}
+                  {item.state === "completed" ? "已完结" : "持续更新"}
+                </span>
+              </>
+            </a>
+          </li>
+        ))
+      }
+    </ul>{!collections.length && <p class="series-empty">还没有公开的系列。</p>}
+  </section>
+</PageLayout>

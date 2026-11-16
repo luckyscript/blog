@@ -76,7 +76,7 @@ export function analyticsPath(value: string) {
   if (
     path.length > 512 ||
     (path !== "/" &&
-      !/^\/(?:blog|tech|sight|life|moments|photography|link|ppt|card|category|projects)(?:\/|$)/.test(
+      !/^\/(?:blog|tech|sight|life|moments|photography|link|ppt|card|category|projects|series)(?:\/|$)/.test(
         path
       ))
   )
@@ -90,6 +90,7 @@ export function pageCategory(path: string): PageCategory {
     (/^\/card\/[^/]+$/.test(path) && !path.startsWith("/card/tag/"))
   )
     return "article";
+  if (path.startsWith("/series")) return "listing";
   if (path.startsWith("/moments")) return "moments";
   if (path.startsWith("/photography")) return "photography";
   if (path.startsWith("/link")) return "links";

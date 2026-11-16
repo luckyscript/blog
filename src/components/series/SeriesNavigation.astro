@@ -1,0 +1,74 @@
+---
+import type { SeriesDetail } from "../../lib/server/series";
+import "../../styles/series.css";
+interface Props {
+  series: SeriesDetail;
+  index: number;
+  position?: "header" | "footer";
+}
+const { series, index, position = "footer" } = Astro.props;
+const older = series.entries[index + 1],
+  newer = series.entries[index - 1];
+---
+
+{
+  position === "header" ? (
+    <div class="series-reading-context">
+      <>
+        <a href={series.path}>《{series.title}》</a>
+        <span>
+          第 {series.entries.length - index} 则 · 共 {series.entries.length} 则
+        </span>
+      </>
+    </div>
+  ) : (
+    <aside class="series-reading-footer" aria-label="系列阅读导航">
+      <div class="series-adjacent">
+        <>
+          <div>
+            {older && (
+              <a href={older.path}>
+                <small>← 上一则</small>
+                <span>{older.title}</span>
+              </a>
+            )}
+          </div>
+          <div>
+            {newer && (
+              <a href={newer.path}>
+                <small>下一则 →</small>
+                <span>{newer.title}</span>
+              </a>
+            )}
+          </div>
+        </>
+      </div>
+      <details class="series-reading-directory">
+        <ol>
+          {[...series.entries].reverse().map((entry) => (
+            <li>
+              <a
+                href={entry.path}
+                aria-current={
+                  entry.path === series.entries[index]?.path
+                    ? "page"
+                    : undefined
+                }
+              >
+                {entry.title}
+              </a>
+            </li>
+          ))}
+        </ol>
+        <>
+          <summary>
+            《{series.title}》系列目录 · {series.entries.length} 则
+          </summary>
+          <a class="series-back-link" href={series.path}>
+            返回系列首页 →
+          </a>
+        </>
+      </details>
+    </aside>
+  )
+}

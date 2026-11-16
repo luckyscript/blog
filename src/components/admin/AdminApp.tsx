@@ -6,6 +6,8 @@ import { mediaMarkdown, stripPendingImages } from '../../lib/admin/editor-media'
 import LocalMoments from './LocalMoments';
 import LinksManager from './LinksManager';
 import PhotographyStudio from './PhotographyStudio';
+import SeriesManager from './SeriesManager';
+import SeriesFields from './SeriesFields';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import WritingPreferences, { useWritingPreferences } from './WritingPreferences';
 import UlyssesEditor, { type UlyssesEditorHandle, type WritingPosition } from './UlyssesEditor';
@@ -87,6 +89,7 @@ function Spinner() {
 }
 function Icon({ name }: { name: string }) {
   const paths: Record<string, React.ReactNode> = {
+    series: <><path d="M4 4h6a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H4zM13 7a3 3 0 0 1 3-3h5v14h-5a3 3 0 0 0-3 3" /></>,
     analytics: <><path d="M4 20V4M4 20h17M8 16v-4M13 16V8M18 16V5" /></>,
     moments: <><path d="M4 4h16v12H9l-5 4z" /><path d="M8 8h8M8 12h5" /></>,
     links: <><path d="m9 15 6-6M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 10a4 4 0 0 0 6 0l4-4a4 4 0 0 0-6-6l-1 1" /></>,
@@ -153,9 +156,10 @@ export default function AdminApp({
 }) {
   if (route === "login")
     return <Login configured={configured} turnstile={turnstile} />;
-  const view = route.startsWith("posts/") ? "editor" : route || "posts";
+  const view = route.startsWith("posts/") ? "editor" : route.startsWith("series/") ? "series" : route || "posts";
   const links = [
     ["", "posts", "文章"],
+    ["series", "series", "系列手记"],
     ["analytics", "analytics", "访问分析"],
     ["moments", "moments", "碎碎念"],
     ['links','links','链接'],
@@ -229,6 +233,7 @@ export default function AdminApp({
           className={`admin-main ${view === "editor" ? "editor-main" : ""}`}
         >
           {view === "posts" && <Posts />}
+          {view === "series" && <SeriesManager request={api} initialId={route.split("/")[1]} />}
           {view === "analytics" && <AnalyticsDashboard request={api} />}
           {view === "editor" && (
             <Editor
@@ -1191,6 +1196,7 @@ function Editor({ postId }: { postId: string | null }) {
                 精选文章
               </label>
             </section>
+            <SeriesFields input={input} postId={record?.id || postId} request={api} onChange={value=>field("metadata",value)} />
             <section className="panel property-panel">
               <h2>摘要与分享</h2>
               <label>

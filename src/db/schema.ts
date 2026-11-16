@@ -197,3 +197,17 @@ export const analyticsEvents = mysqlTable('blog_analytics_events', {
   id:id(),viewId:varchar('view_id',{length:36}).notNull().references(()=>analyticsViews.id,{onDelete:'cascade'}),
   type:varchar('type',{length:32}).notNull(),target:varchar('target',{length:512}).notNull().default(''),label:varchar('label',{length:40}).notNull().default(''),value:int('value').notNull().default(0),createdAt:time('created_at').notNull(),
 },table=>[index('blog_analytics_event_time').on(table.createdAt),index('blog_analytics_event_type').on(table.type,table.createdAt),index('blog_analytics_event_view').on(table.viewId)]);
+
+export const seriesCollections = mysqlTable('blog_series', {
+  id: id(), slug: varchar('slug', {length:120}).notNull().unique(),
+  title: varchar('title', {length:160}).notNull(), description: text('description').notNull(),
+  section: varchar('section', {length:20}).notNull().default('blog'),
+  status: varchar('status', {length:16}).notNull().default('draft'),
+  state: varchar('state', {length:16}).notNull().default('ongoing'),
+  rootPostId: varchar('root_post_id', {length:36}).unique().references(()=>posts.id, {onDelete:'restrict'}),
+  version: int('version').notNull().default(1), createdAt:time('created_at').notNull(),updatedAt:time('updated_at').notNull(),
+},table=>[index('blog_series_public').on(table.status,table.section,table.updatedAt)]);
+export const seriesEntries = mysqlTable('blog_series_entries', {
+  postId:varchar('post_id',{length:36}).primaryKey().references(()=>posts.id,{onDelete:'cascade'}),
+  seriesId:varchar('series_id',{length:36}).notNull().references(()=>seriesCollections.id,{onDelete:'cascade'}),
+},table=>[index('blog_series_entry_collection').on(table.seriesId,table.postId)]);

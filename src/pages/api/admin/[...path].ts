@@ -1,3 +1,4 @@
+import {listAdminSeries,getAdminSeries,saveSeries,newSeriesEntryInput} from '../../../lib/server/series';
 import type { APIContext } from "astro";
 import { z, ZodError } from "zod";
 import { and, eq } from "drizzle-orm";
@@ -96,6 +97,16 @@ export async function ALL(context: APIContext) {
     const user = context.locals.admin;
     if (!user) throw new AppError(401, "请先登录");
     if(path==='analytics'&&method==='GET')return json(await analyticsDashboard(context.url.searchParams));
+    if(path==='series'&&method==='GET')return json(await listAdminSeries());
+    if(path==='series'&&method==='POST')return json(await saveSeries(null,await body(context.request),null),201);
+    const seriesRoute=path.match(/^series\/([a-f0-9-]{36})(?:\/(entries))?$/);
+    if(seriesRoute){
+      const id=z.string().uuid().parse(seriesRoute[1]);
+      if(seriesRoute[2]==='entries'&&method==='POST')return json(await saveDraft(null,await newSeriesEntryInput(id),1,user.id),201);
+      if(!seriesRoute[2]&&method==='GET')return json(await getAdminSeries(id));
+      if(!seriesRoute[2]&&method==='PUT'){const value=await body(context.request);return json(await saveSeries(id,value.input,versionOf(value)));}
+    }
+
     if (path === "moments/sources" && method === "GET") return json(await momentSources());
     if(path==='links'&&method==='GET')return json(await listCuratedLinks(true));
     if(path==='links'&&method==='POST')return json(await saveCuratedLink(null,await body(context.request)),201);
